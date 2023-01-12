@@ -2,6 +2,8 @@ name: "PR test and deploy storybook"
 
 on:
   pull_request:
+    branches-ignore:
+      - main
 
 jobs:
   test:
