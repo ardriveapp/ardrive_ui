@@ -5,9 +5,8 @@
   "targets": {
     "ardrive-web": {
       "hosting": {
-        "storybook": [
-          "ardrive-storybook-d046e"
-        ]
+        "ardrive-ui": ["ardrive-ui"],
+        "ardrive-ui-staging": ["ardrive-ui-staging"]
       }
     }
   }

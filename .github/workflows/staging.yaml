@@ -1,7 +1,9 @@
-name: "PR test and deploy storybook"
+name: "Storybook staging deploy"
 
 on:
-  pull_request:
+  push:
+    branches:
+      - dev
 
 jobs:
   test:
@@ -50,5 +52,5 @@ jobs:
         with:
           repoToken: "${{ secrets.GITHUB_TOKEN }}"
           firebaseServiceAccount: "${{ secrets.FIREBASE_CI_SERVICE_ACCOUNT }}"
-          expires: 14d
-          target: ardrive-ui
+          target: ardrive-ui-staging
+          channelId: live
