@@ -1,0 +1,14 @@
+{
+  "projects": {
+    "default": "ardrive-web"
+  },
+  "targets": {
+    "ardrive-web": {
+      "hosting": {
+        "storybook": [
+          "ardrive-storybook-d046e"
+        ]
+      }
+    }
+  }
+}
