@@ -51,4 +51,4 @@ jobs:
           repoToken: "${{ secrets.GITHUB_TOKEN }}"
           firebaseServiceAccount: "${{ secrets.FIREBASE_CI_SERVICE_ACCOUNT }}"
           expires: 14d
-          target: ardrive-ui
+          target: "ardrive-ui"
