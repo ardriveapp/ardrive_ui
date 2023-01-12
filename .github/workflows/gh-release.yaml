@@ -1,4 +1,4 @@
-name: "Release storybook and draft gh release"
+name: "Draft GH release"
 
 on:
   pull_request:
