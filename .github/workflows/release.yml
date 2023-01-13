@@ -1,4 +1,4 @@
-name: 'Draft release'
+name: "Production release"
 
 on:
   pull_request:
@@ -11,14 +11,27 @@ env:
   BODY: ${{ github.event.pull_request.body }}
 
 jobs:
-  release:
+  test:
+    if: ${{ github.event.pull_request.merged }}
+    uses: ./.github/workflows/test.yml
+
+  storybook:
+    if: ${{ github.event.pull_request.merged }}
+    needs: test
+    uses: ./.github/workflows/storybook.yml
+    secrets: inherit
+    with:
+      FIREBASE_TARGET: "ardrive-ui"
+      FIREBASE_CHANNEL: "live"
+
+  gh-release:
     if: ${{ github.event.pull_request.merged }}
     runs-on: ubuntu-latest
     steps:
-      - name: 'Create draft release'
-        uses: 'actions/github-script@v6'
+      - name: "Create draft release"
+        uses: "actions/github-script@v6"
         with:
-          github-token: '${{ secrets.GITHUB_TOKEN }}'
+          github-token: "${{ secrets.GITHUB_TOKEN }}"
           script: |
             try {
               await github.rest.repos.createRelease({
