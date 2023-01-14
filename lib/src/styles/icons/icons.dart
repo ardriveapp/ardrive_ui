@@ -27,10 +27,15 @@ class ArDriveIcon extends StatelessWidget {
 }
 
 class ArDriveIcons {
-  static ArDriveIcon closeIconCircle({double? size}) =>
-      const ArDriveIcon(path: 'assets/icons/close_icon_circle.svg');
-  static ArDriveIcon closeIcon({double? size}) =>
-      const ArDriveIcon(path: 'assets/icons/close_icon.svg');
+  static ArDriveIcon closeIconCircle({double? size, Color? color}) =>
+      ArDriveIcon(
+        path: 'assets/icons/close_icon_circle.svg',
+        color: color,
+      );
+  static ArDriveIcon closeIcon({double? size, Color? color}) => ArDriveIcon(
+        path: 'assets/icons/close_icon.svg',
+        color: color,
+      );
   static ArDriveIcon uploadCloud({double? size, Color? color}) => ArDriveIcon(
       path: 'assets/icons/cloud_upload.svg', size: size, color: color);
   static ArDriveIcon checkSuccess({double? size, Color? color}) => ArDriveIcon(
