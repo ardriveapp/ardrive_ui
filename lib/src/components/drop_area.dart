@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:ardrive_io/ardrive_io.dart';
 import 'package:ardrive_ui/ardrive_ui.dart';
 import 'package:ardrive_ui/src/constants/size_constants.dart';
@@ -72,6 +74,7 @@ class ArDriveDropAreaSingleInput extends StatefulWidget {
     this.onDragExited,
     this.errorDescription,
     this.onError,
+    this.validateFile,
   });
 
   final double? height;
@@ -83,6 +86,7 @@ class ArDriveDropAreaSingleInput extends StatefulWidget {
   final Function()? onDragExited;
   final Function(IOFile file)? buttonCallback;
   final Function(IOFile file)? onDragDone;
+  final FutureOr<bool> Function(IOFile file)? validateFile;
   final Function(Object e)? onError;
 
   @override
@@ -102,11 +106,16 @@ class _ArDriveDropAreaSingleInputState
       onDragEntered: () {
         widget.onDragEntered?.call();
       },
-      onDragDone: (files) {
-        setState(() {
+      onDragDone: (files) async {
+        if (widget.validateFile != null &&
+            !(await widget.validateFile!(files.first))) {
+          _hasError = true;
+          widget.onError?.call(DropzoneValidationException());
+        } else {
           _file = files.first;
           widget.onDragDone?.call(_file!);
-        });
+        }
+        setState(() {});
       },
       onError: (e) {
         setState(() {
@@ -125,7 +134,7 @@ class _ArDriveDropAreaSingleInputState
         width: widget.width,
         child: Padding(
           padding: const EdgeInsets.all(32),
-          child: _hasError
+          child: _file == null && _hasError
               ? _errorView()
               : Column(
                   mainAxisSize: MainAxisSize.min,
@@ -162,31 +171,39 @@ class _ArDriveDropAreaSingleInputState
                           style: ArDriveTypography.body.smallBold(),
                         ),
                       ),
-                      ArDriveButton(
-                        text: widget.dragAndDropButtonTitle,
-                        onPressed: () async {
-                          _file = await ArDriveIO()
-                              .pickFile(fileSource: FileSource.fileSystem);
-                          setState(() {});
-                          widget.buttonCallback?.call(_file!);
-                        },
-                        maxHeight: buttonActionHeight,
-                        fontStyle: ArDriveTypography.body.buttonNormalRegular(
-                          color: ArDriveTheme.of(context)
-                              .themeData
-                              .colors
-                              .themeAccentSubtle,
-                        ),
-                        backgroundColor: ArDriveTheme.of(context)
-                            .themeData
-                            .colors
-                            .themeFgDefault,
-                      ),
+                      _button(),
                     ]
                   ],
                 ),
         ),
       ),
+    );
+  }
+
+  Widget _button() {
+    return ArDriveButton(
+      text: widget.dragAndDropButtonTitle,
+      onPressed: () async {
+        final selectedFile =
+            await ArDriveIO().pickFile(fileSource: FileSource.fileSystem);
+        // validate file
+        if (widget.validateFile != null &&
+            !(await widget.validateFile!(selectedFile))) {
+          _hasError = true;
+
+          widget.onError?.call(DropzoneValidationException());
+        } else {
+          _file = selectedFile;
+          widget.buttonCallback?.call(_file!);
+        }
+
+        setState(() {});
+      },
+      maxHeight: buttonActionHeight,
+      fontStyle: ArDriveTypography.body.buttonNormalRegular(
+        color: ArDriveTheme.of(context).themeData.colors.themeAccentSubtle,
+      ),
+      backgroundColor: ArDriveTheme.of(context).themeData.colors.themeFgDefault,
     );
   }
 
@@ -202,7 +219,13 @@ class _ArDriveDropAreaSingleInputState
             widget.errorDescription!,
             style: ArDriveTypography.body.smallBold(),
           ),
+        Padding(
+          padding: const EdgeInsets.only(top: 20),
+          child: _button(),
+        ),
       ],
     );
   }
 }
+
+class DropzoneValidationException implements Exception {}
