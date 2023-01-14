@@ -13,6 +13,7 @@ class ArDriveButton extends StatefulWidget {
     this.backgroundColor,
     this.fontStyle,
     this.maxHeight,
+    this.maxWidth,
   });
 
   final String text;
@@ -21,6 +22,7 @@ class ArDriveButton extends StatefulWidget {
   final Color? backgroundColor;
   final TextStyle? fontStyle;
   final double? maxHeight;
+  final double? maxWidth;
 
   @override
   State<ArDriveButton> createState() => _ArDriveButtonState();
@@ -33,12 +35,12 @@ class _ArDriveButtonState extends State<ArDriveButton> {
       case ArDriveButtonStyle.primary:
         return SizedBox(
           height: widget.maxHeight ?? buttonDefaultHeight,
+          width: widget.maxWidth,
           child: ElevatedButton(
             style: ButtonStyle(
               backgroundColor: _backgroundColor,
               maximumSize: _maxSize,
               shape: _shape,
-              padding: _padding,
               alignment: Alignment.center,
             ),
             onPressed: widget.onPressed,
@@ -57,13 +59,14 @@ class _ArDriveButtonState extends State<ArDriveButton> {
       case ArDriveButtonStyle.secondary:
         return SizedBox(
           height: widget.maxHeight ?? buttonDefaultHeight,
+          width: widget.maxWidth,
           child: OutlinedButton(
             onPressed: widget.onPressed,
             style: ButtonStyle(
               maximumSize: _maxSize,
               shape: _shapeOutlined,
               side: _borderSize,
-              padding: _padding,
+              alignment: Alignment.center,
             ),
             child: Text(
               widget.text,
@@ -114,13 +117,6 @@ class _ArDriveButtonState extends State<ArDriveButton> {
             style: BorderStyle.solid,
             color: ArDriveTheme.of(context).themeData.colors.themeFgDefault,
           );
-        },
-      );
-
-  MaterialStateProperty<EdgeInsets> get _padding =>
-      MaterialStateProperty.resolveWith<EdgeInsets>(
-        (Set<MaterialState> states) {
-          return const EdgeInsets.symmetric(vertical: 12, horizontal: 12);
         },
       );
 
