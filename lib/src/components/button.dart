@@ -14,6 +14,8 @@ class ArDriveButton extends StatefulWidget {
     this.fontStyle,
     this.maxHeight,
     this.maxWidth,
+    this.icon,
+    this.isDisabled = false,
   });
 
   final String text;
@@ -23,6 +25,11 @@ class ArDriveButton extends StatefulWidget {
   final TextStyle? fontStyle;
   final double? maxHeight;
   final double? maxWidth;
+  final bool isDisabled;
+
+  /// An optional icon to display to the left of the button text.
+  /// Only applies to primary and secondary buttons.
+  final Widget? icon;
 
   @override
   State<ArDriveButton> createState() => _ArDriveButtonState();
@@ -43,16 +50,23 @@ class _ArDriveButtonState extends State<ArDriveButton> {
               shape: _shape,
               alignment: Alignment.center,
             ),
-            onPressed: widget.onPressed,
-            child: Text(
-              widget.text,
-              style: widget.fontStyle ??
-                  ArDriveTypography.headline.headline5Bold(
-                    color: ArDriveTheme.of(context)
-                        .themeData
-                        .colors
-                        .themeFgOnAccent,
-                  ),
+            onPressed: widget.isDisabled ? null : widget.onPressed,
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                if (widget.icon != null) widget.icon!,
+                Text(
+                  widget.text,
+                  style: widget.fontStyle ??
+                      ArDriveTypography.headline.headline5Bold(
+                        color: ArDriveTheme.of(context)
+                            .themeData
+                            .colors
+                            .themeFgOnAccent,
+                      ),
+                ),
+              ],
             ),
           ),
         );
@@ -61,22 +75,30 @@ class _ArDriveButtonState extends State<ArDriveButton> {
           height: widget.maxHeight ?? buttonDefaultHeight,
           width: widget.maxWidth,
           child: OutlinedButton(
-            onPressed: widget.onPressed,
+            onPressed: widget.isDisabled ? null : widget.onPressed,
             style: ButtonStyle(
               maximumSize: _maxSize,
               shape: _shapeOutlined,
               side: _borderSize,
               alignment: Alignment.center,
+              backgroundColor: _backgroundColor,
             ),
-            child: Text(
-              widget.text,
-              style: widget.fontStyle ??
-                  ArDriveTypography.headline.headline5Bold(
-                    color: ArDriveTheme.of(context)
-                        .themeData
-                        .colors
-                        .themeFgDefault,
-                  ),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                if (widget.icon != null) widget.icon!,
+                Text(
+                  widget.text,
+                  style: widget.fontStyle ??
+                      ArDriveTypography.headline.headline5Bold(
+                        color: ArDriveTheme.of(context)
+                            .themeData
+                            .colors
+                            .themeFgDefault,
+                      ),
+                ),
+              ],
             ),
           ),
         );
@@ -130,6 +152,13 @@ class _ArDriveButtonState extends State<ArDriveButton> {
   MaterialStateProperty<Color?> get _backgroundColor =>
       MaterialStateProperty.resolveWith<Color?>(
         (Set<MaterialState> states) {
+          if (widget.isDisabled) {
+            return ArDriveTheme.of(context)
+                .themeData
+                .colors
+                .themeAccentDisabled;
+          }
+
           return widget.backgroundColor;
         },
       );
