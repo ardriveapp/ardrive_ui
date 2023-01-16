@@ -152,6 +152,9 @@ class _ArDriveButtonState extends State<ArDriveButton> {
   MaterialStateProperty<Color?> get _backgroundColor =>
       MaterialStateProperty.resolveWith<Color?>(
         (Set<MaterialState> states) {
+          if (widget.style == ArDriveButtonStyle.secondary) {
+            return null;
+          }
           if (widget.isDisabled) {
             return ArDriveTheme.of(context)
                 .themeData
