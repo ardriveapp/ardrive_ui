@@ -77,4 +77,20 @@ class ArDriveIcons {
         size: size,
         color: color,
       );
+  static ArDriveIcon arConnectLogo({double? size, Color? color}) => ArDriveIcon(
+        path: 'assets/icons/arconnect_logo.svg',
+        size: size,
+        color: color,
+      );
+  static ArDriveIcon eyeOff({double? size, Color? color}) => ArDriveIcon(
+        path: 'assets/icons/eye_off.svg',
+        size: size,
+        color: color,
+      );
+
+  static ArDriveIcon eye({double? size, Color? color}) => ArDriveIcon(
+        path: 'assets/icons/eye.svg',
+        size: size,
+        color: color,
+      );
 }
