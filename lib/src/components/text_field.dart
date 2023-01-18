@@ -119,12 +119,17 @@ class ArDriveTextFieldState extends State<ArDriveTextField> {
     super.initState();
   }
 
-  bool validate() {
-    print('Validating ArDriveTextField');
-    final validation = widget.validator?.call(widget.controller?.text);
+  bool validate({String? text}) {
+    String? textToValidate = text;
+
+    if (textToValidate == null && widget.controller != null) {
+      textToValidate = widget.controller?.text;
+    }
+
+    final validation = widget.validator?.call(textToValidate);
 
     setState(() {
-      if (widget.controller?.text.isEmpty ?? true) {
+      if (textToValidate?.isEmpty ?? true) {
         textFieldState = TextFieldState.focused;
       } else if (validation != null) {
         textFieldState = TextFieldState.error;
@@ -144,7 +149,6 @@ class ArDriveTextFieldState extends State<ArDriveTextField> {
 
   @override
   Widget build(BuildContext context) {
-    print('Building ArDriveTextField');
     return Align(
       alignment: Alignment.center,
       child: Column(
@@ -176,7 +180,7 @@ class ArDriveTextFieldState extends State<ArDriveTextField> {
             ),
             autovalidateMode: widget.autovalidateMode,
             onChanged: (text) {
-              validate();
+              validate(text: text);
               widget.onChanged?.call(text);
             },
             autofillHints: widget.autofillHints,
@@ -222,7 +226,7 @@ class ArDriveTextFieldState extends State<ArDriveTextField> {
                   .themeInputBackground,
             ),
           ),
-          if (widget.validator != null) _errorMessageLabel(_errorMessage),
+          if (widget.validator != null) _errorMessageLabel(),
           if (widget.successMessage != null)
             _successMessage(widget.successMessage!),
         ],
@@ -230,10 +234,10 @@ class ArDriveTextFieldState extends State<ArDriveTextField> {
     );
   }
 
-  Widget _errorMessageLabel(String? errorMessage) {
+  Widget _errorMessageLabel() {
     return AnimatedTextFieldLabel(
-      text: errorMessage,
-      showing: errorMessage != null,
+      text: _errorMessage,
+      showing: _errorMessage != null,
       color: ArDriveTheme.of(context).themeData.colors.themeErrorDefault,
     );
   }
@@ -338,11 +342,15 @@ class AnimatedTextFieldLabel extends StatefulWidget {
   final Color color;
 
   @override
-  State<AnimatedTextFieldLabel> createState() => _AnimatedTextFieldLabelState();
+  State<AnimatedTextFieldLabel> createState() => AnimatedTextFieldLabelState();
 }
 
-class _AnimatedTextFieldLabelState extends State<AnimatedTextFieldLabel> {
-  bool _visible = false;
+class AnimatedTextFieldLabelState extends State<AnimatedTextFieldLabel> {
+  @visibleForTesting
+  bool visible = false;
+
+  @visibleForTesting
+  bool showing = false;
 
   @override
   void initState() {
@@ -351,22 +359,23 @@ class _AnimatedTextFieldLabelState extends State<AnimatedTextFieldLabel> {
 
   @override
   Widget build(BuildContext context) {
-    if (!widget.showing) {
-      _visible = false;
+    showing = widget.showing;
+    if (!showing) {
+      visible = false;
     }
 
     return Align(
       alignment: Alignment.centerLeft,
       child: AnimatedContainer(
         onEnd: () => setState(() {
-          _visible = !_visible;
+          visible = !visible;
         }),
         duration: const Duration(milliseconds: 300),
-        height: widget.showing ? 35 : 0,
+        height: showing ? 35 : 0,
         width: double.infinity,
         child: AnimatedOpacity(
-          opacity: _visible ? 1.0 : 0.0,
-          duration: Duration(milliseconds: !_visible ? 100 : 300),
+          opacity: visible ? 1.0 : 0.0,
+          duration: Duration(milliseconds: !visible ? 100 : 300),
           child: TextFieldLabel(
             color: widget.color,
             text: widget.text ?? '',
