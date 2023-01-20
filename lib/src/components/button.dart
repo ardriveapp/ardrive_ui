@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 
 enum ArDriveButtonStyle { primary, secondary, tertiary }
 
+enum IconButtonAlignment { left, right }
+
 class ArDriveButton extends StatefulWidget {
   const ArDriveButton({
     super.key,
@@ -16,6 +18,7 @@ class ArDriveButton extends StatefulWidget {
     this.maxWidth,
     this.icon,
     this.isDisabled = false,
+    this.iconAlignment = IconButtonAlignment.left,
   });
 
   final String text;
@@ -26,6 +29,7 @@ class ArDriveButton extends StatefulWidget {
   final double? maxHeight;
   final double? maxWidth;
   final bool isDisabled;
+  final IconButtonAlignment iconAlignment;
 
   /// An optional icon to display to the left of the button text.
   /// Only applies to primary and secondary buttons.
@@ -55,7 +59,11 @@ class _ArDriveButtonState extends State<ArDriveButton> {
               mainAxisSize: MainAxisSize.min,
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                if (widget.icon != null) widget.icon!,
+                if (widget.icon != null &&
+                    widget.iconAlignment == IconButtonAlignment.left) ...[
+                  widget.icon!,
+                  const SizedBox(width: 8),
+                ],
                 Text(
                   widget.text,
                   style: widget.fontStyle ??
@@ -66,6 +74,11 @@ class _ArDriveButtonState extends State<ArDriveButton> {
                             .themeFgOnAccent,
                       ),
                 ),
+                if (widget.icon != null &&
+                    widget.iconAlignment == IconButtonAlignment.right) ...[
+                  const SizedBox(width: 8),
+                  widget.icon!,
+                ]
               ],
             ),
           ),
@@ -87,7 +100,11 @@ class _ArDriveButtonState extends State<ArDriveButton> {
               mainAxisSize: MainAxisSize.min,
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                if (widget.icon != null) widget.icon!,
+                if (widget.icon != null &&
+                    widget.iconAlignment == IconButtonAlignment.left) ...[
+                  widget.icon!,
+                  const SizedBox(width: 8),
+                ],
                 Text(
                   widget.text,
                   style: widget.fontStyle ??
@@ -98,6 +115,11 @@ class _ArDriveButtonState extends State<ArDriveButton> {
                             .themeFgDefault,
                       ),
                 ),
+                if (widget.icon != null &&
+                    widget.iconAlignment == IconButtonAlignment.right) ...[
+                  const SizedBox(width: 8),
+                  widget.icon!,
+                ]
               ],
             ),
           ),
