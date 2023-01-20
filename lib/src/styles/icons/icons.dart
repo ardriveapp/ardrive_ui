@@ -93,4 +93,17 @@ class ArDriveIcons {
         size: size,
         color: color,
       );
+
+  static ArDriveIcon arrowLeftCircle({double? size, Color? color}) =>
+      ArDriveIcon(
+        path: 'assets/icons/arrow_left_circle.svg',
+        size: size,
+        color: color,
+      );
+  static ArDriveIcon arrowRightCircle({double? size, Color? color}) =>
+      ArDriveIcon(
+        path: 'assets/icons/arrow_right_circle.svg',
+        size: size,
+        color: color,
+      );
 }

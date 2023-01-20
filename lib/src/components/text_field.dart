@@ -77,6 +77,7 @@ class ArDriveTextField extends StatefulWidget {
     this.label,
     this.isFieldRequired = false,
     this.showObfuscationToggle = false,
+    this.textInputAction = TextInputAction.done,
   });
 
   final bool isEnabled;
@@ -100,6 +101,7 @@ class ArDriveTextField extends StatefulWidget {
   final String? label;
   final bool isFieldRequired;
   final bool showObfuscationToggle;
+  final TextInputAction textInputAction;
 
   @override
   State<ArDriveTextField> createState() => ArDriveTextFieldState();
@@ -174,6 +176,7 @@ class ArDriveTextFieldState extends State<ArDriveTextField> {
             maxLength: widget.maxLength,
             focusNode: widget.focusNode,
             key: widget.key,
+            textInputAction: widget.textInputAction,
             obscureText: _isObscureText,
             style: ArDriveTypography.body.inputLargeRegular(
               color: ArDriveTheme.of(context).themeData.colors.themeInputText,
