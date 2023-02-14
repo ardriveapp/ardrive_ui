@@ -36,13 +36,9 @@ class ArDriveFormState extends State<ArDriveForm> {
       }
 
       WidgetsBinding.instance.addPostFrameCallback((_) {
-        final isValid =
+        _isValid = _isValid &&
             ((element as StatefulElement).state as ArDriveTextFieldState)
                 .validate();
-
-        if (!isValid) {
-          _isValid = false;
-        }
       });
     });
   }
@@ -121,32 +117,8 @@ class ArDriveTextFieldState extends State<ArDriveTextField> {
     super.initState();
   }
 
-  bool validate({String? text}) {
-    String? textToValidate = text;
-
-    if (textToValidate == null && widget.controller != null) {
-      textToValidate = widget.controller?.text;
-    }
-
-    final validation = widget.validator?.call(textToValidate);
-
-    setState(() {
-      if (textToValidate?.isEmpty ?? true) {
-        textFieldState = TextFieldState.focused;
-      } else if (validation != null) {
-        textFieldState = TextFieldState.error;
-      } else if (validation == null) {
-        textFieldState = TextFieldState.success;
-      }
-
-      _errorMessage = validation;
-    });
-
-    return validation == null;
-  }
-
-  bool _obscurityToggle = false;
   late bool _isObscureText;
+
   String? _errorMessage;
 
   @override
@@ -192,14 +164,13 @@ class ArDriveTextFieldState extends State<ArDriveTextField> {
               suffix: GestureDetector(
                 onTap: () {
                   setState(() {
-                    _obscurityToggle = !_obscurityToggle;
                     _isObscureText = !_isObscureText;
                   });
                 },
                 child: Padding(
                   padding: const EdgeInsets.only(right: 8),
                   child: widget.showObfuscationToggle
-                      ? _obscurityToggle
+                      ? _isObscureText
                           ? ArDriveIcons.eye(
                               color: ArDriveTheme.of(context)
                                   .themeData
@@ -328,6 +299,30 @@ class ArDriveTextFieldState extends State<ArDriveTextField> {
       return ArDriveTheme.of(context).themeData.colors.themeInputPlaceholder;
     }
     return ArDriveTheme.of(context).themeData.colors.themeFgDisabled;
+  }
+
+  bool validate({String? text}) {
+    String? textToValidate = text;
+
+    if (textToValidate == null && widget.controller != null) {
+      textToValidate = widget.controller?.text;
+    }
+
+    final validation = widget.validator?.call(textToValidate);
+
+    setState(() {
+      if (textToValidate?.isEmpty ?? true) {
+        textFieldState = TextFieldState.focused;
+      } else if (validation != null) {
+        textFieldState = TextFieldState.error;
+      } else if (validation == null) {
+        textFieldState = TextFieldState.success;
+      }
+
+      _errorMessage = validation;
+    });
+
+    return validation == null;
   }
 }
 
