@@ -1,4 +1,4 @@
-name: "Draft GH release"
+name: "Production release"
 
 on:
   pull_request:
@@ -11,6 +11,19 @@ env:
   BODY: ${{ github.event.pull_request.body }}
 
 jobs:
+  test:
+    if: ${{ github.event.pull_request.merged }}
+    uses: ./.github/workflows/test.yml
+
+  storybook:
+    if: ${{ github.event.pull_request.merged }}
+    needs: test
+    uses: ./.github/workflows/storybook.yml
+    secrets: inherit
+    with:
+      FIREBASE_TARGET: "ardrive-ui"
+      FIREBASE_CHANNEL: "live"
+
   gh-release:
     if: ${{ github.event.pull_request.merged }}
     runs-on: ubuntu-latest
