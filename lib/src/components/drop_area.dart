@@ -184,17 +184,22 @@ class _ArDriveDropAreaSingleInputState
     return ArDriveButton(
       text: widget.dragAndDropButtonTitle,
       onPressed: () async {
-        final selectedFile =
-            await ArDriveIO().pickFile(fileSource: FileSource.fileSystem);
-        // validate file
-        if (widget.validateFile != null &&
-            !(await widget.validateFile!(selectedFile))) {
-          _hasError = true;
+        try {
+          final selectedFile =
+              await ArDriveIO().pickFile(fileSource: FileSource.fileSystem);
+          // validate file
+          if (widget.validateFile != null &&
+              !(await widget.validateFile!(selectedFile))) {
+            _hasError = true;
 
-          widget.onError?.call(DropzoneValidationException());
-        } else {
-          _file = selectedFile;
-          widget.buttonCallback?.call(_file!);
+            widget.onError?.call(DropzoneValidationException());
+          } else {
+            _file = selectedFile;
+            widget.buttonCallback?.call(_file!);
+          }
+        } catch (e) {
+          debugPrint(e.toString());
+          _hasError = true;
         }
 
         setState(() {});
