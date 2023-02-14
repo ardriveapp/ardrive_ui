@@ -171,13 +171,13 @@ class ArDriveTextFieldState extends State<ArDriveTextField> {
                   padding: const EdgeInsets.only(right: 8),
                   child: widget.showObfuscationToggle
                       ? _isObscureText
-                          ? ArDriveIcons.eye(
+                          ? ArDriveIcons.eyeOff(
                               color: ArDriveTheme.of(context)
                                   .themeData
                                   .colors
                                   .themeBgCanvas,
                             )
-                          : ArDriveIcons.eyeOff(
+                          : ArDriveIcons.eye(
                               color: ArDriveTheme.of(context)
                                   .themeData
                                   .colors
