@@ -64,7 +64,7 @@ class ArDriveThemeData {
           hoverColor: const Color(0xff1D1D1D),
         );
 
-    this.backgroundColor = backgroundColor ?? this.colors.themeBgSubtle;
+    this.backgroundColor = backgroundColor ?? const Color(0xff010905);
     this.primaryColor = primaryColor ?? this.colors.themeAccentBrand;
     this.materialThemeData = materialThemeData ?? darkMaterialTheme();
     this.name = name ?? 'default';

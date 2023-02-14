@@ -75,6 +75,7 @@ class ArDriveDropAreaSingleInput extends StatefulWidget {
     this.errorDescription,
     this.onError,
     this.validateFile,
+    this.platformSupportsDragAndDrop = true,
   });
 
   final double? height;
@@ -88,6 +89,7 @@ class ArDriveDropAreaSingleInput extends StatefulWidget {
   final Function(IOFile file)? onDragDone;
   final FutureOr<bool> Function(IOFile file)? validateFile;
   final Function(Object e)? onError;
+  final bool platformSupportsDragAndDrop;
 
   @override
   State<ArDriveDropAreaSingleInput> createState() =>
@@ -163,16 +165,14 @@ class _ArDriveDropAreaSingleInputState
                           style: ArDriveTypography.body.smallBold(),
                         ),
                       ),
-                    if (_file == null) ...[
-                      Padding(
-                        padding: dropAreaItemContentPadding,
-                        child: Text(
-                          widget.dragAndDropDescription,
-                          style: ArDriveTypography.body.smallBold(),
-                        ),
+                    const SizedBox(height: 8),
+                    if (widget.platformSupportsDragAndDrop)
+                      Text(
+                        widget.dragAndDropDescription,
+                        style: ArDriveTypography.body.smallBold(),
                       ),
-                      _button(),
-                    ]
+                    const SizedBox(height: 20),
+                    if (_file == null) _button(),
                   ],
                 ),
         ),
