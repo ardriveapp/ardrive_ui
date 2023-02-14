@@ -134,7 +134,7 @@ class _ArDriveDropAreaSingleInputState
         width: widget.width,
         child: Padding(
           padding: const EdgeInsets.all(32),
-          child: _file == null && _hasError
+          child: _hasError
               ? _errorView()
               : Column(
                   mainAxisSize: MainAxisSize.min,
