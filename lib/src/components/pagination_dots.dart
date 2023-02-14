@@ -18,11 +18,11 @@ class ArDrivePaginationDots extends StatefulWidget {
 
 class _ArDrivePaginationDotsState extends State<ArDrivePaginationDots> {
   int selectedPage = 0;
-  late int numberOfPages;
+  late int _numberOfPages;
 
   @override
   void initState() {
-    numberOfPages = widget.numberOfPages;
+    _numberOfPages = widget.numberOfPages;
     super.initState();
   }
 
@@ -31,11 +31,11 @@ class _ArDrivePaginationDotsState extends State<ArDrivePaginationDots> {
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: List.generate(
-        numberOfPages,
+        _numberOfPages,
         (index) {
           return Padding(
             padding: EdgeInsets.only(
-              right: index < numberOfPages - 1 ? 16 : 0,
+              right: index < _numberOfPages - 1 ? 16 : 0,
             ),
             child: _buildPaginationDot(index),
           );
