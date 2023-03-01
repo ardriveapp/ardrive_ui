@@ -9,7 +9,7 @@ import desktop_drop
 import device_info_plus
 import file_saver
 import file_selector_macos
-import path_provider_macos
+import path_provider_foundation
 import sqflite
 
 func RegisterGeneratedPlugins(registry: FlutterPluginRegistry) {
