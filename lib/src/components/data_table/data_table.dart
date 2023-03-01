@@ -441,8 +441,8 @@ class _ArDriveDataTableState<T> extends State<ArDriveDataTable<T>> {
   void selectPage(int page) {
     setState(() {
       _selectedPage = page;
-      int maxIndex = _rows.length - 1 < (page + 1) * _numberOfItemsPerPage
-          ? _rows.length - 1
+      int maxIndex = _rows.length < (page + 1) * _numberOfItemsPerPage
+          ? _rows.length
           : (page + 1) * _numberOfItemsPerPage;
 
       int minIndex = (_selectedPage * _numberOfItemsPerPage);
