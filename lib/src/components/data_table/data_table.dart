@@ -128,8 +128,8 @@ class _ArDriveDataTableState<T> extends State<ArDriveDataTable<T>> {
                 selectPage(_selectedPage);
 
                 stopwatch.stop();
-                
-                print('Elapsed time: ${stopwatch.elapsedMilliseconds}ms');
+
+                debugPrint('Elapsed time: ${stopwatch.elapsedMilliseconds}ms');
               },
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.center,
