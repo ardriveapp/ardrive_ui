@@ -17,7 +17,7 @@ WidgetbookCategory modals() {
                   label: 'Title',
                   initialValue: 'Warning',
                 ),
-                content: context.knobs.text(
+                description: context.knobs.text(
                     label: 'content',
                     initialValue:
                         'The file you have selected is too large to download from the mobile app.'),

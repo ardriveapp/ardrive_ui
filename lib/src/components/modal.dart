@@ -284,14 +284,16 @@ class _ModalCloseButton extends StatelessWidget {
 class ArDriveStandardModal extends StatelessWidget {
   const ArDriveStandardModal({
     super.key,
-    required this.title,
-    required this.content,
+    this.title,
+    this.description,
+    this.content,
     this.actions,
   });
 
-  final String title;
-  final String content;
+  final String? title;
+  final String? description;
   final List<ModalAction>? actions;
+  final Widget? content;
 
   @override
   Widget build(BuildContext context) {
@@ -314,21 +316,33 @@ class ArDriveStandardModal extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisSize: MainAxisSize.min,
           children: [
-            Align(
-              alignment: Alignment.topLeft,
-              child: Text(
-                title,
-                style: ArDriveTypography.headline.headline4Bold(),
+            if (title != null) ...[
+              Align(
+                alignment: Alignment.topLeft,
+                child: Text(
+                  title!,
+                  style: ArDriveTypography.headline.headline5Bold(),
+                ),
               ),
-            ),
-            const SizedBox(
-              height: 8,
-            ),
-            Text(
-              content,
-              style: ArDriveTypography.body.smallRegular(),
-              textAlign: TextAlign.left,
-            ),
+              const SizedBox(
+                height: 24,
+              ),
+            ],
+            if (content != null) ...[
+              content!,
+              const SizedBox(
+                height: 24,
+              ),
+            ],
+            if (content == null) ...[
+              if (description != null) ...[
+                Text(
+                  description!,
+                  style: ArDriveTypography.body.smallRegular(),
+                  textAlign: TextAlign.left,
+                ),
+              ],
+            ],
             if (actions != null) ...[
               const SizedBox(
                 height: 24,
@@ -372,6 +386,7 @@ class ArDriveStandardModal extends StatelessWidget {
                 color:
                     ArDriveTheme.of(context).themeData.colors.themeAccentSubtle,
               ),
+              isDisabled: !actions[1].isEnable,
               text: actions[1].title,
               onPressed: actions[1].action,
             ),
@@ -385,10 +400,12 @@ class ModalAction {
   ModalAction({
     required this.action,
     required this.title,
+    this.isEnable = true,
   });
 
   final String title;
   final dynamic Function() action;
+  final bool isEnable;
 }
 
 Future<void> showAnimatedDialog(
@@ -447,7 +464,7 @@ Future<void> showStandardDialog(
     context,
     barrierDismissible: barrierDismissible,
     content: ArDriveStandardModal(
-      content: content,
+      description: content,
       title: title,
       actions: actions,
     ),

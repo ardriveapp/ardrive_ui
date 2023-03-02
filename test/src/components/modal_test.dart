@@ -83,7 +83,7 @@ void main() {
     bool varToChange = false;
 
     final modal = ArDriveStandardModal(
-      content: 'Content',
+      description: 'Content',
       title: 'Title',
       actions: [
         ModalAction(
