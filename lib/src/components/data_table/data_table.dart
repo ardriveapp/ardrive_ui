@@ -409,9 +409,11 @@ class _ArDriveDataTableState<T> extends State<ArDriveDataTable<T>> {
           if (widget.leading != null)
             Padding(
               padding: const EdgeInsets.only(right: 20),
-              child: SizedBox(
-                height: 40,
-                width: 40,
+              child: ConstrainedBox(
+                constraints: const BoxConstraints(
+                  maxWidth: 40,
+                  maxHeight: 40,
+                ),
                 child: widget.leading!.call(row),
               ),
             ),
