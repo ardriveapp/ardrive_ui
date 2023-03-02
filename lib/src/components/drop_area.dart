@@ -76,6 +76,7 @@ class ArDriveDropAreaSingleInput extends StatefulWidget {
     this.onError,
     this.validateFile,
     this.platformSupportsDragAndDrop = true,
+    this.keepButtonVisible = false,
   });
 
   final double? height;
@@ -90,6 +91,7 @@ class ArDriveDropAreaSingleInput extends StatefulWidget {
   final FutureOr<bool> Function(IOFile file)? validateFile;
   final Function(Object e)? onError;
   final bool platformSupportsDragAndDrop;
+  final bool keepButtonVisible;
 
   @override
   State<ArDriveDropAreaSingleInput> createState() =>
@@ -115,6 +117,7 @@ class _ArDriveDropAreaSingleInputState
           widget.onError?.call(DropzoneValidationException());
         } else {
           _file = files.first;
+          _hasError = false;
           widget.onDragDone?.call(_file!);
         }
         setState(() {});
@@ -172,7 +175,7 @@ class _ArDriveDropAreaSingleInputState
                         style: ArDriveTypography.body.smallBold(),
                       ),
                     const SizedBox(height: 20),
-                    if (_file == null) _button(),
+                    if (_file == null || widget.keepButtonVisible) _button(),
                   ],
                 ),
         ),
@@ -195,6 +198,7 @@ class _ArDriveDropAreaSingleInputState
             widget.onError?.call(DropzoneValidationException());
           } else {
             _file = selectedFile;
+            _hasError = false;
             widget.buttonCallback?.call(_file!);
           }
         } catch (e) {
