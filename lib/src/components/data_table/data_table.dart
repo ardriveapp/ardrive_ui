@@ -33,6 +33,7 @@ class ArDriveDataTable<T extends IndexedItem> extends StatefulWidget {
     required this.rowsPerPageText,
     this.sortRows,
     this.onSelectedRows,
+    this.onRowTap,
   });
 
   final List<TableColumn> columns;
@@ -48,6 +49,7 @@ class ArDriveDataTable<T extends IndexedItem> extends StatefulWidget {
   final int maxItemsPerPage;
   final String rowsPerPageText;
   final Function(List<T> selectedRows)? onSelectedRows;
+  final Function(T row)? onRowTap;
 
   @override
   State<ArDriveDataTable> createState() => _ArDriveDataTableState<T>();
@@ -346,28 +348,40 @@ class _ArDriveDataTableState<T extends IndexedItem>
         key: ValueKey(isSelected),
         checked: _isAllSelected || isSelected,
         onChange: (value) {
-          setState(() {
-            if (selectAll) {
-              _isAllSelected = value;
-              _selectedRows = value ? _rows : [];
-              return;
-            }
-
-            if (row != null && index != null) {
-              _selectItem(row, index, value);
-              lastSelectedIndex = index;
-            }
-
-            if (_isMultiSelectingWithLongPress &&
-                !value &&
-                _selectedRows.isEmpty) {
-              _isMultiSelectingWithLongPress = false;
-              return;
-            }
-          });
+          _onChangeItemCheck(
+            selectAll: selectAll,
+            row: row,
+            index: index,
+            value: value,
+          );
         },
       ),
     );
+  }
+
+  void _onChangeItemCheck({
+    required bool selectAll,
+    T? row,
+    int? index,
+    required bool value,
+  }) {
+    setState(() {
+      if (selectAll) {
+        _isAllSelected = value;
+        _selectedRows = value ? _rows : [];
+        return;
+      }
+
+      if (row != null && index != null) {
+        _selectItem(row, index, value);
+        lastSelectedIndex = index;
+      }
+
+      if (_isMultiSelectingWithLongPress && !value && _selectedRows.isEmpty) {
+        _isMultiSelectingWithLongPress = false;
+        return;
+      }
+    });
   }
 
   Widget _pageIndicator() {
@@ -567,17 +581,29 @@ class _ArDriveDataTableState<T extends IndexedItem>
     T row,
     int index,
   ) {
-    return Row(
-      children: [
-        _multiSelectColumn(false, index: index, row: row),
-        Flexible(
-          child: GestureDetector(
-            onTap: () {
-              if (_isMultiSelecting) {
-                _selectItem(row, index,
-                    _selectedRows.any((element) => element.index == row.index));
-              }
-            },
+    return GestureDetector(
+      onTap: () {
+        if (_isMultiSelecting) {
+          _onChangeItemCheck(
+            selectAll: false,
+            value: !_selectedRows.any((r) => r.index == row.index),
+            row: row,
+            index: row.index,
+          );
+        } else {
+          widget.onRowTap?.call(row);
+        }
+      },
+      onLongPress: () {
+        setState(() {
+          _isMultiSelectingWithLongPress = !_isMultiSelectingWithLongPress;
+        });
+      },
+      behavior: HitTestBehavior.opaque,
+      child: Row(
+        children: [
+          _multiSelectColumn(false, index: index, row: row),
+          Flexible(
             child: ArDriveCard(
               backgroundColor: ArDriveTheme.of(context)
                   .themeData
@@ -604,16 +630,9 @@ class _ArDriveDataTableState<T extends IndexedItem>
                     (index) {
                       return Flexible(
                         flex: columns[index].size,
-                        child: GestureDetector(
-                          onLongPress: () {
-                            setState(() {
-                              _isMultiSelectingWithLongPress = true;
-                            });
-                          },
-                          child: Align(
-                            alignment: Alignment.centerLeft,
-                            child: buildRow[index],
-                          ),
+                        child: Align(
+                          alignment: Alignment.centerLeft,
+                          child: buildRow[index],
                         ),
                       );
                     },
@@ -632,8 +651,8 @@ class _ArDriveDataTableState<T extends IndexedItem>
               ),
             ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 
