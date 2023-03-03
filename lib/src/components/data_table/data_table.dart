@@ -29,6 +29,7 @@ class ArDriveDataTable<T> extends StatefulWidget {
     this.onChangePage,
     this.maxItemsPerPage = 100,
     required this.rowsPerPageText,
+    this.sortRows,
   });
 
   final List<TableColumn> columns;
@@ -37,6 +38,8 @@ class ArDriveDataTable<T> extends StatefulWidget {
   final Widget Function(T row)? leading;
   final Widget Function(T row)? trailing;
   final int Function(T a, T b) Function(int columnIndex)? sort;
+  final List<T> Function(List<T> rows, int columnIndex, TableSort sort)?
+      sortRows;
   final Function(int page)? onChangePage;
   final int pageItemsDivisorFactor;
   final int maxItemsPerPage;
@@ -92,33 +95,41 @@ class _ArDriveDataTableState<T> extends State<ArDriveDataTable<T>> {
             alignment: Alignment.centerLeft,
             child: GestureDetector(
               onTap: () {
-                if (widget.sort != null) {
-                  setState(() {
-                    if (_sortedColumn == index) {
-                      // toggles the sort state
-                      if (_tableSort == TableSort.asc) {
-                        _tableSort = TableSort.desc;
-                      } else {
-                        _tableSort = TableSort.asc;
-                      }
-                    } else {
-                      _tableSort = TableSort.asc;
-                    }
-                    int sort(T a, T b) {
-                      if (_tableSort == TableSort.desc) {
-                        return widget.sort!.call(index)(a, b);
-                      } else {
-                        return widget.sort!.call(index)(b, a);
-                      }
-                    }
+                final stopwatch = Stopwatch()..start();
 
+                setState(() {
+                  if (_sortedColumn == index) {
+                    _tableSort = _tableSort == TableSort.asc
+                        ? TableSort.desc
+                        : TableSort.asc;
+                  } else {
                     _sortedColumn = index;
+                    _tableSort = TableSort.asc;
+                  }
+                });
 
+                if (widget.sortRows != null) {
+                  _rows =
+                      List.from(widget.sortRows!(_rows, index, _tableSort!));
+                } else if (widget.sort != null) {
+                  int sort(a, b) {
+                    if (_tableSort == TableSort.asc) {
+                      return widget.sort!.call(index)(a, b);
+                    } else {
+                      return widget.sort!.call(index)(b, a);
+                    }
+                  }
+
+                  setState(() {
                     _rows.sort(sort);
-
-                    selectPage(_selectedPage);
                   });
                 }
+
+                selectPage(_selectedPage);
+
+                stopwatch.stop();
+
+                debugPrint('Elapsed time: ${stopwatch.elapsedMilliseconds}ms');
               },
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.center,
