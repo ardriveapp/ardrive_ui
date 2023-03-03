@@ -1,6 +1,8 @@
 import 'package:ardrive_ui/ardrive_ui.dart';
+import 'package:ardrive_ui/src/constants/size_constants.dart';
 import 'package:ardrive_ui/src/styles/colors/global_colors.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_portal/flutter_portal.dart';
 
 class TableColumn {
@@ -16,7 +18,7 @@ class TableRowWidget {
   final List<Widget> row;
 }
 
-class ArDriveDataTable<T> extends StatefulWidget {
+class ArDriveDataTable<T extends IndexedItem> extends StatefulWidget {
   const ArDriveDataTable({
     super.key,
     required this.columns,
@@ -30,6 +32,7 @@ class ArDriveDataTable<T> extends StatefulWidget {
     this.maxItemsPerPage = 100,
     required this.rowsPerPageText,
     this.sortRows,
+    this.onSelectedRows,
   });
 
   final List<TableColumn> columns;
@@ -44,6 +47,7 @@ class ArDriveDataTable<T> extends StatefulWidget {
   final int pageItemsDivisorFactor;
   final int maxItemsPerPage;
   final String rowsPerPageText;
+  final Function(List<T> selectedRows)? onSelectedRows;
 
   @override
   State<ArDriveDataTable> createState() => _ArDriveDataTableState<T>();
@@ -51,17 +55,36 @@ class ArDriveDataTable<T> extends StatefulWidget {
 
 enum TableSort { asc, desc }
 
-class _ArDriveDataTableState<T> extends State<ArDriveDataTable<T>> {
+abstract class IndexedItem {
+  IndexedItem(this.index);
+
+  final int index;
+}
+
+class _ArDriveDataTableState<T extends IndexedItem>
+    extends State<ArDriveDataTable<T>> {
   late List<T> _rows;
   late List<T> _currentPage;
+  List<T> _selectedRows = [];
 
   late int _numberOfPages;
   late int _selectedPage;
   late int _pageItemsDivisorFactor;
   late int _numberOfItemsPerPage;
   int? _sortedColumn;
+  bool _isMultiSelectingWithLongPress = false;
+  bool _isAllSelected = false;
 
   TableSort? _tableSort;
+
+  bool _isCtrlPressed = false;
+  int? _shiftSelectionStartIndex;
+  int? lastSelectedIndex;
+
+  bool get _isMultiSelecting =>
+      _isCtrlPressed ||
+      _isMultiSelectingWithLongPress ||
+      _selectedRows.isNotEmpty;
 
   @override
   void initState() {
@@ -74,6 +97,85 @@ class _ArDriveDataTableState<T> extends State<ArDriveDataTable<T>> {
       _numberOfPages++;
     }
     selectPage(0);
+    RawKeyboard.instance.addListener(_handleKeyDownEvent);
+    RawKeyboard.instance.addListener(_handleKeyUpEvent);
+    RawKeyboard.instance.addListener(_handleEscapeKey);
+  }
+
+  void _handleEscapeKey(RawKeyEvent event) {
+    if (mounted) {
+      if (event.isKeyPressed(LogicalKeyboardKey.escape)) {
+        setState(() {
+          _isMultiSelectingWithLongPress = false;
+          _selectedRows.clear();
+          _isCtrlPressed = false;
+          _shiftSelectionStartIndex = null;
+        });
+      }
+    }
+  }
+
+  void _handleKeyDownEvent(RawKeyEvent event) {
+    if (mounted) {
+      setState(() {
+        if (event.isKeyPressed(LogicalKeyboardKey.metaLeft) ||
+            event.isKeyPressed(LogicalKeyboardKey.controlLeft)) {
+          _isCtrlPressed = true;
+        } else {
+          _isCtrlPressed = false;
+        }
+      });
+    }
+  }
+
+  void _handleKeyUpEvent(RawKeyEvent event) {
+    if (mounted) {
+      setState(() {
+        if (event.isKeyPressed(LogicalKeyboardKey.metaLeft) ||
+            event.isKeyPressed(LogicalKeyboardKey.controlLeft)) {
+          _isCtrlPressed = true;
+        } else {
+          _isCtrlPressed = false;
+        }
+      });
+    }
+  }
+
+  void _selectItem(T item, int index, bool select) {
+    setState(() {
+      if (_isCtrlPressed) {
+        if (_selectedRows.contains(item)) {
+          _selectedRows.remove(item);
+        } else {
+          _selectedRows.add(item);
+        }
+      } else if (RawKeyboard.instance.keysPressed
+          .contains(LogicalKeyboardKey.shiftLeft)) {
+        if (_shiftSelectionStartIndex != null) {
+          final startIndex = _shiftSelectionStartIndex!;
+          final endIndex = index;
+          final start = startIndex < endIndex ? startIndex : endIndex;
+          final end = startIndex > endIndex ? startIndex : endIndex;
+          _selectedRows.clear();
+
+          for (int i = start; i <= end; i++) {
+            _selectedRows.add(_currentPage[i]);
+          }
+        } else {
+          _shiftSelectionStartIndex = index;
+          _selectedRows.clear();
+          _selectedRows.add(item);
+        }
+      } else {
+        _shiftSelectionStartIndex = null;
+        _selectedRows.clear();
+        if (select) {
+          _selectedRows.add(item);
+        } else {
+          _selectedRows.remove(item);
+        }
+      }
+    });
   }
 
   int _getNumberOfPages() {
@@ -109,8 +211,7 @@ class _ArDriveDataTableState<T> extends State<ArDriveDataTable<T>> {
                 });
 
                 if (widget.sortRows != null) {
-                  _rows =
-                      List.from(widget.sortRows!(_rows, index, _tableSort!));
+                  _rows = widget.sortRows!(_rows, index, _tableSort!);
                 } else if (widget.sort != null) {
                   int sort(a, b) {
                     if (_tableSort == TableSort.asc) {
@@ -120,9 +221,7 @@ class _ArDriveDataTableState<T> extends State<ArDriveDataTable<T>> {
                     }
                   }
 
-                  setState(() {
-                    _rows.sort(sort);
-                  });
+                  _rows.sort(sort);
                 }
 
                 selectPage(_selectedPage);
@@ -162,6 +261,7 @@ class _ArDriveDataTableState<T> extends State<ArDriveDataTable<T>> {
           ),
         );
       },
+      growable: false,
     );
     EdgeInsets getPadding() {
       double rightPadding = 0;
@@ -191,11 +291,19 @@ class _ArDriveDataTableState<T> extends State<ArDriveDataTable<T>> {
           const SizedBox(
             height: 28,
           ),
-          Padding(
-            padding: getPadding(),
-            child: Row(
-              children: columns,
-            ),
+          Row(
+            children: [
+              _multiSelectColumn(true),
+              Flexible(
+                child: AnimatedPadding(
+                  duration: const Duration(milliseconds: 300),
+                  padding: getPadding(),
+                  child: Row(
+                    children: columns,
+                  ),
+                ),
+              ),
+            ],
           ),
           const SizedBox(
             height: 25,
@@ -205,23 +313,59 @@ class _ArDriveDataTableState<T> extends State<ArDriveDataTable<T>> {
               constraints: BoxConstraints(
                 maxHeight: MediaQuery.of(context).size.height,
               ),
-              child: SingleChildScrollView(
-                  child: Column(mainAxisSize: MainAxisSize.min, children: [
-                for (var row in _currentPage) ...[
-                  Padding(
+              child: ListView.builder(
+                itemCount: _currentPage.length,
+                itemBuilder: (context, index) {
+                  return Padding(
                     padding: const EdgeInsets.only(top: 5),
                     child: _buildRowSpacing(
                       widget.columns,
-                      widget.buildRow(row).row,
-                      row,
+                      widget.buildRow(_currentPage[index]).row,
+                      _currentPage[index],
+                      index,
                     ),
-                  ),
-                ],
-              ])),
+                  );
+                },
+              ),
             ),
           ),
           _pageIndicator(),
         ],
+      ),
+    );
+  }
+
+  Widget _multiSelectColumn(bool selectAll, {T? row, int? index}) {
+    final isSelected =
+        _selectedRows.any((element) => element.index == row?.index);
+
+    return AnimatedContainer(
+      duration: const Duration(milliseconds: 300),
+      width: _isMultiSelecting ? checkboxSize + 8 : 0,
+      child: ArDriveCheckBox(
+        key: ValueKey(isSelected),
+        checked: _isAllSelected || isSelected,
+        onChange: (value) {
+          setState(() {
+            if (selectAll) {
+              _isAllSelected = value;
+              _selectedRows = value ? _rows : [];
+              return;
+            }
+
+            if (row != null && index != null) {
+              _selectItem(row, index, value);
+              lastSelectedIndex = index;
+            }
+
+            if (_isMultiSelectingWithLongPress &&
+                !value &&
+                _selectedRows.isEmpty) {
+              _isMultiSelectingWithLongPress = false;
+              return;
+            }
+          });
+        },
       ),
     );
   }
@@ -377,15 +521,26 @@ class _ArDriveDataTableState<T> extends State<ArDriveDataTable<T>> {
     final int end = _selectedPage + 1 + half;
 
     if (start <= 0) {
-      return List.generate(visiblePages, (index) => index + 1);
+      return List.generate(
+        visiblePages,
+        (index) => index + 1,
+        growable: false,
+      );
     }
 
     if (end >= numberOfPages) {
       return List.generate(
-          visiblePages, (index) => numberOfPages - visiblePages + index + 1);
+        visiblePages,
+        (index) => numberOfPages - visiblePages + index + 1,
+        growable: false,
+      );
     }
 
-    return List.generate(visiblePages, (index) => start + index);
+    return List.generate(
+      visiblePages,
+      (index) => start + index,
+      growable: false,
+    );
   }
 
   /// The pages are counted starting from 0, so, to show correctly add + 1
@@ -407,47 +562,78 @@ class _ArDriveDataTableState<T> extends State<ArDriveDataTable<T>> {
   }
 
   Widget _buildRowSpacing(
-      List<TableColumn> columns, List<Widget> buildRow, T row) {
-    return ArDriveCard(
-      backgroundColor: ArDriveTheme.of(context)
-          .themeData
-          .colors
-          .themeBorderDefault
-          .withOpacity(0.25),
-      contentPadding: const EdgeInsets.symmetric(horizontal: 15, vertical: 8),
-      content: Row(
-        children: [
-          if (widget.leading != null)
-            Padding(
-              padding: const EdgeInsets.only(right: 20),
-              child: ConstrainedBox(
-                constraints: const BoxConstraints(
-                  maxWidth: 40,
-                  maxHeight: 40,
-                ),
-                child: widget.leading!.call(row),
+    List<TableColumn> columns,
+    List<Widget> buildRow,
+    T row,
+    int index,
+  ) {
+    return Row(
+      children: [
+        _multiSelectColumn(false, index: index, row: row),
+        Flexible(
+          child: GestureDetector(
+            onTap: () {
+              if (_isMultiSelecting) {
+                _selectItem(row, index,
+                    _selectedRows.any((element) => element.index == row.index));
+              }
+            },
+            child: ArDriveCard(
+              backgroundColor: ArDriveTheme.of(context)
+                  .themeData
+                  .colors
+                  .themeBorderDefault
+                  .withOpacity(0.25),
+              contentPadding:
+                  const EdgeInsets.symmetric(horizontal: 15, vertical: 8),
+              content: Row(
+                children: [
+                  if (widget.leading != null)
+                    Padding(
+                      padding: const EdgeInsets.only(right: 20),
+                      child: ConstrainedBox(
+                        constraints: const BoxConstraints(
+                          maxWidth: 40,
+                          maxHeight: 40,
+                        ),
+                        child: widget.leading!.call(row),
+                      ),
+                    ),
+                  ...List.generate(
+                    columns.length,
+                    (index) {
+                      return Flexible(
+                        flex: columns[index].size,
+                        child: GestureDetector(
+                          onLongPress: () {
+                            setState(() {
+                              _isMultiSelectingWithLongPress = true;
+                            });
+                          },
+                          child: Align(
+                            alignment: Alignment.centerLeft,
+                            child: buildRow[index],
+                          ),
+                        ),
+                      );
+                    },
+                    growable: false,
+                  ),
+                  if (widget.trailing != null)
+                    Padding(
+                      padding: const EdgeInsets.only(left: 20),
+                      child: SizedBox(
+                        height: 40,
+                        width: 40,
+                        child: widget.trailing!.call(row),
+                      ),
+                    ),
+                ],
               ),
             ),
-          ...List.generate(columns.length, (index) {
-            return Flexible(
-              flex: columns[index].size,
-              child: Align(
-                alignment: Alignment.centerLeft,
-                child: buildRow[index],
-              ),
-            );
-          }),
-          if (widget.trailing != null)
-            Padding(
-              padding: const EdgeInsets.only(left: 20),
-              child: SizedBox(
-                height: 40,
-                width: 40,
-                child: widget.trailing!.call(row),
-              ),
-            ),
-        ],
-      ),
+          ),
+        ),
+      ],
     );
   }
 
