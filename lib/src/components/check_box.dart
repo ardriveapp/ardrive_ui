@@ -8,14 +8,14 @@ class ArDriveCheckBox extends StatefulWidget {
     this.checked = false,
     this.isDisabled = false,
     this.isIndeterminate = false,
-    required this.title,
+    this.title,
     this.onChange,
   });
 
   final bool checked;
   final bool isDisabled;
   final bool isIndeterminate;
-  final String title;
+  final String? title;
   final Function(bool value)? onChange;
 
   @override
@@ -106,18 +106,20 @@ class ArDriveCheckBoxState extends State<ArDriveCheckBox> {
                       )
                     : null,
           ),
-          const SizedBox(
-            width: 8,
-          ),
-          Padding(
-            padding: const EdgeInsets.only(bottom: 4.0),
-            child: Text(
-              widget.title,
-              style: ArDriveTypography.body.bodyRegular(
-                color: _textColor(),
-              ),
+          if (widget.title != null) ...[
+            const SizedBox(
+              width: 8,
             ),
-          )
+            Padding(
+              padding: const EdgeInsets.only(bottom: 4.0),
+              child: Text(
+                widget.title!,
+                style: ArDriveTypography.body.bodyRegular(
+                  color: _textColor(),
+                ),
+              ),
+            )
+          ]
         ],
       ),
     );
