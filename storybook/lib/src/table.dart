@@ -95,12 +95,12 @@ int compareDate(File a, File b) {
   return a.createdAt.compareTo(b.createdAt);
 }
 
-class File {
+class File extends IndexedItem {
   File({
     required this.createdAt,
     required this.name,
     required this.size,
-  });
+  }) : super(0);
 
   String name;
   DateTime createdAt;
