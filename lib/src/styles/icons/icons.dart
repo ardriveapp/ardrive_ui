@@ -27,10 +27,15 @@ class ArDriveIcon extends StatelessWidget {
 }
 
 class ArDriveIcons {
-  static ArDriveIcon closeIconCircle({double? size}) =>
-      const ArDriveIcon(path: 'assets/icons/close_icon_circle.svg');
-  static ArDriveIcon closeIcon({double? size}) =>
-      const ArDriveIcon(path: 'assets/icons/close_icon.svg');
+  static ArDriveIcon closeIconCircle({double? size, Color? color}) =>
+      ArDriveIcon(
+        path: 'assets/icons/close_icon_circle.svg',
+        color: color,
+      );
+  static ArDriveIcon closeIcon({double? size, Color? color}) => ArDriveIcon(
+        path: 'assets/icons/close_icon.svg',
+        color: color,
+      );
   static ArDriveIcon uploadCloud({double? size, Color? color}) => ArDriveIcon(
       path: 'assets/icons/cloud_upload.svg', size: size, color: color);
   static ArDriveIcon checkSuccess({double? size, Color? color}) => ArDriveIcon(
@@ -69,6 +74,35 @@ class ArDriveIcons {
       );
   static ArDriveIcon dots({double? size, Color? color}) => ArDriveIcon(
         path: 'assets/icons/dots.svg',
+        size: size,
+        color: color,
+      );
+  static ArDriveIcon arConnectLogo({double? size, Color? color}) => ArDriveIcon(
+        path: 'assets/icons/arconnect_logo.svg',
+        size: size,
+        color: color,
+      );
+  static ArDriveIcon eyeOff({double? size, Color? color}) => ArDriveIcon(
+        path: 'assets/icons/eye_off.svg',
+        size: size,
+        color: color,
+      );
+
+  static ArDriveIcon eye({double? size, Color? color}) => ArDriveIcon(
+        path: 'assets/icons/eye.svg',
+        size: size,
+        color: color,
+      );
+
+  static ArDriveIcon arrowLeftCircle({double? size, Color? color}) =>
+      ArDriveIcon(
+        path: 'assets/icons/arrow_left_circle.svg',
+        size: size,
+        color: color,
+      );
+  static ArDriveIcon arrowRightCircle({double? size, Color? color}) =>
+      ArDriveIcon(
+        path: 'assets/icons/arrow_right_circle.svg',
         size: size,
         color: color,
       );
