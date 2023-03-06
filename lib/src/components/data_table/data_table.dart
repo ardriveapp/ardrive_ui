@@ -38,7 +38,7 @@ class ArDriveDataTable<T> extends StatefulWidget {
   final Widget Function(T row)? leading;
   final Widget Function(T row)? trailing;
   final int Function(T a, T b) Function(int columnIndex)? sort;
-  final List<T> Function(List<T> rows, int columnIndex, TableSort sort)?
+  final List<T> Function(List<T> rows, int columnIndex, TableSort sortOrder)?
       sortRows;
   final Function(int page)? onChangePage;
   final int pageItemsDivisorFactor;
