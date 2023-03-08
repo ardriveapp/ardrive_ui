@@ -106,4 +106,60 @@ class ArDriveIcons {
         size: size,
         color: color,
       );
+
+  // file_code
+  static ArDriveIcon fileCode({double? size, Color? color}) => ArDriveIcon(
+        path: 'assets/icons/file_code.svg',
+        size: size,
+        color: color,
+      );
+
+  // file_doc
+  static ArDriveIcon fileDoc({double? size, Color? color}) => ArDriveIcon(
+        path: 'assets/icons/file_doc.svg',
+        size: size,
+        color: color,
+      );
+
+  // file_music
+  static ArDriveIcon fileMusic({double? size, Color? color}) => ArDriveIcon(
+        path: 'assets/icons/file_music.svg',
+        size: size,
+        color: color,
+      );
+
+  // file_video
+  static ArDriveIcon fileVideo({double? size, Color? color}) => ArDriveIcon(
+        path: 'assets/icons/file_video.svg',
+        size: size,
+        color: color,
+      );
+
+  // file_zip
+  static ArDriveIcon fileZip({double? size, Color? color}) => ArDriveIcon(
+        path: 'assets/icons/file_zip.svg',
+        size: size,
+        color: color,
+      );
+  // folder outlined
+  static ArDriveIcon folderOutlined({double? size, Color? color}) =>
+      ArDriveIcon(
+        path: 'assets/icons/folder_outlined.svg',
+        size: size,
+        color: color,
+      );
+
+  // image
+  static ArDriveIcon image({double? size, Color? color}) => ArDriveIcon(
+        path: 'assets/icons/image.svg',
+        size: size,
+        color: color,
+      );
+
+  // file outlined
+  static ArDriveIcon fileOutlined({double? size, Color? color}) => ArDriveIcon(
+        path: 'assets/icons/file_outlined.svg',
+        size: size,
+        color: color,
+      );
 }
