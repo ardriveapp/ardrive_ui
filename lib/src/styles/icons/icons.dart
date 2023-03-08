@@ -16,9 +16,27 @@ class ArDriveIcon extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SvgPicture.asset(
-      color: color ?? ArDriveTheme.of(context).themeData.colors.themeFgOnAccent,
+    if (path.endsWith('.svg')) {
+      return _buildSvgIcon(context);
+    } else {
+      return _buildPngIcon(context);
+    }
+  }
+
+  Widget _buildPngIcon(BuildContext context) {
+    return Image.asset(
       path,
+      color: color ?? ArDriveTheme.of(context).themeData.colors.themeFgOnAccent,
+      height: size,
+      width: size,
+      package: 'ardrive_ui',
+    );
+  }
+
+  Widget _buildSvgIcon(context) {
+    return SvgPicture.asset(
+      path,
+      color: color ?? ArDriveTheme.of(context).themeData.colors.themeFgOnAccent,
       height: size,
       width: size,
       package: 'ardrive_ui',
@@ -103,6 +121,88 @@ class ArDriveIcons {
   static ArDriveIcon arrowRightCircle({double? size, Color? color}) =>
       ArDriveIcon(
         path: 'assets/icons/arrow_right_circle.svg',
+        size: size,
+        color: color,
+      );
+  // info
+  static ArDriveIcon info({double? size, Color? color}) => ArDriveIcon(
+        path: 'assets/icons/info.svg',
+        size: size,
+        color: color,
+      );
+
+  // share
+  static ArDriveIcon share({double? size, Color? color}) => ArDriveIcon(
+        path: 'assets/icons/share.svg',
+        size: size,
+        color: color,
+      );
+
+  // edit
+  static ArDriveIcon edit({double? size, Color? color}) => ArDriveIcon(
+        path: 'assets/icons/edit.svg',
+        size: size,
+        color: color,
+      );
+
+  //download
+  static ArDriveIcon download({double? size, Color? color}) => ArDriveIcon(
+        path: 'assets/icons/download.svg',
+        size: size,
+        color: color,
+      );
+
+  //move
+  static ArDriveIcon move({double? size, Color? color}) => ArDriveIcon(
+        path: 'assets/icons/move.svg',
+        size: size,
+        color: color,
+      );
+  // external link
+  static ArDriveIcon externalLink({double? size, Color? color}) => ArDriveIcon(
+        path: 'assets/icons/external_link.svg',
+        size: size,
+        color: color,
+      );
+  // folder outlined
+  static ArDriveIcon folderOutlined({double? size, Color? color}) =>
+      ArDriveIcon(
+        path: 'assets/icons/folder_outlined.svg',
+        size: size,
+        color: color,
+      );
+
+  // folder fill
+  static ArDriveIcon folderFilled({double? size, Color? color}) => ArDriveIcon(
+        path: 'assets/icons/folder_fill.svg',
+        size: size,
+        color: color,
+      );
+
+  // folder add
+  static ArDriveIcon folderAdd({double? size, Color? color}) => ArDriveIcon(
+        path: 'assets/icons/folder_add.svg',
+        size: size,
+        color: color,
+      );
+
+  // file fill
+  static ArDriveIcon fileFilled({double? size, Color? color}) => ArDriveIcon(
+        path: 'assets/icons/file_filled.svg',
+        size: size,
+        color: color,
+      );
+
+  // file outlined
+  static ArDriveIcon fileOutlined({double? size, Color? color}) => ArDriveIcon(
+        path: 'assets/icons/file_outlined.svg',
+        size: size,
+        color: color,
+      );
+
+  // arrow back
+  static ArDriveIcon arrowBack({double? size, Color? color}) => ArDriveIcon(
+        path: 'assets/icons/arrow_back.svg',
         size: size,
         color: color,
       );
