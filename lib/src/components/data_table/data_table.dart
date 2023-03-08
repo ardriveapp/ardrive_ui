@@ -29,6 +29,7 @@ class ArDriveDataTable<T> extends StatefulWidget {
     this.maxItemsPerPage = 100,
     required this.rowsPerPageText,
     this.sortRows,
+    this.onRowTap,
   });
 
   final List<TableColumn> columns;
@@ -43,6 +44,7 @@ class ArDriveDataTable<T> extends StatefulWidget {
   final int pageItemsDivisorFactor;
   final int maxItemsPerPage;
   final String rowsPerPageText;
+  final Function(T row)? onRowTap;
 
   @override
   State<ArDriveDataTable> createState() => _ArDriveDataTableState<T>();
@@ -128,7 +130,9 @@ class _ArDriveDataTableState<T> extends State<ArDriveDataTable<T>> {
 
                 stopwatch.stop();
 
-                debugPrint('Elapsed time: ${stopwatch.elapsedMilliseconds}ms');
+                debugPrint(
+                  'TABLE SORT - Elapsed time: ${stopwatch.elapsedMilliseconds}ms',
+                );
               },
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.center,
@@ -204,19 +208,19 @@ class _ArDriveDataTableState<T> extends State<ArDriveDataTable<T>> {
               constraints: BoxConstraints(
                 maxHeight: MediaQuery.of(context).size.height,
               ),
-              child: SingleChildScrollView(
-                  child: Column(mainAxisSize: MainAxisSize.min, children: [
-                for (var row in _currentPage) ...[
-                  Padding(
+              child: ListView.builder(
+                itemCount: _currentPage.length,
+                itemBuilder: (context, index) {
+                  return Padding(
                     padding: const EdgeInsets.only(top: 5),
                     child: _buildRowSpacing(
                       widget.columns,
-                      widget.buildRow(row).row,
-                      row,
+                      widget.buildRow(_currentPage[index]).row,
+                      _currentPage[index],
                     ),
-                  ),
-                ],
-              ])),
+                  );
+                },
+              ),
             ),
           ),
           _pageIndicator(),
@@ -407,46 +411,54 @@ class _ArDriveDataTableState<T> extends State<ArDriveDataTable<T>> {
 
   Widget _buildRowSpacing(
       List<TableColumn> columns, List<Widget> buildRow, T row) {
-    return ArDriveCard(
-      backgroundColor: ArDriveTheme.of(context)
-          .themeData
-          .colors
-          .themeBorderDefault
-          .withOpacity(0.25),
-      contentPadding: const EdgeInsets.symmetric(horizontal: 15, vertical: 8),
-      content: Row(
-        children: [
-          if (widget.leading != null)
-            Padding(
-              padding: const EdgeInsets.only(right: 20),
-              child: ConstrainedBox(
-                constraints: const BoxConstraints(
-                  maxWidth: 40,
-                  maxHeight: 40,
+    return GestureDetector(
+      onTap: () {
+        if (widget.onRowTap != null) {
+          widget.onRowTap!(row);
+        }
+      },
+      behavior: HitTestBehavior.opaque,
+      child: ArDriveCard(
+        backgroundColor: ArDriveTheme.of(context)
+            .themeData
+            .colors
+            .themeBorderDefault
+            .withOpacity(0.25),
+        contentPadding: const EdgeInsets.symmetric(horizontal: 15, vertical: 8),
+        content: Row(
+          children: [
+            if (widget.leading != null)
+              Padding(
+                padding: const EdgeInsets.only(right: 20),
+                child: ConstrainedBox(
+                  constraints: const BoxConstraints(
+                    maxWidth: 40,
+                    maxHeight: 40,
+                  ),
+                  child: widget.leading!.call(row),
                 ),
-                child: widget.leading!.call(row),
               ),
-            ),
-          ...List.generate(columns.length, (index) {
-            return Flexible(
-              flex: columns[index].size,
-              child: Align(
-                alignment: Alignment.centerLeft,
-                child: buildRow[index],
+            ...List.generate(columns.length, (index) {
+              return Flexible(
+                flex: columns[index].size,
+                child: Align(
+                  alignment: Alignment.centerLeft,
+                  child: buildRow[index],
+                ),
+              );
+            }),
+            if (widget.trailing != null)
+              Padding(
+                padding: const EdgeInsets.only(left: 20),
+                child: Container(
+                  alignment: Alignment.center,
+                  height: 40,
+                  width: 40,
+                  child: widget.trailing!.call(row),
+                ),
               ),
-            );
-          }),
-          if (widget.trailing != null)
-            Padding(
-              padding: const EdgeInsets.only(left: 20),
-              child: Container(
-                alignment: Alignment.center,
-                height: 40,
-                width: 40,
-                child: widget.trailing!.call(row),
-              ),
-            ),
-        ],
+          ],
+        ),
       ),
     );
   }

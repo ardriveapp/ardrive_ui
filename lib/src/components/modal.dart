@@ -458,7 +458,7 @@ Future<void> showLongModal(
 Future<void> showStandardDialog(
   BuildContext context, {
   required String title,
-  required String content,
+  required String description,
   List<ModalAction>? actions,
   bool barrierDismissible = true,
 }) {
@@ -466,7 +466,7 @@ Future<void> showStandardDialog(
     context,
     barrierDismissible: barrierDismissible,
     content: ArDriveStandardModal(
-      description: content,
+      description: description,
       title: title,
       actions: actions,
     ),
