@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:storybook/src/accordion.dart';
 import 'package:storybook/src/button.dart';
 import 'package:storybook/src/checkbox.dart';
+import 'package:storybook/src/click_area.dart';
 import 'package:storybook/src/fab.dart';
 import 'package:storybook/src/image.dart';
 import 'package:storybook/src/progress_bar.dart';
@@ -65,6 +66,7 @@ class StoryBook extends StatelessWidget {
             image(),
             checkBox(),
             fab(),
+            clickArea(),
           ]),
     );
   }
