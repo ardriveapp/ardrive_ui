@@ -6,6 +6,7 @@ import 'package:ardrive_ui/src/constants/size_constants.dart';
 import 'package:desktop_drop/desktop_drop.dart';
 import 'package:dotted_border/dotted_border.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 /// `onDragDone` pass a list of `IOFile` dropped on the area under the `child` widget.
 ///
@@ -63,35 +64,27 @@ class _ArDriveDropZoneState extends State<ArDriveDropZone> {
 ///
 class ArDriveDropAreaSingleInput extends StatefulWidget {
   const ArDriveDropAreaSingleInput({
-    super.key,
+    Key? key,
     this.height,
     this.width,
     required this.dragAndDropDescription,
     required this.dragAndDropButtonTitle,
-    this.buttonCallback,
-    this.onDragDone,
-    this.onDragEntered,
-    this.onDragExited,
     this.errorDescription,
-    this.onError,
     this.validateFile,
     this.platformSupportsDragAndDrop = true,
     this.keepButtonVisible = false,
-  });
+    required this.controller,
+  }) : super(key: key);
 
   final double? height;
   final double? width;
   final String dragAndDropDescription;
   final String dragAndDropButtonTitle;
   final String? errorDescription;
-  final Function()? onDragEntered;
-  final Function()? onDragExited;
-  final Function(IOFile file)? buttonCallback;
-  final Function(IOFile file)? onDragDone;
   final FutureOr<bool> Function(IOFile file)? validateFile;
-  final Function(Object e)? onError;
   final bool platformSupportsDragAndDrop;
   final bool keepButtonVisible;
+  final ArDriveDropAreaSingleInputController controller;
 
   @override
   State<ArDriveDropAreaSingleInput> createState() =>
@@ -100,85 +93,85 @@ class ArDriveDropAreaSingleInput extends StatefulWidget {
 
 class _ArDriveDropAreaSingleInputState
     extends State<ArDriveDropAreaSingleInput> {
-  bool _hasError = false;
-  Color? _backgroundColor;
-  IOFile? _file;
-
   @override
   Widget build(BuildContext context) {
-    return ArDriveDropZone(
-      onDragEntered: () {
-        widget.onDragEntered?.call();
-      },
-      onDragDone: (files) async {
-        if (widget.validateFile != null &&
-            !(await widget.validateFile!(files.first))) {
-          _hasError = true;
-          widget.onError?.call(DropzoneValidationException());
-        } else {
-          _file = files.first;
-          _hasError = false;
-          widget.onDragDone?.call(_file!);
-        }
-        setState(() {});
-      },
-      onError: (e) {
-        setState(() {
-          _hasError = true;
-          _backgroundColor =
-              ArDriveTheme.of(context).themeData.colors.themeErrorMuted;
-        });
-        widget.onError?.call(e);
-      },
-      onDragExited: () {
-        widget.onDragExited?.call();
-      },
-      child: Container(
-        color: _backgroundColor,
-        height: widget.height,
-        width: widget.width,
-        child: Padding(
-          padding: const EdgeInsets.all(32),
-          child: _hasError
-              ? _errorView()
-              : Column(
-                  mainAxisSize: MainAxisSize.min,
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    _file != null
-                        ? ArDriveIcons.checkSuccess(
-                            size: dropAreaIconSize,
-                            color: ArDriveTheme.of(context)
-                                .themeData
-                                .colors
-                                .themeFgMuted,
-                          )
-                        : ArDriveIcons.uploadCloud(
-                            size: dropAreaIconSize,
-                            color: ArDriveTheme.of(context)
-                                .themeData
-                                .colors
-                                .themeFgMuted,
+    return ChangeNotifierProvider<ArDriveDropAreaSingleInputController>(
+      create: (_) => widget.controller,
+      child: Consumer<ArDriveDropAreaSingleInputController>(
+        builder: (BuildContext context, controller, Widget? child) {
+          return ArDriveDropZone(
+            onDragEntered: () {
+              controller.onDragEntered.call();
+            },
+            onDragDone: (files) async {
+              if (widget.validateFile != null &&
+                  !(await widget.validateFile!(files.first))) {
+                controller.onError.call(DropzoneValidationException());
+              } else {
+                controller.handleDragDone.call(files.first);
+              }
+            },
+            onError: (e) {
+              controller.onError.call(e);
+            },
+            onDragExited: () {
+              controller.onDragExited.call();
+            },
+            child: Consumer<ArDriveDropAreaSingleInputController>(
+              builder: (context, controller, state) {
+                return Container(
+                  color: controller.backgroundColor,
+                  height: widget.height,
+                  width: widget.width,
+                  child: Padding(
+                    padding: const EdgeInsets.all(32),
+                    child: controller.hasError
+                        ? _errorView()
+                        : Column(
+                            mainAxisSize: MainAxisSize.min,
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              controller.file != null
+                                  ? ArDriveIcons.checkSuccess(
+                                      size: dropAreaIconSize,
+                                      color: ArDriveTheme.of(context)
+                                          .themeData
+                                          .colors
+                                          .themeFgMuted,
+                                    )
+                                  : ArDriveIcons.uploadCloud(
+                                      size: dropAreaIconSize,
+                                      color: ArDriveTheme.of(context)
+                                          .themeData
+                                          .colors
+                                          .themeFgMuted,
+                                    ),
+                              if (controller.file != null)
+                                Padding(
+                                  padding: dropAreaItemContentPadding,
+                                  child: Text(
+                                    controller.file!.name,
+                                    style: ArDriveTypography.body.smallBold(),
+                                  ),
+                                ),
+                              const SizedBox(height: 8),
+                              if (widget.platformSupportsDragAndDrop)
+                                Text(
+                                  widget.dragAndDropDescription,
+                                  style: ArDriveTypography.body.smallBold(),
+                                ),
+                              const SizedBox(height: 20),
+                              if (controller.file == null ||
+                                  widget.keepButtonVisible)
+                                _button(),
+                            ],
                           ),
-                    if (_file != null)
-                      Padding(
-                        padding: dropAreaItemContentPadding,
-                        child: Text(
-                          _file!.name,
-                          style: ArDriveTypography.body.smallBold(),
-                        ),
-                      ),
-                    const SizedBox(height: 8),
-                    if (widget.platformSupportsDragAndDrop)
-                      Text(
-                        widget.dragAndDropDescription,
-                        style: ArDriveTypography.body.smallBold(),
-                      ),
-                    const SizedBox(height: 20),
-                    if (_file == null || widget.keepButtonVisible) _button(),
-                  ],
-                ),
-        ),
+                  ),
+                );
+              },
+            ),
+          );
+        },
       ),
     );
   }
@@ -187,26 +180,7 @@ class _ArDriveDropAreaSingleInputState
     return ArDriveButton(
       text: widget.dragAndDropButtonTitle,
       onPressed: () async {
-        try {
-          final selectedFile =
-              await ArDriveIO().pickFile(fileSource: FileSource.fileSystem);
-          // validate file
-          if (widget.validateFile != null &&
-              !(await widget.validateFile!(selectedFile))) {
-            _hasError = true;
-
-            widget.onError?.call(DropzoneValidationException());
-          } else {
-            _file = selectedFile;
-            _hasError = false;
-            widget.buttonCallback?.call(_file!);
-          }
-        } catch (e) {
-          debugPrint(e.toString());
-          _hasError = true;
-        }
-
-        setState(() {});
+        widget.controller.handleButtonCallback.call();
       },
       maxHeight: buttonActionHeight,
       fontStyle: ArDriveTypography.body.buttonNormalRegular(
@@ -235,6 +209,93 @@ class _ArDriveDropAreaSingleInputState
       ],
     );
   }
+}
+
+class ArDriveDropAreaSingleInputController with ChangeNotifier {
+  IOFile? _file;
+  bool _hasError = false;
+  Color? _backgroundColor;
+
+  final Function() onDragEntered;
+  final Function() onDragExited;
+  final Function(IOFile file) onFileAdded;
+  final Function(Object e) onError;
+  final FutureOr<bool> Function(IOFile file)? validateFile;
+
+  ArDriveDropAreaSingleInputController({
+    required this.onDragEntered,
+    required this.onDragExited,
+    required this.onFileAdded,
+    required this.onError,
+    this.validateFile,
+  });
+
+  void handleDragDone(IOFile file) async {
+    if (validateFile != null && !(await validateFile!(file))) {
+      _hasError = true;
+      onError.call(
+        DropzoneValidationException(),
+      );
+    } else {
+      _file = file;
+      _hasError = false;
+      onFileAdded.call(_file!);
+    }
+
+    notifyListeners();
+  }
+
+  void handleDragEntered() {
+    onDragEntered.call();
+  }
+
+  void handleDragExited() {
+    onDragExited.call();
+  }
+
+  void handleError(Object e, BuildContext context) {
+    _hasError = true;
+    _backgroundColor =
+        ArDriveTheme.of(context).themeData.colors.themeErrorMuted;
+    onError.call(e);
+    notifyListeners();
+  }
+
+  void handleButtonCallback() async {
+    try {
+      final selectedFile =
+          await ArDriveIO().pickFile(fileSource: FileSource.fileSystem);
+      // validate file
+      if (validateFile != null && !(await validateFile!(selectedFile))) {
+        _hasError = true;
+        onError.call(
+          DropzoneValidationException(),
+        );
+      } else {
+        _file = selectedFile;
+        _hasError = false;
+        onFileAdded.call(_file!);
+      }
+
+      notifyListeners();
+    } catch (e) {
+      debugPrint(e.toString());
+      _hasError = true;
+      notifyListeners();
+    }
+  }
+
+  void reset() {
+    _file = null;
+    _hasError = false;
+    notifyListeners();
+  }
+
+  bool get hasError => _hasError;
+
+  Color? get backgroundColor => _backgroundColor;
+
+  IOFile? get file => _file;
 }
 
 class DropzoneValidationException implements Exception {}

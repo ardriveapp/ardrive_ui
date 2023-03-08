@@ -5,12 +5,18 @@ import 'package:flutter_test/flutter_test.dart';
 void main() {
   testWidgets('ArDriveDropAreaSingleInput widget and its contents render',
       (tester) async {
-    const dropArea = ArDriveDropAreaSingleInput(
+    final dropArea = ArDriveDropAreaSingleInput(
+      controller: ArDriveDropAreaSingleInputController(
+        onDragEntered: () {},
+        onDragExited: () {},
+        onError: (e) {},
+        onFileAdded: (file) {},
+      ),
       dragAndDropButtonTitle: '',
       dragAndDropDescription: '',
     );
     await tester.pumpWidget(ArDriveApp(
-      builder: (context) => const MaterialApp(
+      builder: (context) => MaterialApp(
         home: dropArea,
       ),
     ));
