@@ -1,7 +1,6 @@
 import 'package:ardrive_ui/ardrive_ui.dart';
 import 'package:ardrive_ui/src/styles/colors/global_colors.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_portal/flutter_portal.dart';
 
 class TableColumn {
   TableColumn(this.title, this.size);
@@ -440,7 +439,8 @@ class _ArDriveDataTableState<T> extends State<ArDriveDataTable<T>> {
           if (widget.trailing != null)
             Padding(
               padding: const EdgeInsets.only(left: 20),
-              child: SizedBox(
+              child: Container(
+                alignment: Alignment.center,
                 height: 40,
                 width: 40,
                 child: widget.trailing!.call(row),
