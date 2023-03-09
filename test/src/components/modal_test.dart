@@ -167,7 +167,7 @@ void main() {
 }
 
 class _TestWidget extends StatelessWidget {
-  const _TestWidget({super.key});
+  const _TestWidget();
 
   @override
   Widget build(BuildContext context) {
