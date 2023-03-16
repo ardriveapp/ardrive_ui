@@ -555,9 +555,11 @@ class _PaginationSelectState extends State<PaginationSelect> {
             ),
           ),
       ],
-      child: _PageNumber(
-        page: currentNumber - 1,
-        isSelected: false,
+      child: ArDriveClickArea(
+        child: _PageNumber(
+          page: currentNumber - 1,
+          isSelected: false,
+        ),
       ),
     );
   }
