@@ -3,7 +3,6 @@ import 'package:ardrive_ui/src/constants/size_constants.dart';
 import 'package:ardrive_ui/src/styles/colors/global_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_portal/flutter_portal.dart';
 
 class TableColumn {
   TableColumn(this.title, this.size);
@@ -42,7 +41,7 @@ class ArDriveDataTable<T extends IndexedItem> extends StatefulWidget {
   final Widget Function(T row)? leading;
   final Widget Function(T row)? trailing;
   final int Function(T a, T b) Function(int columnIndex)? sort;
-  final List<T> Function(List<T> rows, int columnIndex, TableSort sort)?
+  final List<T> Function(List<T> rows, int columnIndex, TableSort sortOrder)?
       sortRows;
   final Function(int page)? onChangePage;
   final int pageItemsDivisorFactor;
@@ -230,7 +229,9 @@ class _ArDriveDataTableState<T extends IndexedItem>
 
                 stopwatch.stop();
 
-                debugPrint('Elapsed time: ${stopwatch.elapsedMilliseconds}ms');
+                debugPrint(
+                  'TABLE SORT - Elapsed time: ${stopwatch.elapsedMilliseconds}ms',
+                );
               },
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.center,

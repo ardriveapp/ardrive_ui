@@ -10,6 +10,12 @@ WidgetbookCategory dropArea() {
         builder: (context) {
           return ArDriveStorybookAppBase(builder: (context) {
             return ArDriveDropAreaSingleInput(
+              controller: ArDriveDropAreaSingleInputController(
+                onDragEntered: () {},
+                onDragExited: () {},
+                onError: (e) {},
+                onFileAdded: (file) {},
+              ),
               errorDescription: context.knobs.text(
                 label: 'Error description',
                 initialValue: 'Something went wrong!',

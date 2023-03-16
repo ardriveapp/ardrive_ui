@@ -288,12 +288,14 @@ class ArDriveStandardModal extends StatelessWidget {
     this.description,
     this.content,
     this.actions,
+    this.width,
   });
 
   final String? title;
   final String? description;
   final List<ModalAction>? actions;
   final Widget? content;
+  final double? width;
 
   @override
   Widget build(BuildContext context) {
@@ -309,7 +311,7 @@ class ArDriveStandardModal extends StatelessWidget {
     return ArDriveModal(
       constraints: BoxConstraints(
         minHeight: 100,
-        maxWidth: maxWidth,
+        maxWidth: width ?? maxWidth,
         minWidth: 250,
       ),
       content: Column(
@@ -456,7 +458,7 @@ Future<void> showLongModal(
 Future<void> showStandardDialog(
   BuildContext context, {
   required String title,
-  required String content,
+  required String description,
   List<ModalAction>? actions,
   bool barrierDismissible = true,
 }) {
@@ -464,7 +466,7 @@ Future<void> showStandardDialog(
     context,
     barrierDismissible: barrierDismissible,
     content: ArDriveStandardModal(
-      description: content,
+      description: description,
       title: title,
       actions: actions,
     ),

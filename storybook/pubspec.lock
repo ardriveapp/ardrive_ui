@@ -5,11 +5,11 @@ packages:
     dependency: transitive
     description:
       path: "."
-      ref: "v1.1.0"
-      resolved-ref: e9b24fc847f414d85b12ebc280db8dbd45c8abcc
+      ref: "v1.2.0"
+      resolved-ref: c0fee7de0daff697c38301b6d96a16278cddcb3e
       url: "https://github.com/ar-io/ardrive_io.git"
     source: git
-    version: "1.0.0"
+    version: "1.2.0"
   ardrive_ui:
     dependency: "direct main"
     description:
@@ -160,10 +160,12 @@ packages:
   file_picker:
     dependency: transitive
     description:
-      name: file_picker
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "5.2.5"
+      path: "."
+      ref: master
+      resolved-ref: e6a2f5af04951deed4ed9caf138adeae82a0b8ba
+      url: "https://github.com/ar-io/flutter_file_picker"
+    source: git
+    version: "5.2.4"
   file_saver:
     dependency: transitive
     description:
