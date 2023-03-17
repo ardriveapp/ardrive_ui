@@ -273,24 +273,28 @@ class _ArDriveDataTableState<T> extends State<ArDriveDataTable<T>> {
               crossAxisAlignment: CrossAxisAlignment.center,
               mainAxisSize: MainAxisSize.max,
               children: [
-                SizedBox(
-                  height: 32,
-                  width: 32,
+                ArDriveClickArea(
+                  showCursor: _selectedPage > 0,
                   child: GestureDetector(
+                    behavior: HitTestBehavior.translucent,
                     onTap: () {
                       if (_selectedPage > 0) {
                         goToPreviousPage();
                       }
                     },
-                    child: Center(
-                      child: ArDriveIcons.chevronLeft(
-                        size: 18,
-                        color: _selectedPage > 0
-                            ? ArDriveTheme.of(context)
-                                .themeData
-                                .colors
-                                .themeFgDefault
-                            : grey,
+                    child: SizedBox(
+                      height: 32,
+                      width: 32,
+                      child: Center(
+                        child: ArDriveIcons.chevronLeft(
+                          size: 18,
+                          color: _selectedPage > 0
+                              ? ArDriveTheme.of(context)
+                                  .themeData
+                                  .colors
+                                  .themeFgDefault
+                              : grey,
+                        ),
                       ),
                     ),
                   ),
@@ -298,21 +302,16 @@ class _ArDriveDataTableState<T> extends State<ArDriveDataTable<T>> {
                 if (_getPagesToShow().first > 1) ...[
                   _pageNumber(0),
                   if (_getPagesToShow().first > 2)
-                    GestureDetector(
-                      onTap: () {
-                        goToFirstPage();
-                      },
-                      child: Row(
-                        children: [
-                          ArDriveIcons.dots(
-                            size: 24,
-                            color: ArDriveTheme.of(context)
-                                .themeData
-                                .colors
-                                .themeFgDefault,
-                          ),
-                        ],
-                      ),
+                    Row(
+                      children: [
+                        ArDriveIcons.dots(
+                          size: 24,
+                          color: ArDriveTheme.of(context)
+                              .themeData
+                              .colors
+                              .themeFgDefault,
+                        ),
+                      ],
                     ),
                 ],
                 ..._getPagesIndicators(),
@@ -335,24 +334,28 @@ class _ArDriveDataTableState<T> extends State<ArDriveDataTable<T>> {
                       ],
                     ),
                   ),
-                SizedBox(
-                  height: 32,
-                  width: 32,
+                ArDriveClickArea(
+                  showCursor: _selectedPage + 1 < _getNumberOfPages(),
                   child: GestureDetector(
+                    behavior: HitTestBehavior.translucent,
                     onTap: () {
                       if (_selectedPage + 1 < _getNumberOfPages()) {
                         goToNextPage();
                       }
                     },
-                    child: Center(
-                      child: ArDriveIcons.chevronRight(
-                        color: _selectedPage + 1 < _getNumberOfPages()
-                            ? ArDriveTheme.of(context)
-                                .themeData
-                                .colors
-                                .themeFgDefault
-                            : grey,
-                        size: 18,
+                    child: SizedBox(
+                      height: 32,
+                      width: 32,
+                      child: Center(
+                        child: ArDriveIcons.chevronRight(
+                          color: _selectedPage + 1 < _getNumberOfPages()
+                              ? ArDriveTheme.of(context)
+                                  .themeData
+                                  .colors
+                                  .themeFgDefault
+                              : grey,
+                          size: 18,
+                        ),
                       ),
                     ),
                   ),
