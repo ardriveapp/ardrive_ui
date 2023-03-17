@@ -578,44 +578,52 @@ class _PageNumber extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: onPressed,
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 4.0),
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Container(
-              alignment: Alignment.center,
-              padding: const EdgeInsets.fromLTRB(10, 2, 10, 4),
-              decoration: BoxDecoration(
-                border: Border.all(
-                  width: 2,
+    return ArDriveClickArea(
+      child: GestureDetector(
+        onTap: onPressed,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 4.0),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Container(
+                alignment: Alignment.center,
+                padding: const EdgeInsets.fromLTRB(10, 2, 10, 4),
+                decoration: BoxDecoration(
+                  border: Border.all(
+                    width: 2,
+                    color: isSelected
+                        ? ArDriveTheme.of(context)
+                            .themeData
+                            .colors
+                            .themeFgDefault
+                        : ArDriveTheme.of(context)
+                            .themeData
+                            .colors
+                            .themeGbMuted,
+                  ),
+                  borderRadius: BorderRadius.circular(4),
                   color: isSelected
                       ? ArDriveTheme.of(context).themeData.colors.themeFgDefault
-                      : ArDriveTheme.of(context).themeData.colors.themeGbMuted,
+                      : null,
                 ),
-                borderRadius: BorderRadius.circular(4),
-                color: isSelected
-                    ? ArDriveTheme.of(context).themeData.colors.themeFgDefault
-                    : null,
-              ),
-              child: Text(
-                _showSemanticPageNumber(page),
-                style: ArDriveTypography.body.buttonNormalBold(
-                  color: isSelected
-                      ? ArDriveTheme.of(context)
-                          .themeData
-                          .tableTheme
-                          .backgroundColor
-                      : ArDriveTheme.of(context)
-                          .themeData
-                          .colors
-                          .themeFgDefault,
+                child: Text(
+                  _showSemanticPageNumber(page),
+                  style: ArDriveTypography.body.buttonNormalBold(
+                    color: isSelected
+                        ? ArDriveTheme.of(context)
+                            .themeData
+                            .tableTheme
+                            .backgroundColor
+                        : ArDriveTheme.of(context)
+                            .themeData
+                            .colors
+                            .themeFgDefault,
+                  ),
                 ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
