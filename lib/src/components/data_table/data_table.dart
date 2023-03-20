@@ -177,6 +177,8 @@ class _ArDriveDataTableState<T extends IndexedItem>
         }
       }
     });
+
+    widget.onSelectedRows?.call(_selectedRows);
   }
 
   int _getNumberOfPages() {
