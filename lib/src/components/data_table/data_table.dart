@@ -647,7 +647,8 @@ class _ArDriveDataTableState<T extends IndexedItem>
                   if (widget.trailing != null)
                     Padding(
                       padding: const EdgeInsets.only(left: 20),
-                      child: SizedBox(
+                      child: Container(
+                        alignment: Alignment.center,
                         height: 40,
                         width: 40,
                         child: widget.trailing!.call(row),
