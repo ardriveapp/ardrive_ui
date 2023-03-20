@@ -431,24 +431,28 @@ class _ArDriveDataTableState<T extends IndexedItem>
               crossAxisAlignment: CrossAxisAlignment.center,
               mainAxisSize: MainAxisSize.max,
               children: [
-                SizedBox(
-                  height: 32,
-                  width: 32,
+                ArDriveClickArea(
+                  showCursor: _selectedPage > 0,
                   child: GestureDetector(
+                    behavior: HitTestBehavior.translucent,
                     onTap: () {
                       if (_selectedPage > 0) {
                         goToPreviousPage();
                       }
                     },
-                    child: Center(
-                      child: ArDriveIcons.chevronLeft(
-                        size: 18,
-                        color: _selectedPage > 0
-                            ? ArDriveTheme.of(context)
-                                .themeData
-                                .colors
-                                .themeFgDefault
-                            : grey,
+                    child: SizedBox(
+                      height: 32,
+                      width: 32,
+                      child: Center(
+                        child: ArDriveIcons.chevronLeft(
+                          size: 18,
+                          color: _selectedPage > 0
+                              ? ArDriveTheme.of(context)
+                                  .themeData
+                                  .colors
+                                  .themeFgDefault
+                              : grey,
+                        ),
                       ),
                     ),
                   ),
@@ -456,21 +460,16 @@ class _ArDriveDataTableState<T extends IndexedItem>
                 if (_getPagesToShow().first > 1) ...[
                   _pageNumber(0),
                   if (_getPagesToShow().first > 2)
-                    GestureDetector(
-                      onTap: () {
-                        goToFirstPage();
-                      },
-                      child: Row(
-                        children: [
-                          ArDriveIcons.dots(
-                            size: 24,
-                            color: ArDriveTheme.of(context)
-                                .themeData
-                                .colors
-                                .themeFgDefault,
-                          ),
-                        ],
-                      ),
+                    Row(
+                      children: [
+                        ArDriveIcons.dots(
+                          size: 24,
+                          color: ArDriveTheme.of(context)
+                              .themeData
+                              .colors
+                              .themeFgDefault,
+                        ),
+                      ],
                     ),
                 ],
                 ..._getPagesIndicators(),
@@ -493,24 +492,28 @@ class _ArDriveDataTableState<T extends IndexedItem>
                       ],
                     ),
                   ),
-                SizedBox(
-                  height: 32,
-                  width: 32,
+                ArDriveClickArea(
+                  showCursor: _selectedPage + 1 < _getNumberOfPages(),
                   child: GestureDetector(
+                    behavior: HitTestBehavior.translucent,
                     onTap: () {
                       if (_selectedPage + 1 < _getNumberOfPages()) {
                         goToNextPage();
                       }
                     },
-                    child: Center(
-                      child: ArDriveIcons.chevronRight(
-                        color: _selectedPage + 1 < _getNumberOfPages()
-                            ? ArDriveTheme.of(context)
-                                .themeData
-                                .colors
-                                .themeFgDefault
-                            : grey,
-                        size: 18,
+                    child: SizedBox(
+                      height: 32,
+                      width: 32,
+                      child: Center(
+                        child: ArDriveIcons.chevronRight(
+                          color: _selectedPage + 1 < _getNumberOfPages()
+                              ? ArDriveTheme.of(context)
+                                  .themeData
+                                  .colors
+                                  .themeFgDefault
+                              : grey,
+                          size: 18,
+                        ),
                       ),
                     ),
                   ),
@@ -751,9 +754,11 @@ class _PaginationSelectState extends State<PaginationSelect> {
             ),
           ),
       ],
-      child: _PageNumber(
-        page: currentNumber - 1,
-        isSelected: false,
+      child: ArDriveClickArea(
+        child: _PageNumber(
+          page: currentNumber - 1,
+          isSelected: false,
+        ),
       ),
     );
   }
@@ -772,44 +777,52 @@ class _PageNumber extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: onPressed,
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 4.0),
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Container(
-              alignment: Alignment.center,
-              padding: const EdgeInsets.fromLTRB(10, 2, 10, 4),
-              decoration: BoxDecoration(
-                border: Border.all(
-                  width: 2,
+    return ArDriveClickArea(
+      child: GestureDetector(
+        onTap: onPressed,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 4.0),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Container(
+                alignment: Alignment.center,
+                padding: const EdgeInsets.fromLTRB(10, 2, 10, 4),
+                decoration: BoxDecoration(
+                  border: Border.all(
+                    width: 2,
+                    color: isSelected
+                        ? ArDriveTheme.of(context)
+                            .themeData
+                            .colors
+                            .themeFgDefault
+                        : ArDriveTheme.of(context)
+                            .themeData
+                            .colors
+                            .themeGbMuted,
+                  ),
+                  borderRadius: BorderRadius.circular(4),
                   color: isSelected
                       ? ArDriveTheme.of(context).themeData.colors.themeFgDefault
-                      : ArDriveTheme.of(context).themeData.colors.themeGbMuted,
+                      : null,
                 ),
-                borderRadius: BorderRadius.circular(4),
-                color: isSelected
-                    ? ArDriveTheme.of(context).themeData.colors.themeFgDefault
-                    : null,
-              ),
-              child: Text(
-                _showSemanticPageNumber(page),
-                style: ArDriveTypography.body.buttonNormalBold(
-                  color: isSelected
-                      ? ArDriveTheme.of(context)
-                          .themeData
-                          .tableTheme
-                          .backgroundColor
-                      : ArDriveTheme.of(context)
-                          .themeData
-                          .colors
-                          .themeFgDefault,
+                child: Text(
+                  _showSemanticPageNumber(page),
+                  style: ArDriveTypography.body.buttonNormalBold(
+                    color: isSelected
+                        ? ArDriveTheme.of(context)
+                            .themeData
+                            .tableTheme
+                            .backgroundColor
+                        : ArDriveTheme.of(context)
+                            .themeData
+                            .colors
+                            .themeFgDefault,
+                  ),
                 ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );

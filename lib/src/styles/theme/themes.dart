@@ -61,7 +61,7 @@ class ArDriveThemeData {
     this.dropdownTheme = dropdownTheme ??
         ArDriveDropdownTheme(
           backgroundColor: this.colors.themeBgSurface,
-          hoverColor: const Color(0xff1D1D1D),
+          hoverColor: const Color(0xff2C2C2C),
         );
 
     this.backgroundColor = backgroundColor ?? const Color(0xff010905);
