@@ -83,7 +83,7 @@ void main() {
     bool varToChange = false;
 
     final modal = ArDriveStandardModal(
-      content: 'Content',
+      description: 'Content',
       title: 'Title',
       actions: [
         ModalAction(
@@ -111,4 +111,66 @@ void main() {
     // verify if the variable was changed
     expect(varToChange, true);
   });
+
+  testWidgets(
+      'ArDriveStandardModal should render only content when content and description is provided',
+      (tester) async {
+    const testWidget = _TestWidget();
+
+    final modal = ArDriveStandardModal(
+      description: 'Content',
+      content: testWidget,
+      title: 'Title',
+      actions: [
+        ModalAction(
+          action: () {},
+          title: 'Title',
+        ),
+      ],
+    );
+
+    await tester.pumpWidget(
+      ArDriveApp(
+        builder: (context) => MaterialApp(home: modal),
+      ),
+    );
+
+    expect(find.byWidget(testWidget), findsOneWidget);
+  });
+
+  testWidgets(
+      'ArDriveStandardModal should render description wehn provided and content is null',
+      (tester) async {
+    const testWidget = _TestWidget();
+
+    final modal = ArDriveStandardModal(
+      description: 'Description',
+      content: null,
+      title: 'Title',
+      actions: [
+        ModalAction(
+          action: () {},
+          title: 'Title',
+        ),
+      ],
+    );
+
+    await tester.pumpWidget(
+      ArDriveApp(
+        builder: (context) => MaterialApp(home: modal),
+      ),
+    );
+
+    expect(find.byWidget(testWidget), findsNothing);
+    expect(find.text('Description'), findsOneWidget);
+  });
+}
+
+class _TestWidget extends StatelessWidget {
+  const _TestWidget();
+
+  @override
+  Widget build(BuildContext context) {
+    return Container();
+  }
 }

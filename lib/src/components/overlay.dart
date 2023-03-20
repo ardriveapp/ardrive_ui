@@ -4,6 +4,9 @@ import 'package:ardrive_ui/ardrive_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_portal/flutter_portal.dart';
 
+export 'package:flutter_portal/flutter_portal.dart'
+    show Anchor, Aligned, Filled;
+
 class ArDriveDropdown extends StatefulWidget {
   const ArDriveDropdown({
     super.key,
@@ -139,6 +142,7 @@ class _ArDriveOverlayState extends State<ArDriveOverlay> {
   }
 
   late bool _visible;
+
   @override
   Widget build(BuildContext context) {
     return Barrier(
@@ -215,6 +219,7 @@ class _ArDriveDropdownItemState extends State<ArDriveDropdownItem> {
     final theme = ArDriveTheme.of(context).themeData.dropdownTheme;
 
     return MouseRegion(
+      cursor: SystemMouseCursors.click,
       onHover: (event) {
         setState(() {
           hovering = true;
