@@ -104,7 +104,6 @@ class _ArDriveDataTableState<T extends IndexedItem>
     }
     selectPage(0);
     RawKeyboard.instance.addListener(_handleKeyDownEvent);
-    RawKeyboard.instance.addListener(_handleKeyUpEvent);
     RawKeyboard.instance.addListener(_handleEscapeKey);
   }
 
@@ -128,10 +127,10 @@ class _ArDriveDataTableState<T extends IndexedItem>
           _isCtrlPressed = false;
           _shiftSelectionStartIndex = null;
         });
-      }
 
-      if (widget.onChangeMultiSelecting != null) {
-        widget.onChangeMultiSelecting!(_isMultiSelecting);
+        if (widget.onChangeMultiSelecting != null) {
+          widget.onChangeMultiSelecting!(false);
+        }
       }
     }
   }
@@ -153,26 +152,7 @@ class _ArDriveDataTableState<T extends IndexedItem>
     }
   }
 
-  void _handleKeyUpEvent(RawKeyEvent event) {
-    if (mounted) {
-      setState(() {
-        if (event.isKeyPressed(LogicalKeyboardKey.metaLeft) ||
-            event.isKeyPressed(LogicalKeyboardKey.controlLeft)) {
-          _isCtrlPressed = true;
-        } else {
-          _isCtrlPressed = false;
-        }
-      });
-
-      if (widget.onChangeMultiSelecting != null) {
-        widget.onChangeMultiSelecting!(_isMultiSelecting);
-      }
-    }
-  }
-
   void _selectItem(T item, int index, bool select) {
-    print('selectItem: $item, $index, $select');
-
     setState(() {
       if (_isCtrlPressed) {
         if (_selectedRows.contains(item)) {
