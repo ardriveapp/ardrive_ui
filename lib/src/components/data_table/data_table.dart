@@ -33,6 +33,7 @@ class ArDriveDataTable<T extends IndexedItem> extends StatefulWidget {
     this.sortRows,
     this.onSelectedRows,
     this.onRowTap,
+    this.onChangeMultiSelecting,
   });
 
   final List<TableColumn> columns;
@@ -49,6 +50,7 @@ class ArDriveDataTable<T extends IndexedItem> extends StatefulWidget {
   final String rowsPerPageText;
   final Function(List<T> selectedRows)? onSelectedRows;
   final Function(T row)? onRowTap;
+  final Function(bool onChangeMultiSelecting)? onChangeMultiSelecting;
 
   @override
   State<ArDriveDataTable> createState() => _ArDriveDataTableState<T>();
@@ -82,10 +84,13 @@ class _ArDriveDataTableState<T extends IndexedItem>
   int? _shiftSelectionStartIndex;
   int? lastSelectedIndex;
 
-  bool get _isMultiSelecting =>
-      _isCtrlPressed ||
-      _isMultiSelectingWithLongPress ||
-      _selectedRows.isNotEmpty;
+  bool get _isMultiSelecting {
+    final isMultiSelecting = _isMultiSelectingWithLongPress ||
+        _selectedRows.isNotEmpty ||
+        _isCtrlPressed;
+
+    return isMultiSelecting;
+  }
 
   @override
   void initState() {
@@ -103,6 +108,17 @@ class _ArDriveDataTableState<T extends IndexedItem>
     RawKeyboard.instance.addListener(_handleEscapeKey);
   }
 
+  @override
+  void didChangeDependencies() {
+    if (mounted) {
+      if (_selectedRows.isEmpty) {
+        widget.onChangeMultiSelecting!(false);
+      }
+    }
+
+    super.didChangeDependencies();
+  }
+
   void _handleEscapeKey(RawKeyEvent event) {
     if (mounted) {
       if (event.isKeyPressed(LogicalKeyboardKey.escape)) {
@@ -112,6 +128,10 @@ class _ArDriveDataTableState<T extends IndexedItem>
           _isCtrlPressed = false;
           _shiftSelectionStartIndex = null;
         });
+      }
+
+      if (widget.onChangeMultiSelecting != null) {
+        widget.onChangeMultiSelecting!(_isMultiSelecting);
       }
     }
   }
@@ -124,6 +144,10 @@ class _ArDriveDataTableState<T extends IndexedItem>
           _isCtrlPressed = true;
         } else {
           _isCtrlPressed = false;
+        }
+
+        if (widget.onChangeMultiSelecting != null) {
+          widget.onChangeMultiSelecting!(_isMultiSelecting);
         }
       });
     }
@@ -139,6 +163,10 @@ class _ArDriveDataTableState<T extends IndexedItem>
           _isCtrlPressed = false;
         }
       });
+
+      if (widget.onChangeMultiSelecting != null) {
+        widget.onChangeMultiSelecting!(_isMultiSelecting);
+      }
     }
   }
 
@@ -382,6 +410,11 @@ class _ArDriveDataTableState<T extends IndexedItem>
 
       if (_isMultiSelectingWithLongPress && !value && _selectedRows.isEmpty) {
         _isMultiSelectingWithLongPress = false;
+
+        if (widget.onChangeMultiSelecting != null) {
+          widget.onChangeMultiSelecting!(_isMultiSelecting);
+        }
+
         return;
       }
     });
@@ -604,6 +637,10 @@ class _ArDriveDataTableState<T extends IndexedItem>
         setState(() {
           _isMultiSelectingWithLongPress = !_isMultiSelectingWithLongPress;
         });
+
+        if (widget.onChangeMultiSelecting != null) {
+          widget.onChangeMultiSelecting!(_isMultiSelecting);
+        }
       },
       behavior: HitTestBehavior.opaque,
       child: Row(
