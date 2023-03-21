@@ -57,6 +57,7 @@ class ArDriveThemeData {
         ArDriveTableTheme(
           backgroundColor: const Color(0xff121212),
           cellColor: const Color(0xff191919),
+          selectedItemColor: const Color(0xff2C2C2C),
         );
     this.dropdownTheme = dropdownTheme ??
         ArDriveDropdownTheme(
@@ -112,6 +113,7 @@ ArDriveThemeData lightTheme() {
     tableTheme: ArDriveTableTheme(
       backgroundColor: const Color(0xffFAFAFA),
       cellColor: const Color(0xffF1EFF0),
+      selectedItemColor: const Color(0xffF1EFF0),
     ),
     dropdownTheme: ArDriveDropdownTheme(
       backgroundColor: const Color(0xffFAFAFA),
@@ -170,10 +172,12 @@ class ArDriveTableTheme {
   ArDriveTableTheme({
     required this.backgroundColor,
     required this.cellColor,
+    required this.selectedItemColor,
   });
 
   final Color backgroundColor;
   final Color cellColor;
+  final Color selectedItemColor;
 }
 
 class ArDriveDropdownTheme {

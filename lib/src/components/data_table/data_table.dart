@@ -171,6 +171,8 @@ class _ArDriveDataTableState<T extends IndexedItem>
   }
 
   void _selectItem(T item, int index, bool select) {
+    print('selectItem: $item, $index, $select');
+
     setState(() {
       if (_isCtrlPressed) {
         if (_selectedRows.contains(item)) {
@@ -201,6 +203,8 @@ class _ArDriveDataTableState<T extends IndexedItem>
         if (select) {
           _selectedRows.add(item);
         } else {
+          print(
+              'removing item: $item from _selectedRows ${_selectedRows.length}}');
           _selectedRows.remove(item);
         }
       }
@@ -399,7 +403,19 @@ class _ArDriveDataTableState<T extends IndexedItem>
     setState(() {
       if (selectAll) {
         _isAllSelected = value;
-        _selectedRows = value ? _rows : [];
+        if (value) {
+          _selectedRows.clear();
+          _selectedRows.addAll(_rows);
+        } else {
+          _selectedRows.clear();
+        }
+
+        widget.onSelectedRows?.call(_selectedRows);
+
+        if (widget.onChangeMultiSelecting != null) {
+          widget.onChangeMultiSelecting!(_isMultiSelecting);
+        }
+
         return;
       }
 
@@ -648,11 +664,16 @@ class _ArDriveDataTableState<T extends IndexedItem>
           _multiSelectColumn(false, index: index, row: row),
           Flexible(
             child: ArDriveCard(
-              backgroundColor: ArDriveTheme.of(context)
-                  .themeData
-                  .colors
-                  .themeBorderDefault
-                  .withOpacity(0.25),
+              backgroundColor: _selectedRows.contains(row)
+                  ? ArDriveTheme.of(context)
+                      .themeData
+                      .tableTheme
+                      .selectedItemColor
+                  : ArDriveTheme.of(context)
+                      .themeData
+                      .colors
+                      .themeBorderDefault
+                      .withOpacity(0.25),
               contentPadding:
                   const EdgeInsets.symmetric(horizontal: 15, vertical: 8),
               content: Row(

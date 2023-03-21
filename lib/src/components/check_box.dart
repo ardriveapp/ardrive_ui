@@ -91,6 +91,7 @@ class ArDriveCheckBoxState extends State<ArDriveCheckBox> {
                       color: _boxColor(),
                       width: 2,
                     ),
+              color: _backgroundColor(),
             ),
             duration: const Duration(milliseconds: 300),
             child: checked
@@ -134,7 +135,21 @@ class ArDriveCheckBoxState extends State<ArDriveCheckBox> {
       case CheckBoxState.disabled:
         return ArDriveTheme.of(context).themeData.colors.themeFgDisabled;
       case CheckBoxState.normal:
-        return ArDriveTheme.of(context).themeData.colors.themeAccentDefault;
+        return ArDriveTheme.of(context).themeData.colors.themeFgDefault;
+    }
+  }
+
+  Color _backgroundColor() {
+    switch (state) {
+      case CheckBoxState.indeterminate:
+      case CheckBoxState.checked:
+      case CheckBoxState.hover:
+        return ArDriveTheme.of(context).themeData.colors.themeFgDefault;
+      case CheckBoxState.disabled:
+        return Colors.transparent;
+
+      case CheckBoxState.normal:
+        return Colors.transparent;
     }
   }
 
@@ -143,7 +158,7 @@ class ArDriveCheckBoxState extends State<ArDriveCheckBox> {
       case CheckBoxState.indeterminate:
       case CheckBoxState.checked:
       case CheckBoxState.hover:
-        return ArDriveTheme.of(context).themeData.colors.themeFgDefault;
+        return ArDriveTheme.of(context).themeData.colors.themeBgSubtle;
       case CheckBoxState.disabled:
         return ArDriveTheme.of(context).themeData.colors.themeFgDisabled;
       case CheckBoxState.normal:
