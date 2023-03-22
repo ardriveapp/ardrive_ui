@@ -1,8 +1,10 @@
 import 'package:ardrive_ui/ardrive_ui.dart';
 import 'package:ardrive_ui/src/constants/size_constants.dart';
 import 'package:ardrive_ui/src/styles/colors/global_colors.dart';
+import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:provider/provider.dart';
 
 class TableColumn {
   TableColumn(this.title, this.size);
@@ -34,6 +36,7 @@ class ArDriveDataTable<T extends IndexedItem> extends StatefulWidget {
     this.onSelectedRows,
     this.onRowTap,
     this.onChangeMultiSelecting,
+    required this.multiselectController,
   });
 
   final List<TableColumn> columns;
@@ -51,6 +54,7 @@ class ArDriveDataTable<T extends IndexedItem> extends StatefulWidget {
   final Function(List<T> selectedRows)? onSelectedRows;
   final Function(T row)? onRowTap;
   final Function(bool onChangeMultiSelecting)? onChangeMultiSelecting;
+  final ArDriveTableMultiselectController<T> multiselectController;
 
   @override
   State<ArDriveDataTable> createState() => _ArDriveDataTableState<T>();
@@ -58,7 +62,7 @@ class ArDriveDataTable<T extends IndexedItem> extends StatefulWidget {
 
 enum TableSort { asc, desc }
 
-abstract class IndexedItem {
+abstract class IndexedItem with EquatableMixin {
   IndexedItem(this.index);
 
   final int index;
@@ -68,32 +72,22 @@ class _ArDriveDataTableState<T extends IndexedItem>
     extends State<ArDriveDataTable<T>> {
   late List<T> _rows;
   late List<T> _currentPage;
-  final List<T> _selectedRows = [];
 
   late int _numberOfPages;
   late int _selectedPage;
   late int _pageItemsDivisorFactor;
   late int _numberOfItemsPerPage;
   int? _sortedColumn;
-  bool _isMultiSelectingWithLongPress = false;
   bool _isAllSelected = false;
 
   TableSort? _tableSort;
 
-  bool _isCtrlPressed = false;
-  int? _shiftSelectionStartIndex;
   int? lastSelectedIndex;
-
-  bool get _isMultiSelecting {
-    final isMultiSelecting = _isMultiSelectingWithLongPress ||
-        _selectedRows.isNotEmpty ||
-        _isCtrlPressed;
-
-    return isMultiSelecting;
-  }
 
   @override
   void initState() {
+    print('initState');
+
     super.initState();
     _rows = widget.rows;
     _pageItemsDivisorFactor = widget.pageItemsDivisorFactor;
@@ -110,87 +104,37 @@ class _ArDriveDataTableState<T extends IndexedItem>
   @override
   void didChangeDependencies() {
     if (mounted) {
-      if (_selectedRows.isEmpty) {
-        widget.onChangeMultiSelecting!(false);
-      }
+      // if (_selectedRows.isEmpty) {
+      //   widget.onChangeMultiSelecting!(false);
+      // }
     }
 
     super.didChangeDependencies();
   }
 
+  @override
+  void didUpdateWidget(oldWidget) {
+    super.didUpdateWidget(oldWidget);
+
+    _rows = widget.rows;
+
+    selectPage(_selectedPage);
+  }
+
   void _handleEscapeKey(RawKeyEvent event) {
     if (mounted) {
-      if (event.isKeyPressed(LogicalKeyboardKey.escape)) {
-        setState(() {
-          _isMultiSelectingWithLongPress = false;
-          _selectedRows.clear();
-          _isCtrlPressed = false;
-          _shiftSelectionStartIndex = null;
-        });
-
-        if (widget.onChangeMultiSelecting != null) {
-          widget.onChangeMultiSelecting!(false);
-        }
-      }
+      widget.multiselectController.handleEscapeKey(event);
     }
   }
 
   void _handleKeyDownEvent(RawKeyEvent event) {
     if (mounted) {
-      setState(() {
-        if (event.isKeyPressed(LogicalKeyboardKey.metaLeft) ||
-            event.isKeyPressed(LogicalKeyboardKey.controlLeft)) {
-          _isCtrlPressed = true;
-        } else {
-          _isCtrlPressed = false;
-        }
-
-        if (widget.onChangeMultiSelecting != null) {
-          widget.onChangeMultiSelecting!(_isMultiSelecting);
-        }
-      });
+      widget.multiselectController.handleKeyDownEvent(event);
     }
   }
 
   void _selectItem(T item, int index, bool select) {
-    setState(() {
-      if (_isCtrlPressed) {
-        if (_selectedRows.contains(item)) {
-          _selectedRows.remove(item);
-        } else {
-          _selectedRows.add(item);
-        }
-      } else if (RawKeyboard.instance.keysPressed
-          .contains(LogicalKeyboardKey.shiftLeft)) {
-        if (_shiftSelectionStartIndex != null) {
-          final startIndex = _shiftSelectionStartIndex!;
-          final endIndex = index;
-          final start = startIndex < endIndex ? startIndex : endIndex;
-          final end = startIndex > endIndex ? startIndex : endIndex;
-          _selectedRows.clear();
-
-          for (int i = start; i <= end; i++) {
-            _selectedRows.add(_currentPage[i]);
-          }
-        } else {
-          _shiftSelectionStartIndex = index;
-          _selectedRows.clear();
-          _selectedRows.add(item);
-        }
-      } else {
-        _shiftSelectionStartIndex = null;
-        _selectedRows.clear();
-        if (select) {
-          _selectedRows.add(item);
-        } else {
-          debugPrint(
-              'removing item: $item from _selectedRows ${_selectedRows.length}}');
-          _selectedRows.remove(item);
-        }
-      }
-    });
-
-    widget.onSelectedRows?.call(_selectedRows);
+    widget.multiselectController.selectItem(item, index, select, _currentPage);
   }
 
   int _getNumberOfPages() {
@@ -298,80 +242,98 @@ class _ArDriveDataTableState<T extends IndexedItem>
       return EdgeInsets.only(left: leftPadding, right: rightPadding);
     }
 
-    return ArDriveCard(
-      backgroundColor:
-          ArDriveTheme.of(context).themeData.tableTheme.backgroundColor,
-      contentPadding: const EdgeInsets.symmetric(horizontal: 16),
-      key: widget.key,
-      content: Column(
-        children: [
-          const SizedBox(
-            height: 28,
-          ),
-          Row(
-            children: [
-              _multiSelectColumn(true),
-              Flexible(
-                child: AnimatedPadding(
-                  duration: const Duration(milliseconds: 300),
-                  padding: getPadding(),
-                  child: Row(
-                    children: columns,
+    return ChangeNotifierProvider<ArDriveTableMultiselectController<T>>(
+      create: (context) => widget.multiselectController,
+      child: ArDriveCard(
+        backgroundColor:
+            ArDriveTheme.of(context).themeData.tableTheme.backgroundColor,
+        contentPadding: const EdgeInsets.symmetric(horizontal: 16),
+        key: widget.key,
+        content: Column(
+          children: [
+            const SizedBox(
+              height: 28,
+            ),
+            Row(
+              children: [
+                _multiSelectColumn(true),
+                Flexible(
+                  child: AnimatedPadding(
+                    duration: const Duration(milliseconds: 300),
+                    padding: getPadding(),
+                    child: Row(
+                      children: columns,
+                    ),
                   ),
                 ),
-              ),
-            ],
-          ),
-          const SizedBox(
-            height: 25,
-          ),
-          Expanded(
-            child: ConstrainedBox(
-              constraints: BoxConstraints(
-                maxHeight: MediaQuery.of(context).size.height,
-              ),
-              child: ListView.builder(
-                itemCount: _currentPage.length,
-                itemBuilder: (context, index) {
-                  return Padding(
-                    padding: const EdgeInsets.only(top: 5),
-                    child: _buildRowSpacing(
-                      widget.columns,
-                      widget.buildRow(_currentPage[index]).row,
-                      _currentPage[index],
-                      index,
-                    ),
-                  );
-                },
+              ],
+            ),
+            const SizedBox(
+              height: 25,
+            ),
+            Expanded(
+              child: ConstrainedBox(
+                constraints: BoxConstraints(
+                  maxHeight: MediaQuery.of(context).size.height,
+                ),
+                child: ListView.builder(
+                  itemCount: _currentPage.length,
+                  itemBuilder: (context, index) {
+                    return Selector<ArDriveTableMultiselectController<T>,
+                        List<T>>(
+                      selector: (_, state) => state.selectedRows,
+                      builder: (context, selectedRows, _) {
+                        return Padding(
+                          key: ValueKey(_currentPage[index]),
+                          padding: const EdgeInsets.only(top: 5),
+                          child: _buildRowSpacing(
+                            widget.columns,
+                            widget.buildRow(_currentPage[index]).row,
+                            _currentPage[index],
+                            index,
+                          ),
+                        );
+                      },
+                    );
+                  },
+                ),
               ),
             ),
-          ),
-          _pageIndicator(),
-        ],
+            _pageIndicator(),
+          ],
+        ),
       ),
     );
   }
 
   Widget _multiSelectColumn(bool selectAll, {T? row, int? index}) {
-    final isSelected =
-        _selectedRows.any((element) => element.index == row?.index);
+    return Consumer<ArDriveTableMultiselectController<T>>(
+      builder: (context, state, child) {
+        print(state.toString());
+        final isSelected =
+            state.selectedRows.any((element) => element.index == row?.index);
 
-    return AnimatedContainer(
-      duration: const Duration(milliseconds: 300),
-      width: _isMultiSelecting ? checkboxSize + 8 : 0,
-      child: ArDriveCheckBox(
-        key: ValueKey(isSelected),
-        checked: _isAllSelected || isSelected,
-        onChange: (value) {
-          _onChangeItemCheck(
-            selectAll: selectAll,
-            row: row,
-            index: index,
-            value: value,
-          );
-        },
-      ),
+        print('state isMultiSelecting: ${state.isMultiSelecting}');
+
+        return AnimatedContainer(
+          duration: const Duration(milliseconds: 300),
+          width: state.isMultiSelecting ? checkboxSize + 8 : 0,
+          child: ArDriveCheckBox(
+            key: ValueKey(isSelected),
+            checked: _isAllSelected || isSelected,
+            onChange: (value) {
+              _onChangeItemCheck(
+                selectAll: selectAll,
+                row: row,
+                index: index,
+                value: value,
+              );
+            },
+          ),
+        );
+      },
     );
+    ;
   }
 
   void _onChangeItemCheck({
@@ -384,35 +346,33 @@ class _ArDriveDataTableState<T extends IndexedItem>
       if (selectAll) {
         _isAllSelected = value;
         if (value) {
-          _selectedRows.clear();
-          _selectedRows.addAll(_rows);
+          widget.multiselectController.onSelectedRows?.call(_rows);
         } else {
-          _selectedRows.clear();
-        }
-
-        widget.onSelectedRows?.call(_selectedRows);
-
-        if (widget.onChangeMultiSelecting != null) {
-          widget.onChangeMultiSelecting!(_isMultiSelecting);
+          widget.multiselectController.clearSelection();
         }
 
         return;
       }
 
       if (row != null && index != null) {
-        _selectItem(row, index, value);
+        widget.multiselectController.selectItem(
+          row,
+          index,
+          value,
+          _currentPage,
+        );
         lastSelectedIndex = index;
       }
 
-      if (_isMultiSelectingWithLongPress && !value && _selectedRows.isEmpty) {
-        _isMultiSelectingWithLongPress = false;
+      // if (_isMultiSelectingWithLongPress && !value && _selectedRows.isEmpty) {
+      //   _isMultiSelectingWithLongPress = false;
 
-        if (widget.onChangeMultiSelecting != null) {
-          widget.onChangeMultiSelecting!(_isMultiSelecting);
-        }
+      //   if (widget.onChangeMultiSelecting != null) {
+      //     widget.onChangeMultiSelecting!();
+      //   }
 
-        return;
-      }
+      //   return;
+      // }
     });
   }
 
@@ -616,88 +576,90 @@ class _ArDriveDataTableState<T extends IndexedItem>
     T row,
     int index,
   ) {
-    return GestureDetector(
-      onTap: () {
-        if (_isMultiSelecting) {
-          _onChangeItemCheck(
-            selectAll: false,
-            value: !_selectedRows.any((r) => r.index == row.index),
-            row: row,
-            index: row.index,
-          );
-        } else {
-          widget.onRowTap?.call(row);
-        }
-      },
-      onLongPress: () {
-        setState(() {
-          _isMultiSelectingWithLongPress = !_isMultiSelectingWithLongPress;
-        });
+    return Consumer<ArDriveTableMultiselectController<T>>(
+      builder: (context, state, _) {
+        return GestureDetector(
+          onTap: () {
+            if (state.isMultiSelecting) {
+              _onChangeItemCheck(
+                selectAll: false,
+                value: !state.selectedRows.any((r) => r.index == row.index),
+                row: row,
+                index: row.index,
+              );
+            } else {
+              widget.onRowTap?.call(row);
+            }
+          },
+          onLongPress: () {
+            widget.multiselectController.isMultiSelectingWithLongPress = true;
 
-        if (widget.onChangeMultiSelecting != null) {
-          widget.onChangeMultiSelecting!(_isMultiSelecting);
-        }
-      },
-      behavior: HitTestBehavior.opaque,
-      child: Row(
-        children: [
-          _multiSelectColumn(false, index: index, row: row),
-          Flexible(
-            child: ArDriveCard(
-              backgroundColor: _selectedRows.contains(row)
-                  ? ArDriveTheme.of(context)
-                      .themeData
-                      .tableTheme
-                      .selectedItemColor
-                  : ArDriveTheme.of(context)
-                      .themeData
-                      .colors
-                      .themeBorderDefault
-                      .withOpacity(0.25),
-              contentPadding:
-                  const EdgeInsets.symmetric(horizontal: 15, vertical: 8),
-              content: Row(
-                children: [
-                  if (widget.leading != null)
-                    Padding(
-                      padding: const EdgeInsets.only(right: 20),
-                      child: ConstrainedBox(
-                        constraints: const BoxConstraints(
-                          maxWidth: 40,
-                          maxHeight: 40,
+            // if (widget.onChangeMultiSelecting != null) {
+            //   widget.onChangeMultiSelecting!(_isMultiSelecting);
+            // }
+          },
+          behavior: HitTestBehavior.opaque,
+          child: Row(
+            children: [
+              _multiSelectColumn(false, index: index, row: row),
+              Flexible(
+                child: ArDriveCard(
+                  backgroundColor: state.selectedRows.contains(row)
+                      ? ArDriveTheme.of(context)
+                          .themeData
+                          .tableTheme
+                          .selectedItemColor
+                      : ArDriveTheme.of(context)
+                          .themeData
+                          .colors
+                          .themeBorderDefault
+                          .withOpacity(0.25),
+                  contentPadding:
+                      const EdgeInsets.symmetric(horizontal: 15, vertical: 8),
+                  content: Row(
+                    children: [
+                      if (widget.leading != null)
+                        Padding(
+                          padding: const EdgeInsets.only(right: 20),
+                          child: ConstrainedBox(
+                            constraints: const BoxConstraints(
+                              maxWidth: 40,
+                              maxHeight: 40,
+                            ),
+                            child: widget.leading!.call(row),
+                          ),
                         ),
-                        child: widget.leading!.call(row),
+                      ...List.generate(
+                        columns.length,
+                        (index) {
+                          return Flexible(
+                            flex: columns[index].size,
+                            child: Align(
+                              alignment: Alignment.centerLeft,
+                              child: buildRow[index],
+                            ),
+                          );
+                        },
+                        growable: false,
                       ),
-                    ),
-                  ...List.generate(
-                    columns.length,
-                    (index) {
-                      return Flexible(
-                        flex: columns[index].size,
-                        child: Align(
-                          alignment: Alignment.centerLeft,
-                          child: buildRow[index],
+                      if (widget.trailing != null)
+                        Padding(
+                          padding: const EdgeInsets.only(left: 20),
+                          child: Container(
+                            alignment: Alignment.center,
+                            height: 40,
+                            width: 40,
+                            child: widget.trailing!.call(row),
+                          ),
                         ),
-                      );
-                    },
-                    growable: false,
+                    ],
                   ),
-                  if (widget.trailing != null)
-                    Padding(
-                      padding: const EdgeInsets.only(left: 20),
-                      child: Container(
-                        alignment: Alignment.center,
-                        height: 40,
-                        width: 40,
-                        child: widget.trailing!.call(row),
-                      ),
-                    ),
-                ],
+                ),
               ),
-            ),
+            ],
           ),
-        ],
-      ),
+        );
+      },
     );
   }
 
@@ -870,4 +832,123 @@ class _PageNumber extends StatelessWidget {
 
 String _showSemanticPageNumber(int page) {
   return (page + 1).toString();
+}
+
+class ArDriveTableMultiselectController<T> extends ChangeNotifier {
+  ArDriveTableMultiselectController({
+    this.onChangeMultiSelecting,
+    this.onSelectedRows,
+  });
+
+  final Function(bool)? onChangeMultiSelecting;
+  final Function(List<T>)? onSelectedRows;
+
+  final List<T> _selectedRows = [];
+
+  bool _isMultiSelectingWithLongPress = false;
+  bool _isCtrlPressed = false;
+  int? _shiftSelectionStartIndex;
+
+  bool _isMultiSelecting = false;
+
+  bool get isMultiSelecting => _isMultiSelecting;
+  List<T> get selectedRows => _selectedRows;
+
+  set isMultiSelectingWithLongPress(bool value) {
+    _isMultiSelectingWithLongPress = value;
+    notifyListeners();
+  }
+
+  void _updateIsMultiSelecting() {
+    _isMultiSelecting = _isMultiSelectingWithLongPress ||
+        _selectedRows.isNotEmpty ||
+        _isCtrlPressed;
+
+    print('isMultiSelecting: $_isMultiSelecting');
+
+    notifyListeners();
+  }
+
+  void handleEscapeKey(RawKeyEvent event) {
+    if (event.isKeyPressed(LogicalKeyboardKey.escape)) {
+      print('Escape key pressed');
+      _isMultiSelectingWithLongPress = false;
+      _selectedRows.clear();
+      _isCtrlPressed = false;
+      _shiftSelectionStartIndex = null;
+
+      if (onChangeMultiSelecting != null) {
+        onChangeMultiSelecting?.call(false);
+      }
+    }
+
+    notifyListeners();
+  }
+
+  void handleKeyDownEvent(RawKeyEvent event) {
+    print('handleKeyDownEvent: $event');
+    if (event.isKeyPressed(LogicalKeyboardKey.metaLeft) ||
+        event.isKeyPressed(LogicalKeyboardKey.controlLeft)) {
+      if (!_isCtrlPressed) {
+        _isCtrlPressed = true;
+      }
+    } else {
+      if (_isCtrlPressed) {
+        _isCtrlPressed = false;
+      }
+    }
+
+    if (onChangeMultiSelecting != null) {
+      onChangeMultiSelecting?.call(_isMultiSelecting);
+    }
+
+    _updateIsMultiSelecting();
+  }
+
+  void selectItem(T item, int index, bool select, List<T> currentPage) {
+    print('selectItem: $item, $index, $select, $currentPage');
+    if (_isCtrlPressed) {
+      if (_selectedRows.contains(item)) {
+        _selectedRows.remove(item);
+      } else {
+        _selectedRows.add(item);
+      }
+    } else if (RawKeyboard.instance.keysPressed
+        .contains(LogicalKeyboardKey.shiftLeft)) {
+      if (_shiftSelectionStartIndex != null) {
+        final startIndex = _shiftSelectionStartIndex!;
+        final endIndex = index;
+        final start = startIndex < endIndex ? startIndex : endIndex;
+        final end = startIndex > endIndex ? startIndex : endIndex;
+        _selectedRows.clear();
+
+        for (int i = start; i <= end; i++) {
+          _selectedRows.add(currentPage[i]);
+        }
+      } else {
+        _shiftSelectionStartIndex = index;
+        _selectedRows.clear();
+        _selectedRows.add(item);
+      }
+    } else {
+      _shiftSelectionStartIndex = null;
+      _selectedRows.clear();
+      if (select) {
+        _selectedRows.add(item);
+      } else {
+        debugPrint(
+            'removing item: $item from _selectedRows ${_selectedRows.length}}');
+        _selectedRows.remove(item);
+      }
+    }
+
+    notifyListeners();
+
+    onSelectedRows?.call(_selectedRows);
+  }
+
+  clearSelection() {
+    _selectedRows.clear();
+    notifyListeners();
+  }
 }
