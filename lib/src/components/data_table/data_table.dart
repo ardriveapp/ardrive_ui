@@ -71,7 +71,7 @@ class _ArDriveDataTableState<T extends IndexedItem>
   late List<T> _currentPage;
   final List<T> _selectedRows = [];
 
-  ScrollController _scrollController = ScrollController();
+  final ScrollController _scrollController = ScrollController();
 
   late int _numberOfPages;
   late int _selectedPage;
