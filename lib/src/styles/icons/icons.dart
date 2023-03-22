@@ -270,4 +270,11 @@ class ArDriveIcons {
         size: size,
         color: color,
       );
+
+  // options
+  static ArDriveIcon options({double? size, Color? color}) => ArDriveIcon(
+        path: 'assets/icons/options.svg',
+        size: size,
+        color: color,
+      );
 }
