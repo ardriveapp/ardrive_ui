@@ -68,7 +68,7 @@ class _ArDriveDataTableState<T extends IndexedItem>
     extends State<ArDriveDataTable<T>> {
   late List<T> _rows;
   late List<T> _currentPage;
-  List<T> _selectedRows = [];
+  final List<T> _selectedRows = [];
 
   late int _numberOfPages;
   late int _selectedPage;
@@ -183,7 +183,7 @@ class _ArDriveDataTableState<T extends IndexedItem>
         if (select) {
           _selectedRows.add(item);
         } else {
-          print(
+          debugPrint(
               'removing item: $item from _selectedRows ${_selectedRows.length}}');
           _selectedRows.remove(item);
         }
