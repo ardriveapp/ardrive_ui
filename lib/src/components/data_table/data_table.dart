@@ -1,6 +1,7 @@
 import 'package:ardrive_ui/ardrive_ui.dart';
 import 'package:ardrive_ui/src/constants/size_constants.dart';
 import 'package:ardrive_ui/src/styles/colors/global_colors.dart';
+import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
@@ -58,7 +59,7 @@ class ArDriveDataTable<T extends IndexedItem> extends StatefulWidget {
 
 enum TableSort { asc, desc }
 
-abstract class IndexedItem {
+abstract class IndexedItem with EquatableMixin {
   IndexedItem(this.index);
 
   final int index;
@@ -69,6 +70,8 @@ class _ArDriveDataTableState<T extends IndexedItem>
   late List<T> _rows;
   late List<T> _currentPage;
   final List<T> _selectedRows = [];
+
+  ScrollController _scrollController = ScrollController();
 
   late int _numberOfPages;
   late int _selectedPage;
@@ -116,6 +119,15 @@ class _ArDriveDataTableState<T extends IndexedItem>
     }
 
     super.didChangeDependencies();
+  }
+
+  @override
+  void didUpdateWidget(oldWidget) {
+    super.didUpdateWidget(oldWidget);
+
+    _rows = widget.rows;
+
+    selectPage(_selectedPage);
   }
 
   void _handleEscapeKey(RawKeyEvent event) {
@@ -330,19 +342,24 @@ class _ArDriveDataTableState<T extends IndexedItem>
               constraints: BoxConstraints(
                 maxHeight: MediaQuery.of(context).size.height,
               ),
-              child: ListView.builder(
-                itemCount: _currentPage.length,
-                itemBuilder: (context, index) {
-                  return Padding(
-                    padding: const EdgeInsets.only(top: 5),
-                    child: _buildRowSpacing(
-                      widget.columns,
-                      widget.buildRow(_currentPage[index]).row,
-                      _currentPage[index],
-                      index,
-                    ),
-                  );
-                },
+              child: Scrollbar(
+                controller: _scrollController,
+                child: ListView.builder(
+                  controller: _scrollController,
+                  itemCount: _currentPage.length,
+                  itemBuilder: (context, index) {
+                    return Padding(
+                      key: ValueKey(_currentPage[index]),
+                      padding: const EdgeInsets.only(top: 5),
+                      child: _buildRowSpacing(
+                        widget.columns,
+                        widget.buildRow(_currentPage[index]).row,
+                        _currentPage[index],
+                        index,
+                      ),
+                    );
+                  },
+                ),
               ),
             ),
           ),

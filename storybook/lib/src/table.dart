@@ -105,4 +105,7 @@ class File extends IndexedItem {
   String name;
   DateTime createdAt;
   String size;
+
+  @override
+  List<Object?> get props => [name];
 }
