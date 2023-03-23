@@ -68,6 +68,7 @@ class _ArDriveDropdownState extends State<ArDriveDropdown> {
                               width: widget.width,
                               height: widget.height,
                               child: GestureDetector(
+                                behavior: HitTestBehavior.translucent,
                                 onTap: () {
                                   widget.items[index].onClick?.call();
                                   setState(() {
@@ -157,6 +158,7 @@ class _ArDriveOverlayState extends State<ArDriveOverlay> {
         portalFollower: widget.content,
         visible: _visible,
         child: GestureDetector(
+          behavior: HitTestBehavior.translucent,
           onTap: () {
             setState(() {
               _visible = true;
