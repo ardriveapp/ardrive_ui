@@ -36,7 +36,7 @@ class ArDriveIcon extends StatelessWidget {
   Widget _buildSvgIcon(context) {
     return SvgPicture.asset(
       path,
-      color: color ?? ArDriveTheme.of(context).themeData.colors.themeFgOnAccent,
+      color: color ?? ArDriveTheme.of(context).themeData.colors.themeFgDefault,
       height: size,
       width: size,
       package: 'ardrive_ui',
@@ -287,6 +287,34 @@ class ArDriveIcons {
   // plus
   static ArDriveIcon plus({double? size, Color? color}) => ArDriveIcon(
         path: 'assets/icons/plus.svg',
+        size: size,
+        color: color,
+      );
+
+  // manifest
+  static ArDriveIcon manifest({double? size, Color? color}) => ArDriveIcon(
+        path: 'assets/icons/manifest.svg',
+        size: size,
+        color: color,
+      );
+
+  // camera
+  static ArDriveIcon camera({double? size, Color? color}) => ArDriveIcon(
+        path: 'assets/icons/camera.svg',
+        size: size,
+        color: color,
+      );
+
+  // drive
+  static ArDriveIcon drive({double? size, Color? color}) => ArDriveIcon(
+        path: 'assets/icons/drive.svg',
+        size: size,
+        color: color,
+      );
+
+  // person
+  static ArDriveIcon person({double? size, Color? color}) => ArDriveIcon(
+        path: 'assets/icons/person.svg',
         size: size,
         color: color,
       );
