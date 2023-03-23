@@ -277,4 +277,17 @@ class ArDriveIcons {
         size: size,
         color: color,
       );
+
+  // menu_arrow
+  static ArDriveIcon menuArrow({double? size, Color? color}) => ArDriveIcon(
+        path: 'assets/icons/menu_arrow.svg',
+        size: size,
+        color: color,
+      );
+  // plus
+  static ArDriveIcon plus({double? size, Color? color}) => ArDriveIcon(
+        path: 'assets/icons/plus.svg',
+        size: size,
+        color: color,
+      );
 }
