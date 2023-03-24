@@ -42,6 +42,18 @@ class ArDriveIcon extends StatelessWidget {
       package: 'ardrive_ui',
     );
   }
+
+  ArDriveIcon copyWith({
+    String? path,
+    double? size,
+    Color? color,
+  }) {
+    return ArDriveIcon(
+      path: path ?? this.path,
+      size: size ?? this.size,
+      color: color ?? this.color,
+    );
+  }
 }
 
 class ArDriveIcons {
