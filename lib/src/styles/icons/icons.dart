@@ -330,4 +330,10 @@ class ArDriveIcons {
         size: size,
         color: color,
       );
+  // copy
+  static ArDriveIcon copy({double? size, Color? color}) => ArDriveIcon(
+        path: 'assets/icons/copy.svg',
+        size: size,
+        color: color,
+      );
 }
