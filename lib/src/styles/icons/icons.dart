@@ -336,4 +336,11 @@ class ArDriveIcons {
         size: size,
         color: color,
       );
+
+  // logout
+  static ArDriveIcon logout({double? size, Color? color}) => ArDriveIcon(
+        path: 'assets/icons/logout.svg',
+        size: size,
+        color: color,
+      );
 }
