@@ -343,4 +343,26 @@ class ArDriveIcons {
         size: size,
         color: color,
       );
+
+  // help
+  static ArDriveIcon help({double? size, Color? color}) => ArDriveIcon(
+        path: 'assets/icons/help.svg',
+        size: size,
+        color: color,
+      );
+
+  // arrow back filled
+  static ArDriveIcon arrowBackFilled({double? size, Color? color}) =>
+      ArDriveIcon(
+        path: 'assets/icons/arrow_back_filled.svg',
+        size: size,
+        color: color,
+      );
+  // arrow forward filled
+  static ArDriveIcon arrowForwardFilled({double? size, Color? color}) =>
+      ArDriveIcon(
+        path: 'assets/icons/arrow_forward_filled.svg',
+        size: size,
+        color: color,
+      );
 }
