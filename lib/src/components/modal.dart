@@ -381,16 +381,44 @@ class ArDriveStandardModal extends StatelessWidget {
           Padding(
             padding: const EdgeInsets.only(left: 16),
             child: ArDriveButton(
+              style: actions.length > 2
+                  ? ArDriveButtonStyle.secondary
+                  : ArDriveButtonStyle.primary,
               maxHeight: buttonActionHeight,
               backgroundColor:
                   ArDriveTheme.of(context).themeData.colors.themeFgDefault,
               fontStyle: ArDriveTypography.body.buttonNormalRegular(
-                color:
-                    ArDriveTheme.of(context).themeData.colors.themeAccentSubtle,
+                color: actions.length > 2
+                    ? ArDriveTheme.of(context).themeData.colors.themeFgDefault
+                    : ArDriveTheme.of(context)
+                        .themeData
+                        .colors
+                        .themeAccentSubtle,
               ),
               isDisabled: !actions[1].isEnable,
               text: actions[1].title,
               onPressed: actions[1].action,
+            ),
+          ),
+        if (actions.length > 2)
+          Padding(
+            padding: const EdgeInsets.only(left: 16),
+            child: ArDriveButton(
+              style: ArDriveButtonStyle.secondary,
+              maxHeight: buttonActionHeight,
+              backgroundColor:
+                  ArDriveTheme.of(context).themeData.colors.themeFgDefault,
+              fontStyle: ArDriveTypography.body.buttonNormalRegular(
+                color: actions.length > 2
+                    ? ArDriveTheme.of(context).themeData.colors.themeFgDefault
+                    : ArDriveTheme.of(context)
+                        .themeData
+                        .colors
+                        .themeAccentSubtle,
+              ),
+              isDisabled: !actions[2].isEnable,
+              text: actions[2].title,
+              onPressed: actions[2].action,
             ),
           ),
       ],
