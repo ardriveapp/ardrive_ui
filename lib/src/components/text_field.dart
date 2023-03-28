@@ -327,7 +327,6 @@ class ArDriveTextFieldState extends State<ArDriveTextField> {
       if (textToValidate?.isEmpty ?? true) {
         textFieldState = TextFieldState.focused;
       } else if (validation != null) {
-        print(validation);
         textFieldState = TextFieldState.error;
       } else if (validation == null) {
         textFieldState = TextFieldState.success;
