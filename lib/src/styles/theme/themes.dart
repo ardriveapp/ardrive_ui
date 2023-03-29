@@ -2,12 +2,16 @@ import 'package:ardrive_ui/ardrive_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_portal/flutter_portal.dart';
 
+// ignore: library_private_types_in_public_api
+GlobalKey<_ArDriveAppState> arDriveAppKey = GlobalKey();
+
 class ArDriveApp extends StatefulWidget {
   const ArDriveApp({
     super.key,
     required this.builder,
     this.themeData,
   });
+
   final Widget Function(BuildContext context) builder;
   final ArDriveThemeData? themeData;
 
@@ -16,10 +20,18 @@ class ArDriveApp extends StatefulWidget {
 }
 
 class _ArDriveAppState extends State<ArDriveApp> {
+  bool isDefault = true;
+
+  void changeTheme() {
+    setState(() {
+      isDefault = !isDefault;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return ArDriveTheme(
-      themeData: widget.themeData,
+      themeData: isDefault ? widget.themeData : lightTheme(),
       child: Portal(
         child: Builder(builder: (context) {
           return widget.builder(context);
