@@ -35,6 +35,7 @@ class ArDriveDataTable<T extends IndexedItem> extends StatefulWidget {
     this.onSelectedRows,
     this.onRowTap,
     this.onChangeMultiSelecting,
+    this.forceDisableMultiSelect = false,
   });
 
   final List<TableColumn> columns;
@@ -52,6 +53,7 @@ class ArDriveDataTable<T extends IndexedItem> extends StatefulWidget {
   final Function(List<T> selectedRows)? onSelectedRows;
   final Function(T row)? onRowTap;
   final Function(bool onChangeMultiSelecting)? onChangeMultiSelecting;
+  final bool forceDisableMultiSelect;
 
   @override
   State<ArDriveDataTable> createState() => _ArDriveDataTableState<T>();
@@ -112,18 +114,33 @@ class _ArDriveDataTableState<T extends IndexedItem>
 
   @override
   void didChangeDependencies() {
-    if (mounted) {
-      if (_selectedRows.isEmpty) {
-        widget.onChangeMultiSelecting!(false);
-      }
-    }
-
     super.didChangeDependencies();
   }
 
   @override
   void didUpdateWidget(oldWidget) {
     super.didUpdateWidget(oldWidget);
+
+    if (widget.forceDisableMultiSelect && _isMultiSelecting) {
+      widget.onChangeMultiSelecting!(false);
+      _isMultiSelectingWithLongPress = false;
+      _isCtrlPressed = false;
+      _selectedRows.clear();
+      setState(() {});
+    }
+
+    final temp = <T>[];
+
+    // Updates the list of selected rows if the list of rows has changed
+    if (_rows.length != widget.rows.length && _selectedRows.isNotEmpty) {
+      for (final row in _selectedRows) {
+        final index = widget.rows.indexWhere((element) => element == row);
+        temp.add(widget.rows[index]);
+      }
+
+      _selectedRows.clear();
+      _selectedRows.addAll(temp);
+    }
 
     _rows = widget.rows;
 
@@ -349,7 +366,6 @@ class _ArDriveDataTableState<T extends IndexedItem>
                   itemCount: _currentPage.length,
                   itemBuilder: (context, index) {
                     return Padding(
-                      key: ValueKey(_currentPage[index]),
                       padding: const EdgeInsets.only(top: 5),
                       child: _buildRowSpacing(
                         widget.columns,
@@ -661,6 +677,7 @@ class _ArDriveDataTableState<T extends IndexedItem>
           _multiSelectColumn(false, index: index, row: row),
           Flexible(
             child: ArDriveCard(
+              key: ValueKey(_currentPage[index]),
               backgroundColor: _selectedRows.contains(row)
                   ? ArDriveTheme.of(context)
                       .themeData
