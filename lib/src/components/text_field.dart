@@ -207,13 +207,15 @@ class ArDriveTextFieldState extends State<ArDriveTextField> {
                   .themeInputBackground,
             ),
           ),
-          if (widget.validator != null)
+          if (widget.validator != null && widget.validator is Future<String?>)
             FutureBuilder(
-              future: validate(text: _currentText) as Future,
+              future: widget.validator?.call(_currentText) as Future,
               builder: (context, snapshot) {
                 return _errorMessageLabel();
               },
             ),
+          if (widget.validator != null && widget.validator is String?)
+            _errorMessageLabel(),
           if (widget.successMessage != null)
             _successMessage(widget.successMessage!),
         ],
