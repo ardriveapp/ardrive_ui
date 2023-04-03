@@ -191,7 +191,6 @@ class _ArDriveDataTableState<T extends IndexedItem>
         }
       } else {
         _shiftSelectionStartIndex = null;
-        _selectedRows.clear();
         if (select) {
           _selectedRows.add(item);
         } else {
