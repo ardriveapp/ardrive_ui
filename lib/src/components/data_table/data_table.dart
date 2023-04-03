@@ -386,8 +386,9 @@ class _ArDriveDataTableState<T extends IndexedItem>
   }
 
   Widget _multiSelectColumn(bool selectAll, {T? row, int? index}) {
-    final isSelected =
-        _selectedRows.any((element) => element.index == row?.index);
+    final isSelected = selectAll
+        ? _isAllSelected
+        : _selectedRows.any((element) => element.index == row?.index);
 
     return AnimatedContainer(
       duration: const Duration(milliseconds: 300),
@@ -431,6 +432,8 @@ class _ArDriveDataTableState<T extends IndexedItem>
 
         return;
       }
+
+      _isAllSelected = false;
 
       if (row != null && index != null) {
         _selectItem(row, index, value);
