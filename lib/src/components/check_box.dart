@@ -35,7 +35,7 @@ class ArDriveCheckBoxState extends State<ArDriveCheckBox> {
   @override
   void initState() {
     checked = widget.checked;
-    if (checked && !widget.isDisabled && !widget.isIndeterminate) {
+    if (checked && !widget.isDisabled) {
       state = CheckBoxState.checked;
     } else if (widget.isDisabled) {
       state = CheckBoxState.disabled;
@@ -44,9 +44,6 @@ class ArDriveCheckBoxState extends State<ArDriveCheckBox> {
     } else {
       state = CheckBoxState.normal;
     }
-
-    // You can't have the checkbox checked and with the indeterminate state.
-    assert(!(widget.checked && widget.isIndeterminate));
 
     super.initState();
   }
@@ -64,6 +61,9 @@ class ArDriveCheckBoxState extends State<ArDriveCheckBox> {
             });
             break;
           case CheckBoxState.indeterminate:
+            setState(() {
+              checked = !checked;
+            });
             break;
           case CheckBoxState.checked:
             setState(() {
