@@ -35,6 +35,7 @@ class ArDriveDataTable<T extends IndexedItem> extends StatefulWidget {
     this.onSelectedRows,
     this.onRowTap,
     this.onChangeMultiSelecting,
+    this.forceDisableMultiSelect = false,
   });
 
   final List<TableColumn> columns;
@@ -52,6 +53,7 @@ class ArDriveDataTable<T extends IndexedItem> extends StatefulWidget {
   final Function(List<MultiSelectBox<T>> selectedRows)? onSelectedRows;
   final Function(T row)? onRowTap;
   final Function(bool onChangeMultiSelecting)? onChangeMultiSelecting;
+  final bool forceDisableMultiSelect;
 
   @override
   State<ArDriveDataTable> createState() => _ArDriveDataTableState<T>();
@@ -155,6 +157,30 @@ class _ArDriveDataTableState<T extends IndexedItem>
   @override
   void didUpdateWidget(oldWidget) {
     super.didUpdateWidget(oldWidget);
+
+    if (widget.forceDisableMultiSelect && _isMultiSelecting) {
+      widget.onChangeMultiSelecting!(false);
+      _isMultiSelectingWithLongPress = false;
+      _isCtrlPressed = false;
+      _multiSelectBoxes.clear();
+      setState(() {});
+    }
+
+    final temp = <T>[];
+
+    final currentMultiSelectBox = getMultiSelectBox();
+
+    // Updates the list of selected rows if the list of rows has changed
+    if (_rows.length != widget.rows.length &&
+        currentMultiSelectBox.selectedItems.isNotEmpty) {
+      for (final row in currentMultiSelectBox.selectedItems) {
+        final index = widget.rows.indexWhere((element) => element == row);
+        temp.add(widget.rows[index]);
+      }
+
+      currentMultiSelectBox.clear();
+      currentMultiSelectBox.addAll(temp);
+    }
 
     _rows = widget.rows;
 
@@ -395,7 +421,6 @@ class _ArDriveDataTableState<T extends IndexedItem>
                   itemCount: _currentPage.length,
                   itemBuilder: (context, index) {
                     return Padding(
-                      key: ValueKey(_currentPage[index]),
                       padding: const EdgeInsets.only(top: 5),
                       child: _buildRowSpacing(
                         widget.columns,
