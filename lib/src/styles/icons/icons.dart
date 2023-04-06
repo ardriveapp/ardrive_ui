@@ -336,4 +336,10 @@ class ArDriveIcons {
         size: size,
         color: color,
       );
+  // close button
+  static ArDriveIcon closeButton({double? size, Color? color}) => ArDriveIcon(
+        path: 'assets/icons/close_button.svg',
+        size: size,
+        color: color,
+      );
 }
