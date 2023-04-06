@@ -365,4 +365,11 @@ class ArDriveIcons {
         size: size,
         color: color,
       );
+
+  // sync
+  static ArDriveIcon sync({double? size, Color? color}) => ArDriveIcon(
+        path: 'assets/icons/sync.svg',
+        size: size,
+        color: color,
+      );
 }

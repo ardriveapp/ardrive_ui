@@ -289,6 +289,7 @@ class ArDriveStandardModal extends StatelessWidget {
     this.content,
     this.actions,
     this.width,
+    this.hasCloseButton = false,
   });
 
   final String? title;
@@ -296,6 +297,7 @@ class ArDriveStandardModal extends StatelessWidget {
   final List<ModalAction>? actions;
   final Widget? content;
   final double? width;
+  final bool hasCloseButton;
 
   @override
   Widget build(BuildContext context) {
@@ -318,6 +320,18 @@ class ArDriveStandardModal extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisSize: MainAxisSize.min,
           children: [
+            if (hasCloseButton) ...[
+              GestureDetector(
+                onTap: () => Navigator.pop(context),
+                child: Align(
+                  alignment: Alignment.centerRight,
+                  child: ArDriveIcons.closeIcon(),
+                ),
+              ),
+              const SizedBox(
+                height: 18,
+              ),
+            ],
             if (title != null) ...[
               Align(
                 alignment: Alignment.topLeft,
