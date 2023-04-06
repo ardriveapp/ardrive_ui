@@ -20,8 +20,9 @@ const double cardDefaultBorderRadius = 8;
 const double dropAreaIconSize = 56;
 const EdgeInsets dropAreaItemContentPadding =
     EdgeInsets.only(top: 8.0, bottom: 20);
+
 /// Check constants
-const double checkboxSize = 22;
+const double checkboxSize = 20;
 
 /// Border radius
 const double checkboxBorderRadius = 3;
