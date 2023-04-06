@@ -35,6 +35,8 @@ class ArDriveDataTable<T extends IndexedItem> extends StatefulWidget {
     this.onSelectedRows,
     this.onRowTap,
     this.onChangeMultiSelecting,
+    this.forceDisableMultiSelect = false,
+    this.lockMultiSelect = false,
   });
 
   final List<TableColumn> columns;
@@ -49,10 +51,11 @@ class ArDriveDataTable<T extends IndexedItem> extends StatefulWidget {
   final int pageItemsDivisorFactor;
   final int maxItemsPerPage;
   final String rowsPerPageText;
-  final Function(List<T> selectedRows)? onSelectedRows;
+  final Function(List<MultiSelectBox<T>> selectedRows)? onSelectedRows;
   final Function(T row)? onRowTap;
   final Function(bool onChangeMultiSelecting)? onChangeMultiSelecting;
-
+  final bool forceDisableMultiSelect;
+  final bool lockMultiSelect;
   @override
   State<ArDriveDataTable> createState() => _ArDriveDataTableState<T>();
 }
@@ -67,9 +70,9 @@ abstract class IndexedItem with EquatableMixin {
 
 class _ArDriveDataTableState<T extends IndexedItem>
     extends State<ArDriveDataTable<T>> {
-  late List<T> _rows;
+  late List<T> _cachedRows;
   late List<T> _currentPage;
-  final List<T> _selectedRows = [];
+  final List<MultiSelectBox<T>> _multiSelectBoxes = [];
 
   final ScrollController _scrollController = ScrollController();
 
@@ -79,17 +82,17 @@ class _ArDriveDataTableState<T extends IndexedItem>
   late int _numberOfItemsPerPage;
   int? _sortedColumn;
   bool _isMultiSelectingWithLongPress = false;
-  bool _isAllSelected = false;
 
   TableSort? _tableSort;
 
   bool _isCtrlPressed = false;
   int? _shiftSelectionStartIndex;
-  int? lastSelectedIndex;
 
   bool get _isMultiSelecting {
     final isMultiSelecting = _isMultiSelectingWithLongPress ||
-        _selectedRows.isNotEmpty ||
+        _multiSelectBoxes.isNotEmpty &&
+            _multiSelectBoxes
+                .any((element) => element.selectedItems.isNotEmpty) ||
         _isCtrlPressed;
 
     return isMultiSelecting;
@@ -98,22 +101,91 @@ class _ArDriveDataTableState<T extends IndexedItem>
   @override
   void initState() {
     super.initState();
-    _rows = widget.rows;
+    _cachedRows = widget.rows;
     _pageItemsDivisorFactor = widget.pageItemsDivisorFactor;
     _numberOfItemsPerPage = _pageItemsDivisorFactor;
-    _numberOfPages = _rows.length ~/ _pageItemsDivisorFactor;
-    if (_rows.length % _pageItemsDivisorFactor != 0) {
+    _numberOfPages = _cachedRows.length ~/ _pageItemsDivisorFactor;
+
+    if (_cachedRows.length % _pageItemsDivisorFactor != 0) {
       _numberOfPages++;
     }
+
     selectPage(0);
+
     RawKeyboard.instance.addListener(_handleKeyDownEvent);
     RawKeyboard.instance.addListener(_handleEscapeKey);
+    RawKeyboard.instance.addListener(_handleSelectAllShortcut);
+  }
+
+  void openMultiSelectBox() {
+    if (!_multiSelectBoxes.any((element) => element.page == _selectedPage)) {
+      _multiSelectBoxes.add(
+        MultiSelectBox(
+          selectedItems: [],
+          page: _selectedPage,
+        ),
+      );
+    }
+  }
+
+  MultiSelectBox<T> getMultiSelectBox() {
+    if (!_multiSelectBoxes.any((element) => element.page == _selectedPage)) {
+      openMultiSelectBox();
+    }
+
+    return _multiSelectBoxes.firstWhere(
+      (element) => element.page == _selectedPage,
+    );
+  }
+
+  void recalculatePageForNewNumberOfItemsPerPage(int newItemsPerPage) {
+    setState(() {
+      int newPage =
+          ((_selectedPage) * _numberOfItemsPerPage) ~/ newItemsPerPage;
+
+      _numberOfItemsPerPage = newItemsPerPage;
+
+      // Clear the current selection because the items on the page have changed
+      clearSelection();
+
+      selectPage(newPage);
+    });
+  }
+
+  int _recalculateCurrentPage() {
+    // calculate the new total number of items after removing the items
+    int removedItemCount = _cachedRows.length - widget.rows.length;
+
+    int newTotalItems = _cachedRows.length - removedItemCount;
+
+    // calculate the new last page index
+    int newLastPageIndex = (newTotalItems / _numberOfItemsPerPage).ceil() - 1;
+
+    if (newLastPageIndex < 0) {
+      newLastPageIndex = 0;
+    }
+
+    // if the current page is greater than the new last page index,
+    // move the user to the last page
+    if (_selectedPage > newLastPageIndex) {
+      return newLastPageIndex;
+    }
+
+    return _selectedPage;
+  }
+
+  void clearSelection() {
+    widget.onSelectedRows?.call([]);
+    _multiSelectBoxes.clear();
+    _isMultiSelectingWithLongPress = false;
+    _isCtrlPressed = false;
+    _shiftSelectionStartIndex = null;
   }
 
   @override
   void didChangeDependencies() {
     if (mounted) {
-      if (_selectedRows.isEmpty) {
+      if (getMultiSelectBox().selectedItems.isEmpty) {
         widget.onChangeMultiSelecting!(false);
       }
     }
@@ -125,30 +197,62 @@ class _ArDriveDataTableState<T extends IndexedItem>
   void didUpdateWidget(oldWidget) {
     super.didUpdateWidget(oldWidget);
 
-    _rows = widget.rows;
+    if (oldWidget != widget) {
+      if (widget.forceDisableMultiSelect && _isMultiSelecting) {
+        clearSelection();
+      }
 
-    selectPage(_selectedPage);
+      final temp = <T>[];
+
+      final currentMultiSelectBox = getMultiSelectBox();
+
+      // Updates the list of selected rows if the list of rows has changed
+      if (_cachedRows.length != widget.rows.length) {
+        if (currentMultiSelectBox.selectedItems.isNotEmpty &&
+            !widget.lockMultiSelect) {
+          for (final row in currentMultiSelectBox.selectedItems) {
+            final index = widget.rows.indexWhere((element) => element == row);
+            temp.add(widget.rows[index]);
+          }
+
+          currentMultiSelectBox.clear();
+          currentMultiSelectBox.addAll(temp);
+        }
+
+        _cachedRows = widget.rows;
+
+        selectPage(_recalculateCurrentPage());
+      }
+    }
   }
 
   void _handleEscapeKey(RawKeyEvent event) {
     if (mounted) {
       if (event.isKeyPressed(LogicalKeyboardKey.escape)) {
         setState(() {
-          _isMultiSelectingWithLongPress = false;
-          _selectedRows.clear();
-          _isCtrlPressed = false;
-          _shiftSelectionStartIndex = null;
-        });
+          clearSelection();
 
-        if (widget.onChangeMultiSelecting != null) {
-          widget.onChangeMultiSelecting!(false);
-        }
+          if (widget.onChangeMultiSelecting != null) {
+            widget.onChangeMultiSelecting!(false);
+          }
+        });
       }
+    }
+  }
+
+  /// Selects all items c=with ctrl / command + a
+  void _handleSelectAllShortcut(RawKeyEvent event) {
+    if (event.isKeyPressed(LogicalKeyboardKey.keyA) && _isCtrlPressed) {
+      _selectAllItemsInPage();
     }
   }
 
   void _handleKeyDownEvent(RawKeyEvent event) {
     if (mounted) {
+      if (widget.lockMultiSelect) {
+        return;
+      }
+
       setState(() {
         if (event.isKeyPressed(LogicalKeyboardKey.metaLeft) ||
             event.isKeyPressed(LogicalKeyboardKey.controlLeft)) {
@@ -164,13 +268,28 @@ class _ArDriveDataTableState<T extends IndexedItem>
     }
   }
 
-  void _selectItem(T item, int index, bool select) {
+  void _selectMultiSelectItem(T item, int index, bool select) {
+    if (widget.lockMultiSelect) {
+      return;
+    }
+
     setState(() {
+      if (!_multiSelectBoxes.any((element) => element.page == _selectedPage)) {
+        _multiSelectBoxes.add(
+          MultiSelectBox(
+            selectedItems: [],
+            page: _selectedPage,
+          ),
+        );
+      }
+
+      final multiselectBox = getMultiSelectBox();
+
       if (_isCtrlPressed) {
-        if (_selectedRows.contains(item)) {
-          _selectedRows.remove(item);
+        if (multiselectBox.selectedItems.contains(item)) {
+          multiselectBox.remove(item);
         } else {
-          _selectedRows.add(item);
+          multiselectBox.add(item);
         }
       } else if (RawKeyboard.instance.keysPressed
           .contains(LogicalKeyboardKey.shiftLeft)) {
@@ -179,37 +298,50 @@ class _ArDriveDataTableState<T extends IndexedItem>
           final endIndex = index;
           final start = startIndex < endIndex ? startIndex : endIndex;
           final end = startIndex > endIndex ? startIndex : endIndex;
-          _selectedRows.clear();
+          multiselectBox.selectedItems.clear();
 
           for (int i = start; i <= end; i++) {
-            _selectedRows.add(_currentPage[i]);
+            multiselectBox.add(_currentPage[i]);
           }
         } else {
           _shiftSelectionStartIndex = index;
-          _selectedRows.clear();
-          _selectedRows.add(item);
+          multiselectBox.selectedItems.clear();
+          multiselectBox.add(item);
         }
       } else {
         _shiftSelectionStartIndex = null;
-        _selectedRows.clear();
         if (select) {
-          _selectedRows.add(item);
+          multiselectBox.add(item);
         } else {
-          debugPrint(
-              'removing item: $item from _selectedRows ${_selectedRows.length}}');
-          _selectedRows.remove(item);
+          multiselectBox.remove(item);
         }
       }
     });
 
-    widget.onSelectedRows?.call(_selectedRows);
+    widget.onSelectedRows?.call(_multiSelectBoxes);
+  }
+
+  void _selectAllItemsInPage() {
+    if (widget.lockMultiSelect) {
+      return;
+    }
+
+    final multiselectPage = getMultiSelectBox();
+
+    setState(() {
+      multiselectPage.addAll(_currentPage);
+    });
+
+    widget.onSelectedRows?.call(_multiSelectBoxes);
   }
 
   int _getNumberOfPages() {
-    _numberOfPages = _rows.length ~/ _numberOfItemsPerPage;
-    if (_rows.length % _numberOfItemsPerPage != 0) {
+    _numberOfPages = _cachedRows.length ~/ _numberOfItemsPerPage;
+
+    if (_cachedRows.length % _numberOfItemsPerPage != 0) {
       _numberOfPages = _numberOfPages + 1;
     }
+
     return _numberOfPages;
   }
 
@@ -238,7 +370,8 @@ class _ArDriveDataTableState<T extends IndexedItem>
                 });
 
                 if (widget.sortRows != null) {
-                  _rows = widget.sortRows!(_rows, index, _tableSort!);
+                  _cachedRows =
+                      widget.sortRows!(_cachedRows, index, _tableSort!);
                 } else if (widget.sort != null) {
                   int sort(a, b) {
                     if (_tableSort == TableSort.asc) {
@@ -248,7 +381,7 @@ class _ArDriveDataTableState<T extends IndexedItem>
                     }
                   }
 
-                  _rows.sort(sort);
+                  _cachedRows.sort(sort);
                 }
 
                 selectPage(_selectedPage);
@@ -322,7 +455,7 @@ class _ArDriveDataTableState<T extends IndexedItem>
           ),
           Row(
             children: [
-              _multiSelectColumn(true),
+              _masterMultiselectCheckBox(),
               Flexible(
                 child: AnimatedPadding(
                   duration: const Duration(milliseconds: 300),
@@ -349,7 +482,6 @@ class _ArDriveDataTableState<T extends IndexedItem>
                   itemCount: _currentPage.length,
                   itemBuilder: (context, index) {
                     return Padding(
-                      key: ValueKey(_currentPage[index]),
                       padding: const EdgeInsets.only(top: 5),
                       child: _buildRowSpacing(
                         widget.columns,
@@ -369,19 +501,58 @@ class _ArDriveDataTableState<T extends IndexedItem>
     );
   }
 
-  Widget _multiSelectColumn(bool selectAll, {T? row, int? index}) {
-    final isSelected =
-        _selectedRows.any((element) => element.index == row?.index);
+  Widget _masterMultiselectCheckBox() {
+    final multiselectPage = getMultiSelectBox();
+
+    final isMasterCheckBoxChecked = multiselectPage.page == _selectedPage &&
+        multiselectPage.selectedItems.length == _currentPage.length;
 
     return AnimatedContainer(
       duration: const Duration(milliseconds: 300),
       width: _isMultiSelecting ? checkboxSize + 8 : 0,
       child: ArDriveCheckBox(
-        key: ValueKey(isSelected),
-        checked: _isAllSelected || isSelected,
+        key: ValueKey(
+          isMasterCheckBoxChecked.toString() +
+              multiselectPage.page.toString() +
+              multiselectPage.selectedItems.length.toString(),
+        ),
+        checked: isMasterCheckBoxChecked,
+        isIndeterminate: multiselectPage.selectedItems.isNotEmpty &&
+            multiselectPage.selectedItems.length != _currentPage.length,
+        onChange: (value) {
+          setState(() {
+            if (value) {
+              _selectAllItemsInPage();
+            } else {
+              multiselectPage.clear();
+            }
+
+            if (widget.onChangeMultiSelecting != null) {
+              widget.onChangeMultiSelecting!(_isMultiSelecting);
+            }
+          });
+        },
+      ),
+    );
+  }
+
+  Widget _multiSelectColumn(bool selectAll, {required T row, int? index}) {
+    final multiselectPage = getMultiSelectBox();
+
+    final isSelected = multiselectPage.selectedItems.any(
+      (element) => element.index == row.index,
+    );
+
+    return AnimatedContainer(
+      duration: const Duration(milliseconds: 300),
+      width: _isMultiSelecting ? checkboxSize + 8 : 0,
+      child: ArDriveCheckBox(
+        key: ValueKey(
+          index.toString() + isSelected.toString(),
+        ),
+        checked: isSelected,
         onChange: (value) {
           _onChangeItemCheck(
-            selectAll: selectAll,
             row: row,
             index: index,
             value: value,
@@ -392,45 +563,29 @@ class _ArDriveDataTableState<T extends IndexedItem>
   }
 
   void _onChangeItemCheck({
-    required bool selectAll,
     T? row,
     int? index,
     required bool value,
   }) {
-    setState(() {
-      if (selectAll) {
-        _isAllSelected = value;
-        if (value) {
-          _selectedRows.clear();
-          _selectedRows.addAll(_rows);
-        } else {
-          _selectedRows.clear();
+    setState(
+      () {
+        if (row != null && index != null) {
+          _selectMultiSelectItem(row, index, value);
         }
 
-        widget.onSelectedRows?.call(_selectedRows);
+        if (_isMultiSelectingWithLongPress &&
+            !value &&
+            getMultiSelectBox().selectedItems.isEmpty) {
+          _isMultiSelectingWithLongPress = false;
 
-        if (widget.onChangeMultiSelecting != null) {
-          widget.onChangeMultiSelecting!(_isMultiSelecting);
+          if (widget.onChangeMultiSelecting != null) {
+            widget.onChangeMultiSelecting!(_isMultiSelecting);
+          }
+
+          return;
         }
-
-        return;
-      }
-
-      if (row != null && index != null) {
-        _selectItem(row, index, value);
-        lastSelectedIndex = index;
-      }
-
-      if (_isMultiSelectingWithLongPress && !value && _selectedRows.isEmpty) {
-        _isMultiSelectingWithLongPress = false;
-
-        if (widget.onChangeMultiSelecting != null) {
-          widget.onChangeMultiSelecting!(_isMultiSelecting);
-        }
-
-        return;
-      }
-    });
+      },
+    );
   }
 
   Widget _pageIndicator() {
@@ -456,16 +611,7 @@ class _ArDriveDataTableState<T extends IndexedItem>
                     divisorFactor: _pageItemsDivisorFactor,
                     maxOption: widget.maxItemsPerPage,
                     maxNumber: widget.rows.length,
-                    onSelect: (n) {
-                      setState(() {
-                        int newPage =
-                            ((_selectedPage) * _numberOfItemsPerPage) ~/ n;
-
-                        _numberOfItemsPerPage = n;
-
-                        selectPage(newPage);
-                      });
-                    },
+                    onSelect: recalculatePageForNewNumberOfItemsPerPage,
                   ),
                 ),
               ],
@@ -633,12 +779,13 @@ class _ArDriveDataTableState<T extends IndexedItem>
     T row,
     int index,
   ) {
+    final multiselect = getMultiSelectBox();
+
     return GestureDetector(
       onTap: () {
         if (_isMultiSelecting) {
           _onChangeItemCheck(
-            selectAll: false,
-            value: !_selectedRows.any((r) => r.index == row.index),
+            value: !multiselect.selectedItems.any((r) => r.index == row.index),
             row: row,
             index: row.index,
           );
@@ -661,7 +808,7 @@ class _ArDriveDataTableState<T extends IndexedItem>
           _multiSelectColumn(false, index: index, row: row),
           Flexible(
             child: ArDriveCard(
-              backgroundColor: _selectedRows.contains(row)
+              backgroundColor: multiselect.selectedItems.contains(row)
                   ? ArDriveTheme.of(context)
                       .themeData
                       .tableTheme
@@ -721,13 +868,14 @@ class _ArDriveDataTableState<T extends IndexedItem>
   void selectPage(int page) {
     setState(() {
       _selectedPage = page;
-      int maxIndex = _rows.length < (page + 1) * _numberOfItemsPerPage
-          ? _rows.length
+
+      int maxIndex = _cachedRows.length < (page + 1) * _numberOfItemsPerPage
+          ? _cachedRows.length
           : (page + 1) * _numberOfItemsPerPage;
 
       int minIndex = (_selectedPage * _numberOfItemsPerPage);
 
-      _currentPage = _rows.sublist(minIndex, maxIndex);
+      _currentPage = _cachedRows.sublist(minIndex, maxIndex);
     });
   }
 
@@ -887,4 +1035,31 @@ class _PageNumber extends StatelessWidget {
 
 String _showSemanticPageNumber(int page) {
   return (page + 1).toString();
+}
+
+class MultiSelectBox<T> {
+  final int page;
+  final List<T> selectedItems;
+
+  MultiSelectBox({
+    required this.page,
+    required this.selectedItems,
+  });
+
+  void add(T item) {
+    selectedItems.add(item);
+  }
+
+  void addAll(List<T> items) {
+    selectedItems.clear();
+    selectedItems.addAll(items);
+  }
+
+  void remove(T item) {
+    selectedItems.remove(item);
+  }
+
+  void clear() {
+    selectedItems.clear();
+  }
 }
