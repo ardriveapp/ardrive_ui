@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:ardrive_ui/ardrive_ui.dart';
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
@@ -35,9 +37,9 @@ class ArDriveFormState extends State<ArDriveForm> {
         return _findAndValidateTextField(element);
       }
 
-      WidgetsBinding.instance.addPostFrameCallback((_) {
+      WidgetsBinding.instance.addPostFrameCallback((_) async {
         _isValid = _isValid &&
-            ((element as StatefulElement).state as ArDriveTextFieldState)
+            await ((element as StatefulElement).state as ArDriveTextFieldState)
                 .validate();
       });
     });
@@ -74,10 +76,11 @@ class ArDriveTextField extends StatefulWidget {
     this.isFieldRequired = false,
     this.showObfuscationToggle = false,
     this.textInputAction = TextInputAction.done,
+    this.suffixIcon,
   });
 
   final bool isEnabled;
-  final String? Function(String?)? validator;
+  final FutureOr<String?>? Function(String?)? validator;
   final Function(String)? onChanged;
   final String? hintText;
   final bool obscureText;
@@ -98,6 +101,7 @@ class ArDriveTextField extends StatefulWidget {
   final bool isFieldRequired;
   final bool showObfuscationToggle;
   final TextInputAction textInputAction;
+  final Widget? suffixIcon;
 
   @override
   State<ArDriveTextField> createState() => ArDriveTextFieldState();
@@ -120,6 +124,7 @@ class ArDriveTextFieldState extends State<ArDriveTextField> {
   late bool _isObscureText;
 
   String? _errorMessage;
+  String? _currentText;
 
   @override
   Widget build(BuildContext context) {
@@ -157,35 +162,37 @@ class ArDriveTextFieldState extends State<ArDriveTextField> {
             onChanged: (text) {
               validate(text: text);
               widget.onChanged?.call(text);
+              _currentText = text;
             },
             autofillHints: widget.autofillHints,
             enabled: widget.isEnabled,
             decoration: InputDecoration(
-              suffix: GestureDetector(
-                onTap: () {
-                  setState(() {
-                    _isObscureText = !_isObscureText;
-                  });
-                },
-                child: Padding(
-                  padding: const EdgeInsets.only(right: 8),
-                  child: widget.showObfuscationToggle
-                      ? _isObscureText
-                          ? ArDriveIcons.eyeOff(
-                              color: ArDriveTheme.of(context)
-                                  .themeData
-                                  .colors
-                                  .themeBgCanvas,
-                            )
-                          : ArDriveIcons.eye(
-                              color: ArDriveTheme.of(context)
-                                  .themeData
-                                  .colors
-                                  .themeBgCanvas,
-                            )
-                      : null,
-                ),
-              ),
+              suffix: widget.suffixIcon ??
+                  GestureDetector(
+                    onTap: () {
+                      setState(() {
+                        _isObscureText = !_isObscureText;
+                      });
+                    },
+                    child: Padding(
+                      padding: const EdgeInsets.only(right: 8),
+                      child: widget.showObfuscationToggle
+                          ? _isObscureText
+                              ? ArDriveIcons.eyeOff(
+                                  color: ArDriveTheme.of(context)
+                                      .themeData
+                                      .colors
+                                      .themeBgCanvas,
+                                )
+                              : ArDriveIcons.eye(
+                                  color: ArDriveTheme.of(context)
+                                      .themeData
+                                      .colors
+                                      .themeBgCanvas,
+                                )
+                          : null,
+                    ),
+                  ),
               errorStyle: const TextStyle(height: 0),
               hintText: widget.hintText,
               hintStyle: ArDriveTypography.body
@@ -200,7 +207,15 @@ class ArDriveTextFieldState extends State<ArDriveTextField> {
                   .themeInputBackground,
             ),
           ),
-          if (widget.validator != null) _errorMessageLabel(),
+          if (widget.validator != null && widget.validator is Future<String?>)
+            FutureBuilder(
+              future: widget.validator?.call(_currentText) as Future,
+              builder: (context, snapshot) {
+                return _errorMessageLabel();
+              },
+            ),
+          if (widget.validator != null && widget.validator is String?)
+            _errorMessageLabel(),
           if (widget.successMessage != null)
             _successMessage(widget.successMessage!),
         ],
@@ -301,14 +316,14 @@ class ArDriveTextFieldState extends State<ArDriveTextField> {
     return ArDriveTheme.of(context).themeData.colors.themeFgDisabled;
   }
 
-  bool validate({String? text}) {
+  FutureOr<bool> validate({String? text}) async {
     String? textToValidate = text;
 
     if (textToValidate == null && widget.controller != null) {
       textToValidate = widget.controller?.text;
     }
 
-    final validation = widget.validator?.call(textToValidate);
+    final validation = await widget.validator?.call(textToValidate);
 
     setState(() {
       if (textToValidate?.isEmpty ?? true) {
@@ -318,9 +333,9 @@ class ArDriveTextFieldState extends State<ArDriveTextField> {
       } else if (validation == null) {
         textFieldState = TextFieldState.success;
       }
-
-      _errorMessage = validation;
     });
+
+    _errorMessage = validation;
 
     return validation == null;
   }

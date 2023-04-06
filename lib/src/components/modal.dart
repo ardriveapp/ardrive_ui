@@ -289,6 +289,7 @@ class ArDriveStandardModal extends StatelessWidget {
     this.content,
     this.actions,
     this.width,
+    this.hasCloseButton = false,
   });
 
   final String? title;
@@ -296,6 +297,7 @@ class ArDriveStandardModal extends StatelessWidget {
   final List<ModalAction>? actions;
   final Widget? content;
   final double? width;
+  final bool hasCloseButton;
 
   @override
   Widget build(BuildContext context) {
@@ -318,6 +320,18 @@ class ArDriveStandardModal extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisSize: MainAxisSize.min,
           children: [
+            if (hasCloseButton) ...[
+              GestureDetector(
+                onTap: () => Navigator.pop(context),
+                child: Align(
+                  alignment: Alignment.centerRight,
+                  child: ArDriveIcons.closeIcon(),
+                ),
+              ),
+              const SizedBox(
+                height: 18,
+              ),
+            ],
             if (title != null) ...[
               Align(
                 alignment: Alignment.topLeft,
@@ -381,16 +395,44 @@ class ArDriveStandardModal extends StatelessWidget {
           Padding(
             padding: const EdgeInsets.only(left: 16),
             child: ArDriveButton(
+              style: actions.length > 2
+                  ? ArDriveButtonStyle.secondary
+                  : ArDriveButtonStyle.primary,
               maxHeight: buttonActionHeight,
               backgroundColor:
                   ArDriveTheme.of(context).themeData.colors.themeFgDefault,
               fontStyle: ArDriveTypography.body.buttonNormalRegular(
-                color:
-                    ArDriveTheme.of(context).themeData.colors.themeAccentSubtle,
+                color: actions.length > 2
+                    ? ArDriveTheme.of(context).themeData.colors.themeFgDefault
+                    : ArDriveTheme.of(context)
+                        .themeData
+                        .colors
+                        .themeAccentSubtle,
               ),
               isDisabled: !actions[1].isEnable,
               text: actions[1].title,
               onPressed: actions[1].action,
+            ),
+          ),
+        if (actions.length > 2)
+          Padding(
+            padding: const EdgeInsets.only(left: 16),
+            child: ArDriveButton(
+              style: ArDriveButtonStyle.secondary,
+              maxHeight: buttonActionHeight,
+              backgroundColor:
+                  ArDriveTheme.of(context).themeData.colors.themeFgDefault,
+              fontStyle: ArDriveTypography.body.buttonNormalRegular(
+                color: actions.length > 2
+                    ? ArDriveTheme.of(context).themeData.colors.themeFgDefault
+                    : ArDriveTheme.of(context)
+                        .themeData
+                        .colors
+                        .themeAccentSubtle,
+              ),
+              isDisabled: !actions[2].isEnable,
+              text: actions[2].title,
+              onPressed: actions[2].action,
             ),
           ),
       ],

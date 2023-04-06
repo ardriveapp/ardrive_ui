@@ -10,7 +10,7 @@ class ArDriveButton extends StatefulWidget {
   const ArDriveButton({
     super.key,
     required this.text,
-    required this.onPressed,
+    this.onPressed,
     this.style = ArDriveButtonStyle.primary,
     this.backgroundColor,
     this.fontStyle,
@@ -22,7 +22,7 @@ class ArDriveButton extends StatefulWidget {
   });
 
   final String text;
-  final Function() onPressed;
+  final Function()? onPressed;
   final ArDriveButtonStyle style;
   final Color? backgroundColor;
   final TextStyle? fontStyle;
@@ -196,7 +196,7 @@ class ArDriveTextButton extends StatelessWidget {
     required this.onPressed,
   });
   final String text;
-  final Function() onPressed;
+  final Function()? onPressed;
 
   @override
   Widget build(BuildContext context) {

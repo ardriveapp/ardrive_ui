@@ -51,7 +51,7 @@ class _ArDriveDropdownState extends State<ArDriveDropdown> {
           return SizedBox(
             height: size,
             child: ArDriveCard(
-              contentPadding: EdgeInsets.zero,
+              contentPadding: widget.contentPadding ?? EdgeInsets.zero,
               content: ClipRRect(
                 borderRadius: BorderRadius.circular(8),
                 child: Column(

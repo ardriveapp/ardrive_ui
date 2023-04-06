@@ -2,12 +2,24 @@ import 'package:ardrive_ui/ardrive_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_portal/flutter_portal.dart';
 
+// ignore: library_private_types_in_public_api
+GlobalKey<_ArDriveAppState> arDriveAppKey = GlobalKey();
+
+class ArDriveUIThemeSwitcher {
+  static void changeTheme(ArDriveThemes theme) {
+    arDriveAppKey.currentState?.changeTheme(theme);
+  }
+}
+
+enum ArDriveThemes { light, dark }
+
 class ArDriveApp extends StatefulWidget {
   const ArDriveApp({
     super.key,
     required this.builder,
     this.themeData,
   });
+
   final Widget Function(BuildContext context) builder;
   final ArDriveThemeData? themeData;
 
@@ -16,16 +28,53 @@ class ArDriveApp extends StatefulWidget {
 }
 
 class _ArDriveAppState extends State<ArDriveApp> {
+  bool isDefault = true;
+
+  late ArDriveThemes _theme;
+
+  void changeTheme(ArDriveThemes theme) {
+    setState(() {
+      _theme = theme;
+    });
+  }
+
+  @override
+  void initState() {
+    super.initState();
+
+    switch (widget.themeData?.name) {
+      case 'ArDriveThemes.dark':
+        _theme = ArDriveThemes.dark;
+        break;
+      case 'ArDriveThemes.light':
+        _theme = ArDriveThemes.light;
+        break;
+      default:
+        _theme = ArDriveThemes.dark;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return ArDriveTheme(
-      themeData: widget.themeData,
+      themeData: _getTheme(),
       child: Portal(
         child: Builder(builder: (context) {
           return widget.builder(context);
         }),
       ),
     );
+  }
+
+  ArDriveThemeData _getTheme() {
+    switch (_theme) {
+      case ArDriveThemes.dark:
+        return widget.themeData ?? ArDriveThemeData();
+      case ArDriveThemes.light:
+        return lightTheme();
+      default:
+        return ArDriveThemeData();
+    }
   }
 }
 
@@ -68,7 +117,7 @@ class ArDriveThemeData {
     this.backgroundColor = backgroundColor ?? const Color(0xff010905);
     this.primaryColor = primaryColor ?? this.colors.themeAccentBrand;
     this.materialThemeData = materialThemeData ?? darkMaterialTheme();
-    this.name = name ?? 'default';
+    this.name = name ?? 'dark';
   }
 
   late Color backgroundColor;
