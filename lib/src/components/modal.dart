@@ -415,6 +415,8 @@ Future<void> showAnimatedDialog(
   bool barrierDismissible = true,
   required Widget content,
 }) {
+  final lowScreenWarning = MediaQuery.of(context).size.height < 600;
+
   return showGeneralDialog(
     context: context,
     transitionDuration: const Duration(milliseconds: 200),
@@ -431,6 +433,9 @@ Future<void> showAnimatedDialog(
     barrierLabel: '',
     pageBuilder: (context, a1, a2) {
       return Dialog(
+        insetPadding: lowScreenWarning
+            ? EdgeInsets.symmetric(horizontal: 8, vertical: 8)
+            : null,
         elevation: 0,
         backgroundColor: Colors.transparent,
         child: content,
