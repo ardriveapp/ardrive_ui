@@ -352,72 +352,74 @@ class _ArDriveDataTableState<T extends IndexedItem>
       (index) {
         return Flexible(
           flex: widget.columns[index].size,
-          child: Align(
-            alignment: Alignment.centerLeft,
-            child: GestureDetector(
-              onTap: () {
-                final stopwatch = Stopwatch()..start();
+          child: ArDriveClickArea(
+            child: Align(
+              alignment: Alignment.centerLeft,
+              child: GestureDetector(
+                onTap: () {
+                  final stopwatch = Stopwatch()..start();
 
-                setState(() {
-                  if (_sortedColumn == index) {
-                    _tableSort = _tableSort == TableSort.asc
-                        ? TableSort.desc
-                        : TableSort.asc;
-                  } else {
-                    _sortedColumn = index;
-                    _tableSort = TableSort.asc;
-                  }
-                });
-
-                if (widget.sortRows != null) {
-                  _cachedRows =
-                      widget.sortRows!(_cachedRows, index, _tableSort!);
-                } else if (widget.sort != null) {
-                  int sort(a, b) {
-                    if (_tableSort == TableSort.asc) {
-                      return widget.sort!.call(index)(a, b);
+                  setState(() {
+                    if (_sortedColumn == index) {
+                      _tableSort = _tableSort == TableSort.asc
+                          ? TableSort.desc
+                          : TableSort.asc;
                     } else {
-                      return widget.sort!.call(index)(b, a);
+                      _sortedColumn = index;
+                      _tableSort = TableSort.asc;
                     }
+                  });
+
+                  if (widget.sortRows != null) {
+                    _cachedRows =
+                        widget.sortRows!(_cachedRows, index, _tableSort!);
+                  } else if (widget.sort != null) {
+                    int sort(a, b) {
+                      if (_tableSort == TableSort.asc) {
+                        return widget.sort!.call(index)(a, b);
+                      } else {
+                        return widget.sort!.call(index)(b, a);
+                      }
+                    }
+
+                    _cachedRows.sort(sort);
                   }
 
-                  _cachedRows.sort(sort);
-                }
+                  selectPage(_selectedPage);
 
-                selectPage(_selectedPage);
+                  stopwatch.stop();
 
-                stopwatch.stop();
-
-                debugPrint(
-                  'TABLE SORT - Elapsed time: ${stopwatch.elapsedMilliseconds}ms',
-                );
-              },
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.only(right: 4),
-                    child: Text(
-                      widget.columns[index].title,
-                      style: ArDriveTypography.body.buttonNormalBold(),
+                  debugPrint(
+                    'TABLE SORT - Elapsed time: ${stopwatch.elapsedMilliseconds}ms',
+                  );
+                },
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.only(right: 4),
+                      child: Text(
+                        widget.columns[index].title,
+                        style: ArDriveTypography.body.buttonNormalBold(),
+                      ),
                     ),
-                  ),
-                  if (_sortedColumn == index)
-                    _tableSort == TableSort.asc
-                        ? ArDriveIcons.chevronUp(
-                            size: 8,
-                            color: ArDriveTheme.of(context)
-                                .themeData
-                                .colors
-                                .themeFgDefault)
-                        : ArDriveIcons.chevronDown(
-                            size: 8,
-                            color: ArDriveTheme.of(context)
-                                .themeData
-                                .colors
-                                .themeFgDefault,
-                          ),
-                ],
+                    if (_sortedColumn == index)
+                      _tableSort == TableSort.asc
+                          ? ArDriveIcons.chevronUp(
+                              size: 8,
+                              color: ArDriveTheme.of(context)
+                                  .themeData
+                                  .colors
+                                  .themeFgDefault)
+                          : ArDriveIcons.chevronDown(
+                              size: 8,
+                              color: ArDriveTheme.of(context)
+                                  .themeData
+                                  .colors
+                                  .themeFgDefault,
+                            ),
+                  ],
+                ),
               ),
             ),
           ),
@@ -481,13 +483,15 @@ class _ArDriveDataTableState<T extends IndexedItem>
                   controller: _scrollController,
                   itemCount: _currentPage.length,
                   itemBuilder: (context, index) {
-                    return Padding(
-                      padding: const EdgeInsets.only(top: 5),
-                      child: _buildRowSpacing(
-                        widget.columns,
-                        widget.buildRow(_currentPage[index]).row,
-                        _currentPage[index],
-                        index,
+                    return ArDriveClickArea(
+                      child: Padding(
+                        padding: const EdgeInsets.only(top: 5),
+                        child: _buildRowSpacing(
+                          widget.columns,
+                          widget.buildRow(_currentPage[index]).row,
+                          _currentPage[index],
+                          index,
+                        ),
                       ),
                     );
                   },
@@ -838,9 +842,11 @@ class _ArDriveDataTableState<T extends IndexedItem>
                     (index) {
                       return Flexible(
                         flex: columns[index].size,
-                        child: Align(
-                          alignment: Alignment.centerLeft,
-                          child: buildRow[index],
+                        child: ArDriveClickArea(
+                          child: Align(
+                            alignment: Alignment.centerLeft,
+                            child: buildRow[index],
+                          ),
                         ),
                       );
                     },
