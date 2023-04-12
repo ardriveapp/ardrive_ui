@@ -434,7 +434,7 @@ Future<void> showAnimatedDialog(
     pageBuilder: (context, a1, a2) {
       return Dialog(
         insetPadding: lowScreenWarning
-            ? EdgeInsets.symmetric(horizontal: 8, vertical: 8)
+            ? const EdgeInsets.symmetric(horizontal: 0, vertical: 8)
             : null,
         elevation: 0,
         backgroundColor: Colors.transparent,
