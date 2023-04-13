@@ -6,6 +6,7 @@ class ArDriveImage extends StatelessWidget {
   final double? height;
   final double? width;
   final BoxFit? fit;
+  final Color? color;
   const ArDriveImage({
     super.key,
     required this.image,
@@ -13,6 +14,7 @@ class ArDriveImage extends StatelessWidget {
     this.height,
     this.width,
     this.fit = BoxFit.contain,
+    this.color,
   });
 
   @override
@@ -28,10 +30,12 @@ class ArDriveImage extends StatelessWidget {
       );
     }
     return Image(
+      color: color,
       fit: fit,
       image: image,
       height: height,
       width: width,
+      filterQuality: FilterQuality.high,
     );
   }
 }
