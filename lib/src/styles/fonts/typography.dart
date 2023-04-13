@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 const String _package = 'ardrive_ui_library';
@@ -470,7 +471,7 @@ const double lineHeightsHeadlinesSm = 1.3;
 const double lineHeightsBodyRelaxed = 1.75;
 const double lineHeightsBodyDefault = 1.5;
 
-const double letterSpacingHeadlines = -1;
+const double letterSpacingHeadlines = kIsWeb ? 0.5 : -1;
 
 /// Font Sizes
 const double fontSizeBase = 16;
