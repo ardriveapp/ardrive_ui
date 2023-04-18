@@ -28,17 +28,21 @@ class ArDriveCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ClipRRect(
-      borderRadius: BorderRadius.circular(
-        borderRadius ?? cardDefaultBorderRadius,
+    return Container(
+      height: height,
+      width: width,
+      decoration: BoxDecoration(
+        color: backgroundColor ??
+            ArDriveTheme.of(context).themeData.colors.themeBgSurface,
+        boxShadow:
+            boxShadow != null ? [_getBoxShadow(boxShadow, context)] : null,
+        borderRadius: BorderRadius.circular(
+          borderRadius ?? cardDefaultBorderRadius,
+        ),
       ),
-      child: Container(
-        height: height,
-        width: width,
-        decoration: BoxDecoration(
-          color: backgroundColor ??
-              ArDriveTheme.of(context).themeData.colors.themeBgSurface,
-          boxShadow: [_getBoxShadow(boxShadow, context)],
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(
+          borderRadius ?? cardDefaultBorderRadius,
         ),
         child: Padding(
           padding: contentPadding,

@@ -459,7 +459,6 @@ class Headline {
 }
 
 /// Font families
-
 const String fontFamiliesHeadlines = 'Wavehaus';
 const String fontFamiliesBody = 'Wavehaus';
 
