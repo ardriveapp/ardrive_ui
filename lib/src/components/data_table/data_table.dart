@@ -437,7 +437,7 @@ class _ArDriveDataTableState<T extends IndexedItem>
         leftPadding = 20;
       }
       if (widget.trailing != null) {
-        rightPadding = 80;
+        rightPadding = 130;
       } else {
         rightPadding = 20;
       }
@@ -478,7 +478,6 @@ class _ArDriveDataTableState<T extends IndexedItem>
                 maxHeight: MediaQuery.of(context).size.height,
               ),
               child: Scrollbar(
-                controller: _scrollController,
                 child: ListView.builder(
                   controller: _scrollController,
                   itemCount: _currentPage.length,
@@ -857,8 +856,8 @@ class _ArDriveDataTableState<T extends IndexedItem>
                       padding: const EdgeInsets.only(left: 20),
                       child: Container(
                         alignment: Alignment.center,
-                        height: 40,
-                        width: 40,
+                        height: 44,
+                        width: 90,
                         child: widget.trailing!.call(row),
                       ),
                     ),
