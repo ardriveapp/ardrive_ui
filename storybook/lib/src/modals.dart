@@ -81,9 +81,12 @@ WidgetbookCategory modals() {
                     label: 'content', initialValue: 'You created a new drive.'),
                 leading: context.knobs.options(label: 'leading', options: [
                   const Option(label: 'No leading', value: null),
-                  Option(
+                  const Option(
                     label: 'With leading',
-                    value: ArDriveIcons.uploadCloud(size: 42),
+                    value: ArDriveIcon(
+                      icon: ArDriveIconsData.warning,
+                      color: Colors.red,
+                    ),
                   ),
                 ]),
               );
@@ -160,7 +163,8 @@ WidgetbookCategory modals() {
                   label: 'Content',
                   initialValue:
                       'Your profile settings have been updated. Now you can go ahead and jump on into the ArDrive app, have some fun, enjoy yourself, and upload some really awesome stuff.'),
-              icon: ArDriveIcons.checkSuccess(
+              icon: ArDriveIcon(
+                icon: ArDriveIconsData.check_success,
                 size: 88,
                 color: ArDriveTheme.of(context)
                     .themeData

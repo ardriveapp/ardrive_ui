@@ -33,6 +33,7 @@ Widget _tableWithContent(BuildContext context) {
       context.knobs.number(label: 'Space 3 column', initialValue: 1).toInt();
 
   return ArDriveDataTable<File>(
+    maxItemsPerPage: 100,
     rowsPerPageText: 'Rows per page',
     pageItemsDivisorFactor: 25,
     leading: context.knobs.boolean(label: 'With leading')
@@ -73,6 +74,37 @@ Widget _tableWithContent(BuildContext context) {
 
       return TableRowWidget(widgets);
     },
+    onChangeMultiSelecting: (isMultiSelecting) {
+      print('isMultiSelecting: $isMultiSelecting');
+    },
+    onChangePage: (page) {
+      print('page: $page');
+    },
+    onRowTap: (row) {
+      print('row: $row');
+    },
+    onSelectedRows: (rows) {
+      print('rows: $rows');
+    },
+    sortRows: (rows, columnIndex, isAscending) {
+      if (columnIndex == 2) {
+        return rows.sorted(compareDate);
+      }
+
+      List<File> sort(List<File> rows) {
+        if (columnIndex == 0) {
+          return rows.sorted(
+              (a, b) => compareAlphabeticallyAndNatural(a.name, b.name));
+        } else {
+          return rows.sorted(
+              (a, b) => compareAlphabeticallyAndNatural(a.size, b.size));
+        }
+      }
+
+      return sort(rows);
+    },
+    forceDisableMultiSelect: false,
+    lockMultiSelect: false,
     rows: [
       for (int i = 0; i < 180; i++)
         File(

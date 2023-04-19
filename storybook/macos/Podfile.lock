@@ -52,7 +52,7 @@ SPEC CHECKSUMS:
   device_info_plus: 5401765fde0b8d062a2f8eb65510fb17e77cf07f
   file_saver: 44e6fbf666677faf097302460e214e977fdd977b
   file_selector_macos: 0f85c1108e2fd597b58246bc0b0c1cb483d7593b
-  FlutterMacOS: ae6af50a8ea7d6103d888583d46bd8328a7e9811
+  FlutterMacOS: 8f6f14fa908a6fb3fba0cd85dbd81ec4b251fb24
   FMDB: 2ce00b547f966261cd18927a3ddb07cb6f3db82a
   path_provider_foundation: c68054786f1b4f3343858c1e1d0caaded73f0be9
   sqflite: a5789cceda41d54d23f31d6de539d65bb14100ea
