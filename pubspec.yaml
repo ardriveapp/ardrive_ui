@@ -35,6 +35,9 @@ flutter:
   assets:
     - assets/icons/
   fonts:
+    - family:  ArDriveIcons
+      fonts:
+        - asset: assets/fonts/ArDriveIcons.ttf
     - family: Wavehaus
       fonts:
         - asset: assets/fonts/Wavehaus-28Thin.otf

@@ -63,9 +63,11 @@ class ArDriveIconModal extends StatelessWidget {
         children: [
           GestureDetector(
             onTap: () => Navigator.pop(context),
-            child: Align(
+            child: const Align(
               alignment: Alignment.centerRight,
-              child: ArDriveIcons.closeIcon(),
+              child: ArDriveIcon(
+                icon: ArDriveIconsData.close_icon,
+              ),
             ),
           ),
           const SizedBox(
@@ -276,7 +278,7 @@ class _ModalCloseButton extends StatelessWidget {
       onTap: () {
         Navigator.pop(context);
       },
-      child: ArDriveIcons.closeIconCircle(),
+      child: const ArDriveIcon(icon: ArDriveIconsData.close_icon_circle),
     );
   }
 }
@@ -323,9 +325,12 @@ class ArDriveStandardModal extends StatelessWidget {
             if (hasCloseButton) ...[
               GestureDetector(
                 onTap: () => Navigator.pop(context),
-                child: Align(
+                child: const Align(
                   alignment: Alignment.centerRight,
-                  child: ArDriveIcons.closeIcon(),
+                  child: ArDriveIcon(
+                    icon: ArDriveIconsData.close_icon,
+                    size: 24,
+                  ),
                 ),
               ),
               const SizedBox(

@@ -15,6 +15,7 @@ class ArDriveCard extends StatelessWidget {
     this.height,
     this.width,
     this.boxShadow,
+    this.border,
   });
 
   final Color? backgroundColor;
@@ -25,6 +26,7 @@ class ArDriveCard extends StatelessWidget {
   final double? height;
   final double? width;
   final BoxShadowCard? boxShadow;
+  final Border? border;
 
   @override
   Widget build(BuildContext context) {
@@ -32,6 +34,7 @@ class ArDriveCard extends StatelessWidget {
       height: height,
       width: width,
       decoration: BoxDecoration(
+        border: border,
         color: backgroundColor ??
             ArDriveTheme.of(context).themeData.colors.themeBgSurface,
         boxShadow:
@@ -41,6 +44,7 @@ class ArDriveCard extends StatelessWidget {
         ),
       ),
       child: ClipRRect(
+        clipBehavior: Clip.hardEdge,
         borderRadius: BorderRadius.circular(
           borderRadius ?? cardDefaultBorderRadius,
         ),
