@@ -80,33 +80,33 @@ class ArDriveCheckBoxState extends State<ArDriveCheckBox> {
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          AnimatedContainer(
-            height: checkboxSize,
-            width: checkboxSize,
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(checkboxBorderRadius),
-              border: state == CheckBoxState.indeterminate
-                  ? null
-                  : Border.all(
+          state == CheckBoxState.indeterminate
+              ? ArDriveIcon(
+                  icon: ArDriveIconsData.indeterminate_indicator,
+                  color:
+                      ArDriveTheme.of(context).themeData.colors.themeFgDefault,
+                  size: 20,
+                )
+              : AnimatedContainer(
+                  height: checkboxSize,
+                  width: checkboxSize,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(checkboxBorderRadius),
+                    border: Border.all(
                       color: _boxColor(),
                       width: 2,
                     ),
-              color: _backgroundColor(),
-            ),
-            duration: const Duration(milliseconds: 300),
-            child: checked
-                ? Padding(
-                    padding: const EdgeInsets.all(3),
-                    child: ArDriveIcons.checked(
-                      color: _checkColor(),
-                    ),
-                  )
-                : state == CheckBoxState.indeterminate
-                    ? ArDriveIcons.indeterminateIndicator(
-                        color: _checkColor(),
-                      )
-                    : null,
-          ),
+                    color: _backgroundColor(),
+                  ),
+                  duration: const Duration(milliseconds: 300),
+                  child: checked
+                      ? ArDriveIcon(
+                          icon: ArDriveIconsData.checked,
+                          size: 12,
+                          color: _checkColor(),
+                        )
+                      : null,
+                ),
           if (widget.title != null) ...[
             const SizedBox(
               width: 8,
