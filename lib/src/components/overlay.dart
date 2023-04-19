@@ -18,6 +18,7 @@ class ArDriveDropdown extends StatefulWidget {
       target: Alignment.bottomLeft,
       offset: Offset(0, 4),
     ),
+    this.calculateVerticalAlignment,
   });
 
   final double height;
@@ -27,26 +28,55 @@ class ArDriveDropdown extends StatefulWidget {
   final EdgeInsets? contentPadding;
   final Anchor anchor;
 
+  // retruns the alignment based if the current widget y coordinate is greater than half the screen height
+  final Alignment Function(bool)? calculateVerticalAlignment;
+
   @override
   State<ArDriveDropdown> createState() => _ArDriveDropdownState();
 }
 
 class _ArDriveDropdownState extends State<ArDriveDropdown> {
   bool visible = false;
+  late Anchor _anchor;
 
   double dropdownHeight = 0;
 
   @override
   void initState() {
+    _anchor = widget.anchor;
+
     super.initState();
   }
 
   @override
-  Widget build(BuildContext context) {
-    print('dropdownHeight: $dropdownHeight');
-    print('widget.items.length: ${widget.items.length}');
-    print('visible: $visible');
+  void didChangeDependencies() {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final renderBox = context.findRenderObject() as RenderBox?;
 
+      final position = renderBox?.localToGlobal(Offset.zero);
+
+      if (position != null && widget.calculateVerticalAlignment != null) {
+        final y = position.dy;
+
+        final screenHeight = MediaQuery.of(context).size.height;
+
+        Alignment alignment;
+
+        alignment =
+            widget.calculateVerticalAlignment!.call(y > screenHeight / 2);
+
+        _anchor = Aligned(
+          follower: alignment,
+          target: Alignment.bottomLeft,
+        );
+      }
+    });
+
+    super.didChangeDependencies();
+  }
+
+  @override
+  Widget build(BuildContext context) {
     dropdownHeight = widget.items.length * widget.height;
 
     return ArDriveOverlay(
@@ -56,11 +86,18 @@ class _ArDriveDropdownState extends State<ArDriveDropdown> {
         });
       },
       visible: visible,
-      anchor: widget.anchor,
+      anchor: _anchor,
       content: _ArDriveDropdownContent(
         height: dropdownHeight,
         child: ArDriveCard(
-          boxShadow: BoxShadowCard.shadow100,
+          border: Border.all(
+            color: ArDriveTheme.of(context)
+                .themeData
+                .dropdownTheme
+                .backgroundColor,
+            width: 1,
+          ),
+          boxShadow: BoxShadowCard.shadow80,
           elevation: 5,
           contentPadding: widget.contentPadding ?? EdgeInsets.zero,
           content: SingleChildScrollView(
@@ -114,7 +151,6 @@ class _ArDriveDropdownContent extends StatefulWidget {
   _ArDriveDropdownContentState createState() => _ArDriveDropdownContentState();
 
   const _ArDriveDropdownContent({
-    super.key,
     required this.child,
     this.height = 200,
   });
