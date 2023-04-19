@@ -74,18 +74,10 @@ Widget _tableWithContent(BuildContext context) {
 
       return TableRowWidget(widgets);
     },
-    onChangeMultiSelecting: (isMultiSelecting) {
-      print('isMultiSelecting: $isMultiSelecting');
-    },
-    onChangePage: (page) {
-      print('page: $page');
-    },
-    onRowTap: (row) {
-      print('row: $row');
-    },
-    onSelectedRows: (rows) {
-      print('rows: $rows');
-    },
+    onChangeMultiSelecting: (isMultiSelecting) {},
+    onChangePage: (page) {},
+    onRowTap: (row) {},
+    onSelectedRows: (rows) {},
     sortRows: (rows, columnIndex, isAscending) {
       if (columnIndex == 2) {
         return rows.sorted(compareDate);

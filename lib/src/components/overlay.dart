@@ -170,7 +170,7 @@ class _ArDriveDropdownContentState extends State<_ArDriveDropdownContent>
     super.initState();
     _animationController = AnimationController(
       vsync: this,
-      duration: Duration(milliseconds: 200),
+      duration: const Duration(milliseconds: 200),
     );
     _animation = Tween<double>(begin: 0, end: widget.height)
         .animate(_animationController)
@@ -190,7 +190,7 @@ class _ArDriveDropdownContentState extends State<_ArDriveDropdownContent>
 
   @override
   Widget build(BuildContext context) {
-    return Container(
+    return SizedBox(
       height: _height,
       child: widget.child,
     );
@@ -222,7 +222,6 @@ class _ArDriveOverlayState extends State<ArDriveOverlay> {
   @override
   void initState() {
     super.initState();
-    print('initState');
     _visible = widget.visible ?? false;
     _updateVisibleState();
   }
@@ -230,7 +229,6 @@ class _ArDriveOverlayState extends State<ArDriveOverlay> {
   @override
   void didUpdateWidget(oldWidget) {
     super.didUpdateWidget(oldWidget);
-    print('didUpdateWidget');
     if (widget.visible != oldWidget.visible) {
       setState(() {
         _updateVisibleState();
@@ -252,7 +250,6 @@ class _ArDriveOverlayState extends State<ArDriveOverlay> {
 
   @override
   Widget build(BuildContext context) {
-    print('_visible: $_visible');
     return Barrier(
       onClose: () {
         setState(() {

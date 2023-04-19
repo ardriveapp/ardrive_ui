@@ -13,6 +13,8 @@
 ///
 ///
 ///
+// ignore_for_file: unnecessary_nullable_for_final_variable_declarations, constant_identifier_names
+
 import 'package:flutter/widgets.dart';
 
 class ArDriveIconsData {
