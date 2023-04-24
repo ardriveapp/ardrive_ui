@@ -1,7 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
-const String _package = 'ardrive_ui_library';
+const String _package = 'ardrive_ui';
 
 class ArDriveTypography {
   static Body body = const Body();
