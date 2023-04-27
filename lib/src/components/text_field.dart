@@ -210,7 +210,8 @@ class ArDriveTextFieldState extends State<ArDriveTextField> {
                 return _errorMessageLabel();
               },
             ),
-          if (widget.validator != null && widget.validator is String?)
+          if (widget.validator != null &&
+              widget.validator is String Function(String?))
             _errorMessageLabel(),
           if (widget.successMessage != null)
             _successMessage(widget.successMessage!),

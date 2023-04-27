@@ -70,7 +70,7 @@ void main() {
     await tester.pumpWidget(
       ArDriveApp(
         builder: (context) => MaterialApp(
-          home: Scaffold(body: textField),
+          home: Scaffold(body: Center(child: textField)),
         ),
       ),
     );
@@ -81,6 +81,7 @@ void main() {
 
     final state =
         tester.state<ArDriveTextFieldState>(find.byType(ArDriveTextField));
+
     final labelState = tester.state<AnimatedTextFieldLabelState>(
         find.byType(AnimatedTextFieldLabel));
 
@@ -147,15 +148,11 @@ void main() {
 
     final label = find.bySubtype<AnimatedTextFieldLabel>();
 
-    await tester.ensureVisible(label);
-
     final state =
         tester.state<ArDriveTextFieldState>(find.byType(ArDriveTextField));
 
-    final labelState = tester.state<AnimatedTextFieldLabelState>(label);
-
     expect(findTextField, findsOneWidget);
-    expect(labelState.showing, false);
+    expect(label, findsNothing);
     expect(state.textFieldState, TextFieldState.success);
   });
 
