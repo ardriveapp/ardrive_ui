@@ -50,27 +50,29 @@ class _ArDriveDropdownState extends State<ArDriveDropdown> {
 
   @override
   void didChangeDependencies() {
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      final renderBox = context.findRenderObject() as RenderBox?;
+    if (mounted) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        final renderBox = context.findRenderObject() as RenderBox?;
 
-      final position = renderBox?.localToGlobal(Offset.zero);
+        final position = renderBox?.localToGlobal(Offset.zero);
 
-      if (position != null && widget.calculateVerticalAlignment != null) {
-        final y = position.dy;
+        if (position != null && widget.calculateVerticalAlignment != null) {
+          final y = position.dy;
 
-        final screenHeight = MediaQuery.of(context).size.height;
+          final screenHeight = MediaQuery.of(context).size.height;
 
-        Alignment alignment;
+          Alignment alignment;
 
-        alignment =
-            widget.calculateVerticalAlignment!.call(y > screenHeight / 2);
+          alignment =
+              widget.calculateVerticalAlignment!.call(y > screenHeight / 2);
 
-        _anchor = Aligned(
-          follower: alignment,
-          target: Alignment.bottomLeft,
-        );
-      }
-    });
+          _anchor = Aligned(
+            follower: alignment,
+            target: Alignment.bottomLeft,
+          );
+        }
+      });
+    }
 
     super.didChangeDependencies();
   }
