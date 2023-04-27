@@ -174,19 +174,21 @@ class ArDriveTextFieldState extends State<ArDriveTextField> {
                         _isObscureText = !_isObscureText;
                       });
                     },
-                    child: Padding(
-                      padding: const EdgeInsets.only(right: 8),
-                      child: widget.showObfuscationToggle
-                          ? ArDriveIcon(
-                              icon: _isObscureText
-                                  ? ArDriveIconsData.eye_off
-                                  : ArDriveIconsData.eye,
-                              color: ArDriveTheme.of(context)
-                                  .themeData
-                                  .colors
-                                  .themeBgCanvas,
-                            )
-                          : null,
+                    child: ArDriveClickArea(
+                      child: Padding(
+                        padding: const EdgeInsets.only(right: 8),
+                        child: widget.showObfuscationToggle
+                            ? ArDriveIcon(
+                                icon: _isObscureText
+                                    ? ArDriveIconsData.eye_off
+                                    : ArDriveIconsData.eye,
+                                color: ArDriveTheme.of(context)
+                                    .themeData
+                                    .colors
+                                    .themeInputText,
+                              )
+                            : null,
+                      ),
                     ),
                   ),
               errorStyle: const TextStyle(height: 0),
