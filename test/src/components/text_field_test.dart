@@ -177,7 +177,7 @@ void main() {
 
     await tester.pumpAndSettle(const Duration(milliseconds: 3000));
 
-    final label = find.bySubtype<AnimatedTextFieldLabel>().at(1);
+    final label = find.bySubtype<AnimatedTextFieldLabel>().at(0);
 
     await tester.ensureVisible(label);
 

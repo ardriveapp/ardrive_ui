@@ -201,7 +201,7 @@ void main() {
     );
 
     /// Gets the container to tap
-    final findCheckBox = find.byType(AnimatedContainer).first;
+    final findCheckBox = find.byType(ArDriveIcon).first;
 
     final state =
         tester.state<ArDriveCheckBoxState>(find.byType(ArDriveCheckBox));
