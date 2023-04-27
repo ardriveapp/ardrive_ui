@@ -52,7 +52,7 @@ class _ArDrivePaginationDotsState extends State<ArDrivePaginationDots> {
       decoration: BoxDecoration(
         color: widget.currentPage == index
             ? ArDriveTheme.of(context).themeData.colors.themeErrorOnEmphasis
-            : ArDriveTheme.of(context).themeData.colors.themeGbMuted,
+            : ArDriveTheme.of(context).themeData.colors.themeFgDefault,
         shape: BoxShape.circle,
       ),
     );
