@@ -322,28 +322,30 @@ class ArDriveStandardModal extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisSize: MainAxisSize.min,
           children: [
-            if (hasCloseButton) ...[
-              GestureDetector(
-                onTap: () => Navigator.pop(context),
-                child: const Align(
-                  alignment: Alignment.centerRight,
-                  child: ArDriveIcon(
-                    icon: ArDriveIconsData.close_icon,
-                    size: 24,
-                  ),
-                ),
-              ),
-              const SizedBox(
-                height: 18,
-              ),
-            ],
             if (title != null) ...[
-              Align(
-                alignment: Alignment.topLeft,
-                child: Text(
-                  title!,
-                  style: ArDriveTypography.headline.headline5Bold(),
-                ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Flexible(
+                    child: Text(
+                      title!,
+                      style: ArDriveTypography.headline.headline5Bold(),
+                    ),
+                  ),
+                  if (hasCloseButton)
+                    ArDriveClickArea(
+                      child: GestureDetector(
+                        onTap: () => Navigator.pop(context),
+                        child: const Align(
+                          alignment: Alignment.centerRight,
+                          child: ArDriveIcon(
+                            icon: ArDriveIconsData.close_icon,
+                            size: 24,
+                          ),
+                        ),
+                      ),
+                    )
+                ],
               ),
               const SizedBox(
                 height: 24,
