@@ -222,6 +222,10 @@ class _ArDriveDataTableState<T extends IndexedItem>
         _cachedRows = widget.rows;
 
         selectPage(_recalculateCurrentPage());
+      } else {
+        _cachedRows = widget.rows;
+
+        selectPage(_selectedPage);
       }
     }
   }
@@ -484,6 +488,7 @@ class _ArDriveDataTableState<T extends IndexedItem>
                   itemCount: _currentPage.length,
                   itemBuilder: (context, index) {
                     return ArDriveClickArea(
+                      key: ValueKey(_currentPage[index]),
                       child: Padding(
                         padding: const EdgeInsets.only(top: 5),
                         child: _buildRowSpacing(
