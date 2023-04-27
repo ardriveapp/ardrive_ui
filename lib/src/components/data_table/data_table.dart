@@ -478,6 +478,7 @@ class _ArDriveDataTableState<T extends IndexedItem>
                 maxHeight: MediaQuery.of(context).size.height,
               ),
               child: Scrollbar(
+                controller: _scrollController,
                 child: ListView.builder(
                   controller: _scrollController,
                   itemCount: _currentPage.length,
@@ -811,6 +812,7 @@ class _ArDriveDataTableState<T extends IndexedItem>
           _multiSelectColumn(false, index: index, row: row),
           Flexible(
             child: ArDriveCard(
+              key: ValueKey(row),
               backgroundColor: multiselect.selectedItems.contains(row)
                   ? ArDriveTheme.of(context)
                       .themeData
