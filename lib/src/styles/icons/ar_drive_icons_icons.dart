@@ -13,13 +13,15 @@
 ///
 ///
 ///
+// ignore_for_file: constant_identifier_names
+
 import 'package:flutter/widgets.dart';
 
 class ArDriveIconsData {
   ArDriveIconsData._();
 
   static const _kFontFam = 'ArDriveIcons';
-  static const String? _kFontPkg = 'ardrive_ui';
+  static const String _kFontPkg = 'ardrive_ui';
 
   static const IconData arrow_back_filled =
       IconData(0xe800, fontFamily: _kFontFam, fontPackage: _kFontPkg);
