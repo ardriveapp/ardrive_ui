@@ -275,7 +275,7 @@ class ArDriveIcons {
 
   // folder add
   static ArDriveIcon folderAdd({double? size, Color? color}) => ArDriveIcon(
-        icon: ArDriveIconsData.folder_add,
+        icon: ArDriveIconsData.icon_new_folder,
         size: size,
         color: color,
       );
@@ -287,7 +287,7 @@ class ArDriveIcons {
         color: color,
       );
 
-  // drive
+  // driv
   static ArDriveIcon drive({double? size, Color? color}) => ArDriveIcon(
         icon: ArDriveIconsData.style_4,
         size: size,
@@ -360,14 +360,21 @@ class ArDriveIcons {
 
   // attach drive
   static ArDriveIcon attachDrive({double? size, Color? color}) => ArDriveIcon(
-        icon: ArDriveIconsData.vector_2,
+        icon: ArDriveIconsData.icon_attach_drive,
+        size: size,
+        color: color,
+      );
+
+  // add drive
+  static ArDriveIcon addDrive({double? size, Color? color}) => ArDriveIcon(
+        icon: ArDriveIconsData.icon_add_drive,
         size: size,
         color: color,
       );
 
   // snapshot
   static ArDriveIcon snapshot({double? size, Color? color}) => ArDriveIcon(
-        icon: ArDriveIconsData.snapshot,
+        icon: ArDriveIconsData.icon_create_snapshot,
         size: size,
         color: color,
       );
@@ -380,7 +387,27 @@ class ArDriveIcons {
       );
   // folder upload
   static ArDriveIcon uploadFolder({double? size, Color? color}) => ArDriveIcon(
-        icon: ArDriveIconsData.upload_folder_3,
+        icon: ArDriveIconsData.icon_upload_folder,
+        size: size,
+        color: color,
+      );
+
+  // create folder
+  static ArDriveIcon newFolder({double? size, Color? color}) => ArDriveIcon(
+        icon: ArDriveIconsData.icon_new_folder,
+        size: size,
+        color: color,
+      );
+
+  // add file
+  static ArDriveIcon addFile({double? size, Color? color}) => ArDriveIcon(
+        icon: ArDriveIconsData.icon_upload_files,
+        size: size,
+        color: color,
+      );
+  // arconnect
+  static ArDriveIcon arconnect({double? size, Color? color}) => ArDriveIcon(
+        icon: ArDriveIconsData.arconnect_icon_1,
         size: size,
         color: color,
       );

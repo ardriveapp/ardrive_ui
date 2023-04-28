@@ -13,15 +13,16 @@
 ///
 ///
 ///
-// ignore_for_file: constant_identifier_names
-
 import 'package:flutter/widgets.dart';
+
+// ignore_for_file: unnecessary_nullable_for_final_variable_declarations
+// ignore_for_file: constant_identifier_names
 
 class ArDriveIconsData {
   ArDriveIconsData._();
 
   static const _kFontFam = 'ArDriveIcons';
-  static const String _kFontPkg = 'ardrive_ui';
+  static const String? _kFontPkg = 'ardrive_ui';
 
   static const IconData arrow_back_filled =
       IconData(0xe800, fontFamily: _kFontFam, fontPackage: _kFontPkg);
@@ -55,10 +56,14 @@ class ArDriveIconsData {
       IconData(0xe80e, fontFamily: _kFontFam, fontPackage: _kFontPkg);
   static const IconData cloud_upload =
       IconData(0xe80f, fontFamily: _kFontFam, fontPackage: _kFontPkg);
+  static const IconData icon_add_drive =
+      IconData(0xe810, fontFamily: _kFontFam, fontPackage: _kFontPkg);
   static const IconData dots =
       IconData(0xe811, fontFamily: _kFontFam, fontPackage: _kFontPkg);
   static const IconData download =
       IconData(0xe812, fontFamily: _kFontFam, fontPackage: _kFontPkg);
+  static const IconData icon_new_folder =
+      IconData(0xe813, fontFamily: _kFontFam, fontPackage: _kFontPkg);
   static const IconData edit =
       IconData(0xe814, fontFamily: _kFontFam, fontPackage: _kFontPkg);
   static const IconData external_link =
@@ -137,6 +142,14 @@ class ArDriveIconsData {
       IconData(0xe839, fontFamily: _kFontFam, fontPackage: _kFontPkg);
   static const IconData file_music =
       IconData(0xe83a, fontFamily: _kFontFam, fontPackage: _kFontPkg);
-  static const IconData upload_folder_3 =
+  static const IconData icon_upload_folder =
       IconData(0xe83b, fontFamily: _kFontFam, fontPackage: _kFontPkg);
+  static const IconData icon_upload_files =
+      IconData(0xe83c, fontFamily: _kFontFam, fontPackage: _kFontPkg);
+  static const IconData icon_create_snapshot =
+      IconData(0xe83d, fontFamily: _kFontFam, fontPackage: _kFontPkg);
+  static const IconData icon_attach_drive =
+      IconData(0xe83e, fontFamily: _kFontFam, fontPackage: _kFontPkg);
+  static const IconData arconnect_icon_1 =
+      IconData(0xe83f, fontFamily: _kFontFam, fontPackage: _kFontPkg);
 }
