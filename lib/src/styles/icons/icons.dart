@@ -378,4 +378,10 @@ class ArDriveIcons {
         size: size,
         color: color,
       );
+  // folder upload
+  static ArDriveIcon uploadFolder({double? size, Color? color}) => ArDriveIcon(
+        icon: ArDriveIconsData.upload_folder_3,
+        size: size,
+        color: color,
+      );
 }

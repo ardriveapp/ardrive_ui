@@ -13,8 +13,6 @@
 ///
 ///
 ///
-// ignore_for_file: unnecessary_nullable_for_final_variable_declarations, constant_identifier_names
-
 import 'package:flutter/widgets.dart';
 
 class ArDriveIconsData {
@@ -137,4 +135,6 @@ class ArDriveIconsData {
       IconData(0xe839, fontFamily: _kFontFam, fontPackage: _kFontPkg);
   static const IconData file_music =
       IconData(0xe83a, fontFamily: _kFontFam, fontPackage: _kFontPkg);
+  static const IconData upload_folder_3 =
+      IconData(0xe83b, fontFamily: _kFontFam, fontPackage: _kFontPkg);
 }
