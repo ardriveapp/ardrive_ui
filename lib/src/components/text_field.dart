@@ -180,8 +180,8 @@ class ArDriveTextFieldState extends State<ArDriveTextField> {
                         child: widget.showObfuscationToggle
                             ? ArDriveIcon(
                                 icon: _isObscureText
-                                    ? ArDriveIconsData.eye_off
-                                    : ArDriveIconsData.eye,
+                                    ? ArDriveIconsData.eye_closed
+                                    : ArDriveIconsData.eye_open,
                                 color: ArDriveTheme.of(context)
                                     .themeData
                                     .colors

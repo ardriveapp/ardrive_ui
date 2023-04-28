@@ -66,7 +66,7 @@ class ArDriveIconModal extends StatelessWidget {
             child: const Align(
               alignment: Alignment.centerRight,
               child: ArDriveIcon(
-                icon: ArDriveIconsData.close_icon,
+                icon: ArDriveIconsData.x,
               ),
             ),
           ),
@@ -278,7 +278,7 @@ class _ModalCloseButton extends StatelessWidget {
       onTap: () {
         Navigator.pop(context);
       },
-      child: const ArDriveIcon(icon: ArDriveIconsData.close_icon_circle),
+      child: const ArDriveIcon(icon: ArDriveIconsData.close_circle),
     );
   }
 }
@@ -339,7 +339,7 @@ class ArDriveStandardModal extends StatelessWidget {
                         child: const Align(
                           alignment: Alignment.centerRight,
                           child: ArDriveIcon(
-                            icon: ArDriveIconsData.close_icon,
+                            icon: ArDriveIconsData.x,
                             size: 24,
                           ),
                         ),

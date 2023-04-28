@@ -82,10 +82,9 @@ class ArDriveCheckBoxState extends State<ArDriveCheckBox> {
         children: [
           state == CheckBoxState.indeterminate
               ? ArDriveIcon(
-                  icon: ArDriveIconsData.indeterminate_indicator,
+                  icon: ArDriveIconsData.minus_rectangle,
                   color:
                       ArDriveTheme.of(context).themeData.colors.themeFgDefault,
-                  size: 20,
                 )
               : AnimatedContainer(
                   height: checkboxSize,
@@ -101,7 +100,7 @@ class ArDriveCheckBoxState extends State<ArDriveCheckBox> {
                   duration: const Duration(milliseconds: 300),
                   child: checked
                       ? ArDriveIcon(
-                          icon: ArDriveIconsData.checked,
+                          icon: ArDriveIconsData.checkmark,
                           size: 12,
                           color: _checkColor(),
                         )

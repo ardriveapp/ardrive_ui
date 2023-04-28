@@ -84,7 +84,7 @@ WidgetbookCategory modals() {
                   const Option(
                     label: 'With leading',
                     value: ArDriveIcon(
-                      icon: ArDriveIconsData.warning,
+                      icon: ArDriveIconsData.triangle,
                       color: Colors.red,
                     ),
                   ),
@@ -164,7 +164,7 @@ WidgetbookCategory modals() {
                   initialValue:
                       'Your profile settings have been updated. Now you can go ahead and jump on into the ArDrive app, have some fun, enjoy yourself, and upload some really awesome stuff.'),
               icon: ArDriveIcon(
-                icon: ArDriveIconsData.check_success,
+                icon: ArDriveIconsData.check_cirle,
                 size: 88,
                 color: ArDriveTheme.of(context)
                     .themeData

@@ -409,14 +409,12 @@ class _ArDriveDataTableState<T extends IndexedItem>
                     ),
                     if (_sortedColumn == index)
                       _tableSort == TableSort.asc
-                          ? ArDriveIcons.chevronUp(
-                              size: 8,
+                          ? ArDriveIcons.carretUp(
                               color: ArDriveTheme.of(context)
                                   .themeData
                                   .colors
                                   .themeFgDefault)
-                          : ArDriveIcons.chevronDown(
-                              size: 8,
+                          : ArDriveIcons.carretDown(
                               color: ArDriveTheme.of(context)
                                   .themeData
                                   .colors
@@ -645,8 +643,7 @@ class _ArDriveDataTableState<T extends IndexedItem>
                       height: 32,
                       width: 32,
                       child: Center(
-                        child: ArDriveIcons.chevronLeft(
-                          size: 18,
+                        child: ArDriveIcons.carretLeft(
                           color: _selectedPage > 0
                               ? ArDriveTheme.of(context)
                                   .themeData
@@ -706,14 +703,13 @@ class _ArDriveDataTableState<T extends IndexedItem>
                       height: 32,
                       width: 32,
                       child: Center(
-                        child: ArDriveIcons.chevronRight(
+                        child: ArDriveIcons.carretRight(
                           color: _selectedPage + 1 < _getNumberOfPages()
                               ? ArDriveTheme.of(context)
                                   .themeData
                                   .colors
                                   .themeFgDefault
                               : grey,
-                          size: 18,
                         ),
                       ),
                     ),

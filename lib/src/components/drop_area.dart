@@ -132,14 +132,15 @@ class _ArDriveDropAreaSingleInputState
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
                               controller.file != null
-                                  ? ArDriveIcons.checkSuccess(
+                                  // TODO: Check!
+                                  ? ArDriveIcons.checkCirle(
                                       size: dropAreaIconSize,
                                       color: ArDriveTheme.of(context)
                                           .themeData
                                           .colors
                                           .themeFgMuted,
                                     )
-                                  : ArDriveIcons.uploadCloud(
+                                  : ArDriveIcons.upload(
                                       size: dropAreaIconSize,
                                       color: ArDriveTheme.of(context)
                                           .themeData
@@ -193,7 +194,7 @@ class _ArDriveDropAreaSingleInputState
   Widget _errorView() {
     return Column(
       children: [
-        ArDriveIcons.warning(),
+        ArDriveIcons.triangle(),
         const SizedBox(
           height: 8,
         ),
