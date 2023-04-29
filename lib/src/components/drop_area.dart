@@ -132,7 +132,6 @@ class _ArDriveDropAreaSingleInputState
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
                               controller.file != null
-                                  // TODO: Check!
                                   ? ArDriveIcons.checkCirle(
                                       size: dropAreaIconSize,
                                       color: ArDriveTheme.of(context)
