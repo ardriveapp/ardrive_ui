@@ -22,7 +22,7 @@ const EdgeInsets dropAreaItemContentPadding =
     EdgeInsets.only(top: 8.0, bottom: 20);
 
 /// Check constants
-const double checkboxSize = 20;
+const double checkboxSize = 18;
 
 /// Border radius
 const double checkboxBorderRadius = 3;

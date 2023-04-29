@@ -11,7 +11,7 @@ class ArDriveDropdown extends StatefulWidget {
     required this.items,
     required this.child,
     this.contentPadding,
-    this.height = 60,
+    this.height = 48,
     this.width = 200,
     this.anchor = const Aligned(
       follower: Alignment.topLeft,
@@ -102,23 +102,39 @@ class _ArDriveDropdownState extends State<ArDriveDropdown> {
           boxShadow: BoxShadowCard.shadow80,
           elevation: 5,
           contentPadding: widget.contentPadding ?? EdgeInsets.zero,
-          content: SingleChildScrollView(
-            child: Column(
-              children: List.generate(widget.items.length, (index) {
-                return GestureDetector(
-                  onTap: () {
-                    widget.items[index].onClick?.call();
-                    setState(() {
-                      visible = false;
-                    });
-                  },
-                  child: SizedBox(
-                    width: widget.width,
-                    height: widget.height,
-                    child: widget.items[index],
-                  ),
-                );
-              }),
+          content: SizedBox(
+            width: widget.width,
+            child: SingleChildScrollView(
+              child: Column(
+                children: List.generate(widget.items.length, (index) {
+                  return Column(
+                    children: [
+                      GestureDetector(
+                        onTap: () {
+                          widget.items[index].onClick?.call();
+                          setState(() {
+                            visible = false;
+                          });
+                        },
+                        child: SizedBox(
+                          width: widget.width,
+                          height: widget.height,
+                          child: widget.items[index],
+                        ),
+                      ),
+                      if (index != widget.items.length - 1)
+                        Divider(
+                          height: 0,
+                          thickness: 1,
+                          color: ArDriveTheme.of(context)
+                              .themeData
+                              .colors
+                              .themeBorderDefault,
+                        ),
+                    ],
+                  );
+                }),
+              ),
             ),
           ),
         ),
@@ -328,7 +344,7 @@ class _ArDriveDropdownItemState extends State<ArDriveDropdownItem> {
       }),
       child: Container(
         color: hovering ? theme.hoverColor : theme.backgroundColor,
-        alignment: Alignment.center,
+        // alignment: Alignment.center,
         child: widget.content,
       ),
     );

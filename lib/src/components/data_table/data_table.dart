@@ -516,7 +516,7 @@ class _ArDriveDataTableState<T extends IndexedItem>
 
     return AnimatedContainer(
       duration: const Duration(milliseconds: 300),
-      width: _isMultiSelecting ? checkboxSize + 8 : 0,
+      width: _isMultiSelecting ? checkboxSize + 14 : 0,
       child: ArDriveCheckBox(
         key: ValueKey(
           isMasterCheckBoxChecked.toString() +
@@ -552,7 +552,7 @@ class _ArDriveDataTableState<T extends IndexedItem>
 
     return AnimatedContainer(
       duration: const Duration(milliseconds: 300),
-      width: _isMultiSelecting ? checkboxSize + 8 : 0,
+      width: _isMultiSelecting ? checkboxSize + 14 : 0,
       child: ArDriveCheckBox(
         key: ValueKey(
           index.toString() + isSelected.toString(),
@@ -830,7 +830,7 @@ class _ArDriveDataTableState<T extends IndexedItem>
                 children: [
                   if (widget.leading != null)
                     Padding(
-                      padding: const EdgeInsets.only(right: 20),
+                      padding: const EdgeInsets.only(right: 16),
                       child: ConstrainedBox(
                         constraints: const BoxConstraints(
                           maxWidth: 40,
