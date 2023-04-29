@@ -19,10 +19,12 @@ class ArDriveApp extends StatefulWidget {
     super.key,
     required this.builder,
     this.themeData,
+    this.onThemeChanged,
   });
 
   final Widget Function(BuildContext context) builder;
   final ArDriveThemeData? themeData;
+  final Function(ArDriveThemes)? onThemeChanged;
 
   @override
   State<ArDriveApp> createState() => _ArDriveAppState();
@@ -42,6 +44,26 @@ class _ArDriveAppState extends State<ArDriveApp> {
   @override
   void initState() {
     super.initState();
+
+    var window = WidgetsBinding.instance.window;
+    WidgetsBinding.instance.handlePlatformBrightnessChanged();
+
+    window.onPlatformBrightnessChanged = () {
+      // This callback is called every time the brightness changes.
+      var brightness = window.platformBrightness;
+
+      if (brightness == Brightness.dark) {
+        setState(() {
+          _theme = ArDriveThemes.dark;
+        });
+      } else {
+        setState(() {
+          _theme = ArDriveThemes.light;
+        });
+      }
+
+      widget.onThemeChanged?.call(_theme);
+    };
 
     switch (widget.themeData?.name) {
       case 'ArDriveThemes.dark':
