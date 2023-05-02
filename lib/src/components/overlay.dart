@@ -20,11 +20,17 @@ class ArDriveDropdown extends StatefulWidget {
       target: Alignment.bottomLeft,
       offset: Offset(0, 4),
     ),
+    this.footer,
+    this.footerHeight = 60,
   });
 
   final double height;
   final double width;
   final List<ArDriveDropdownItem> items;
+
+  final Widget? footer;
+  final double footerHeight;
+
   final Widget child;
   final EdgeInsets? contentPadding;
   final Anchor anchor;
@@ -38,7 +44,8 @@ class _ArDriveDropdownState extends State<ArDriveDropdown> {
 
   @override
   Widget build(BuildContext context) {
-    double dropdownHeight = widget.items.length * widget.height;
+    double dropdownHeight = (widget.items.length * widget.height) +
+        (widget.footer != null ? widget.footerHeight : 0);
 
     return ArDriveOverlay(
       visible: visible,
@@ -55,10 +62,49 @@ class _ArDriveDropdownState extends State<ArDriveDropdown> {
               content: ClipRRect(
                 borderRadius: BorderRadius.circular(8),
                 child: Column(
-                  children: List.generate(widget.items.length, (index) {
-                    return FutureBuilder<bool>(
+                  children: [
+                    Expanded(
+                      child: Column(
+                        children: List.generate(widget.items.length, (index) {
+                          return FutureBuilder<bool>(
+                              future: Future.delayed(
+                                Duration(milliseconds: (index + 1) * 50),
+                                () => true,
+                              ),
+                              builder: (context, snapshot) {
+                                return AnimatedCrossFade(
+                                  duration: const Duration(milliseconds: 100),
+                                  firstChild: SizedBox(
+                                    width: widget.width,
+                                    height: widget.height,
+                                    child: GestureDetector(
+                                      onTap: () {
+                                        widget.items[index].onClick?.call();
+                                        setState(() {
+                                          visible = false;
+                                        });
+                                      },
+                                      child: widget.items[index],
+                                    ),
+                                  ),
+                                  secondChild: SizedBox(
+                                    height: 0,
+                                    width: widget.width,
+                                  ),
+                                  crossFadeState:
+                                      snapshot.hasData && snapshot.data!
+                                          ? CrossFadeState.showFirst
+                                          : CrossFadeState.showSecond,
+                                );
+                              });
+                        }),
+                      ),
+                    ),
+                    if (widget.footer != null)
+                      FutureBuilder<bool>(
                         future: Future.delayed(
-                          Duration(milliseconds: (index + 1) * 50),
+                          Duration(
+                              milliseconds: (widget.items.length + 1) * 50),
                           () => true,
                         ),
                         builder: (context, snapshot) {
@@ -66,16 +112,7 @@ class _ArDriveDropdownState extends State<ArDriveDropdown> {
                             duration: const Duration(milliseconds: 100),
                             firstChild: SizedBox(
                               width: widget.width,
-                              height: widget.height,
-                              child: GestureDetector(
-                                onTap: () {
-                                  widget.items[index].onClick?.call();
-                                  setState(() {
-                                    visible = false;
-                                  });
-                                },
-                                child: widget.items[index],
-                              ),
+                              child: widget.footer,
                             ),
                             secondChild: SizedBox(
                               height: 0,
@@ -85,8 +122,9 @@ class _ArDriveDropdownState extends State<ArDriveDropdown> {
                                 ? CrossFadeState.showFirst
                                 : CrossFadeState.showSecond,
                           );
-                        });
-                  }),
+                        },
+                      ),
+                  ],
                 ),
               ),
               boxShadow: BoxShadowCard.shadow80,

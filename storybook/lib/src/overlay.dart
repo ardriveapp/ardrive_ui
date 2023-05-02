@@ -40,6 +40,46 @@ WidgetbookCategory overlay() {
           });
         },
       ),
+      WidgetbookUseCase(
+        name: 'Dropdown with Footer',
+        builder: (context) {
+          return ArDriveStorybookAppBase(builder: (context) {
+            return Column(
+              children: [
+                ArDriveDropdown(
+                  items: [
+                    ArDriveDropdownItem(
+                      content: Text(
+                        'Create new Drive',
+                        style: ArDriveTypography.body.buttonLargeBold(),
+                      ),
+                    ),
+                    ArDriveDropdownItem(
+                      content: Text(
+                        'Create new Drive',
+                        style: ArDriveTypography.body.buttonLargeBold(),
+                      ),
+                    ),
+                    ArDriveDropdownItem(
+                      content: Text(
+                        'Create new Drive',
+                        style: ArDriveTypography.body.buttonLargeBold(),
+                      ),
+                    )
+                  ],
+                  child: const Text('some text'),
+                  footerHeight: 128,
+                  footer: Container(
+                    height: 64,
+                    width: double.infinity,
+                    color: Colors.red,
+                  ),
+                )
+              ],
+            );
+          });
+        },
+      ),
     ]),
   ]);
 }
