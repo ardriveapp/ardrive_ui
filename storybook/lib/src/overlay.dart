@@ -67,13 +67,13 @@ WidgetbookCategory overlay() {
                       ),
                     )
                   ],
-                  child: const Text('some text'),
                   footerHeight: 128,
                   footer: Container(
                     height: 64,
                     width: double.infinity,
                     color: Colors.red,
                   ),
+                  child: const Text('some text'),
                 )
               ],
             );
