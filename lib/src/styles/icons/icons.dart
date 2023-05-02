@@ -379,4 +379,18 @@ class ArDriveIcons {
         size: size,
         color: color,
       );
+
+  // eye_closed
+  static ArDriveIcon eyeClosed({double? size, Color? color}) => ArDriveIcon(
+        icon: ArDriveIconsData.eye_closed,
+        size: size,
+        color: color,
+      );
+
+  // eye_open
+  static ArDriveIcon eyeOpen({double? size, Color? color}) => ArDriveIcon(
+        icon: ArDriveIconsData.eye_open,
+        size: size,
+        color: color,
+      );
 }
