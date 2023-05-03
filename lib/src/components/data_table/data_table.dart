@@ -73,6 +73,7 @@ class _ArDriveDataTableState<T extends IndexedItem>
   late List<T> _cachedRows;
   late List<T> _currentPage;
   final List<MultiSelectBox<T>> _multiSelectBoxes = [];
+  T? _selectedItem;
 
   final ScrollController _scrollController = ScrollController();
 
@@ -792,6 +793,10 @@ class _ArDriveDataTableState<T extends IndexedItem>
             index: row.index,
           );
         } else {
+          setState(() {
+            _selectedItem = row;
+          });
+
           widget.onRowTap?.call(row);
         }
       },
@@ -811,7 +816,8 @@ class _ArDriveDataTableState<T extends IndexedItem>
           Flexible(
             child: ArDriveCard(
               key: ValueKey(row),
-              backgroundColor: multiselect.selectedItems.contains(row)
+              backgroundColor: (!_isMultiSelecting && _selectedItem == row) ||
+                      multiselect.selectedItems.contains(row)
                   ? ArDriveTheme.of(context)
                       .themeData
                       .tableTheme
