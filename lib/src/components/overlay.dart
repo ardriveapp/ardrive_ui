@@ -91,49 +91,52 @@ class _ArDriveDropdownState extends State<ArDriveDropdown> {
       anchor: _anchor,
       content: _ArDriveDropdownContent(
         height: dropdownHeight,
-        child: ArDriveCard(
-          border: Border.all(
-            color: ArDriveTheme.of(context)
-                .themeData
-                .dropdownTheme
-                .backgroundColor,
-            width: 1,
-          ),
-          boxShadow: BoxShadowCard.shadow80,
-          elevation: 5,
-          contentPadding: widget.contentPadding ?? EdgeInsets.zero,
-          content: SizedBox(
-            width: widget.width,
-            child: SingleChildScrollView(
-              child: Column(
-                children: List.generate(widget.items.length, (index) {
-                  return Column(
-                    children: [
-                      GestureDetector(
-                        onTap: () {
-                          widget.items[index].onClick?.call();
-                          setState(() {
-                            visible = false;
-                          });
-                        },
-                        child: SizedBox(
-                          width: widget.width,
-                          height: widget.height,
-                          child: widget.items[index],
+        child: ArDriveScrollBar(
+          isVisible: false,
+          child: ArDriveCard(
+            border: Border.all(
+              color: ArDriveTheme.of(context)
+                  .themeData
+                  .dropdownTheme
+                  .backgroundColor,
+              width: 1,
+            ),
+            boxShadow: BoxShadowCard.shadow80,
+            elevation: 5,
+            contentPadding: widget.contentPadding ?? EdgeInsets.zero,
+            content: SizedBox(
+              width: widget.width,
+              child: SingleChildScrollView(
+                child: Column(
+                  children: List.generate(widget.items.length, (index) {
+                    return Column(
+                      children: [
+                        GestureDetector(
+                          onTap: () {
+                            widget.items[index].onClick?.call();
+                            setState(() {
+                              visible = false;
+                            });
+                          },
+                          child: SizedBox(
+                            width: widget.width,
+                            height: widget.height,
+                            child: widget.items[index],
+                          ),
                         ),
-                      ),
-                      if (index != widget.items.length - 1)
-                        Divider(
-                          height: 0,
-                          thickness: 1,
-                          color: ArDriveTheme.of(context)
-                              .themeData
-                              .colors
-                              .themeBorderDefault,
-                        ),
-                    ],
-                  );
-                }),
+                        if (index != widget.items.length - 1)
+                          Divider(
+                            height: 0,
+                            thickness: 1,
+                            color: ArDriveTheme.of(context)
+                                .themeData
+                                .colors
+                                .themeBorderDefault,
+                          ),
+                      ],
+                    );
+                  }),
+                ),
               ),
             ),
           ),
