@@ -479,7 +479,7 @@ class _ArDriveDataTableState<T extends IndexedItem>
               constraints: BoxConstraints(
                 maxHeight: MediaQuery.of(context).size.height,
               ),
-              child: Scrollbar(
+              child: ArDriveScrollBar(
                 controller: _scrollController,
                 child: ListView.builder(
                   controller: _scrollController,
