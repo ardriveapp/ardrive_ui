@@ -158,7 +158,7 @@ ThemeData lightMaterialTheme() {
   ArDriveColors colors = ArDriveColors.light();
 
   return ThemeData(
-    fontFamily: 'Wavehaus',
+    fontFamily: _fontFamily,
     primaryColor: colors.themeAccentBrand,
     primaryColorLight: colors.themeAccentBrand,
     colorScheme: theme.colorScheme.copyWith(
@@ -169,7 +169,7 @@ ThemeData lightMaterialTheme() {
       onSurface: colors.themeBgSurface,
     ),
     textTheme: theme.textTheme.apply(
-      fontFamily: 'Wavehaus',
+      fontFamily: _fontFamily,
       bodyColor: colors.themeFgDefault,
     ),
   );
@@ -266,7 +266,7 @@ ThemeData darkMaterialTheme() {
   ArDriveColors colors = ArDriveColors.dark();
 
   return ThemeData(
-    fontFamily: 'Wavehaus',
+    fontFamily: _fontFamily,
     primaryColor: colors.themeAccentBrand,
     primaryColorLight: colors.themeAccentBrand,
     colorScheme: theme.colorScheme.copyWith(
@@ -277,8 +277,10 @@ ThemeData darkMaterialTheme() {
       onSurface: colors.themeBgSurface,
     ),
     textTheme: theme.textTheme.apply(
-      fontFamily: 'Wavehaus',
+      fontFamily: _fontFamily,
       bodyColor: colors.themeFgDefault,
     ),
   );
 }
+
+const _fontFamily = 'packages/ardrive_ui/Wavehaus';
