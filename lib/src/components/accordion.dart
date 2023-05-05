@@ -21,10 +21,13 @@ class ArDriveAccordionItem {
 class ArDriveAccordion extends StatefulWidget {
   final List<ArDriveAccordionItem> children;
   final Color? backgroundColor;
+  final EdgeInsetsGeometry? contentPadding;
+
   const ArDriveAccordion({
     Key? key,
     required this.children,
     this.backgroundColor,
+    this.contentPadding,
   }) : super(key: key);
 
   @override
@@ -45,6 +48,7 @@ class _ArDriveAccordionState extends State<ArDriveAccordion> {
     return Theme(
       data: Theme.of(context).copyWith(dividerColor: Colors.transparent),
       child: ListView.builder(
+        padding: EdgeInsets.zero,
         key: widget.key,
         shrinkWrap: true,
         itemCount: tiles.length,
