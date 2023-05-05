@@ -286,7 +286,7 @@ class ArDriveTextFieldState extends State<ArDriveTextField> {
     }
 
     return _getBorder(
-      ArDriveTheme.of(context).themeData.colors.themeAccentEmphasis,
+      ArDriveTheme.of(context).themeData.colors.themeFgDefault,
     );
   }
 

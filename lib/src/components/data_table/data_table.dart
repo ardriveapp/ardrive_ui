@@ -604,28 +604,6 @@ class _ArDriveDataTableState<T extends IndexedItem>
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Text(
-                widget.rowsPerPageText,
-                style: ArDriveTypography.body.buttonNormalBold(),
-              ),
-              Padding(
-                padding: const EdgeInsets.only(left: 20),
-                child: PaginationSelect(
-                  currentNumber: _numberOfItemsPerPage,
-                  divisorFactor: _pageItemsDivisorFactor,
-                  maxOption: widget.maxItemsPerPage,
-                  maxNumber: widget.rows.length,
-                  onSelect: recalculatePageForNewNumberOfItemsPerPage,
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(
-            width: 20,
-          ),
-          Row(
             crossAxisAlignment: CrossAxisAlignment.center,
             mainAxisSize: MainAxisSize.max,
             children: [
@@ -828,7 +806,7 @@ class _ArDriveDataTableState<T extends IndexedItem>
                       .themeBorderDefault
                       .withOpacity(0.25),
               contentPadding:
-                  const EdgeInsets.symmetric(horizontal: 15, vertical: 8),
+                  const EdgeInsets.symmetric(horizontal: 15, vertical: 0),
               content: Row(
                 children: [
                   if (widget.leading != null)
