@@ -55,7 +55,7 @@ void main() {
     );
 
     expect(find.byWidget(modal), findsOneWidget);
-    expect(find.byType(Icon), findsOneWidget);
+    expect(find.byType(Icon), findsWidgets); // icon and the close icon
     expect(find.text('Content'), findsOneWidget);
     expect(find.text('Title'), findsOneWidget);
   });

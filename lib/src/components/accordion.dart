@@ -20,9 +20,14 @@ class ArDriveAccordionItem {
 
 class ArDriveAccordion extends StatefulWidget {
   final List<ArDriveAccordionItem> children;
+  final Color? backgroundColor;
+  final EdgeInsetsGeometry? contentPadding;
+
   const ArDriveAccordion({
     Key? key,
     required this.children,
+    this.backgroundColor,
+    this.contentPadding,
   }) : super(key: key);
 
   @override
@@ -31,6 +36,7 @@ class ArDriveAccordion extends StatefulWidget {
 
 class _ArDriveAccordionState extends State<ArDriveAccordion> {
   late List<ArDriveAccordionItem> tiles;
+
   @override
   void initState() {
     tiles = [...widget.children];
@@ -41,36 +47,41 @@ class _ArDriveAccordionState extends State<ArDriveAccordion> {
   Widget build(BuildContext context) {
     return Theme(
       data: Theme.of(context).copyWith(dividerColor: Colors.transparent),
-      child: ListView(
-        children: tiles.map(
-          (tile) {
-            return ExpansionTileTheme(
-              data: ExpansionTileThemeData(
-                backgroundColor:
-                    ArDriveTheme.of(context).themeData.colors.themeBgCanvas,
-                collapsedBackgroundColor:
-                    ArDriveTheme.of(context).themeData.colors.themeBgCanvas,
-                collapsedIconColor:
-                    ArDriveTheme.of(context).themeData.colors.themeAccentBrand,
-                textColor:
-                    ArDriveTheme.of(context).themeData.colors.themeFgDefault,
-                collapsedTextColor:
-                    ArDriveTheme.of(context).themeData.colors.themeFgDefault,
-              ),
-              child: ExpansionTile(
-                title: tile.title,
-                initiallyExpanded: tile.isExpanded,
-                expandedAlignment: Alignment.centerLeft,
-                expandedCrossAxisAlignment: CrossAxisAlignment.start,
-                onExpansionChanged: (value) {
-                  setState(
-                      () => tiles[tiles.indexOf(tile)].isExpanded = !value);
-                },
-                children: tile.children,
-              ),
-            );
-          },
-        ).toList(),
+      child: ListView.builder(
+        padding: EdgeInsets.zero,
+        key: widget.key,
+        shrinkWrap: true,
+        itemCount: tiles.length,
+        itemBuilder: (context, index) {
+          final tile = tiles[index];
+
+          return ExpansionTileTheme(
+            data: ExpansionTileThemeData(
+              backgroundColor: widget.backgroundColor ??
+                  ArDriveTheme.of(context).themeData.colors.themeBgCanvas,
+              collapsedBackgroundColor: widget.backgroundColor ??
+                  ArDriveTheme.of(context).themeData.colors.themeBgCanvas,
+              collapsedIconColor:
+                  ArDriveTheme.of(context).themeData.colors.themeFgDefault,
+              textColor:
+                  ArDriveTheme.of(context).themeData.colors.themeFgDefault,
+              collapsedTextColor:
+                  ArDriveTheme.of(context).themeData.colors.themeFgDefault,
+              iconColor:
+                  ArDriveTheme.of(context).themeData.colors.themeFgDefault,
+            ),
+            child: ExpansionTile(
+              title: tile.title,
+              initiallyExpanded: tile.isExpanded,
+              expandedAlignment: Alignment.centerLeft,
+              expandedCrossAxisAlignment: CrossAxisAlignment.start,
+              onExpansionChanged: (value) {
+                setState(() => tiles[tiles.indexOf(tile)].isExpanded = !value);
+              },
+              children: tile.children,
+            ),
+          );
+        },
       ),
     );
   }

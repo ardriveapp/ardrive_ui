@@ -63,9 +63,11 @@ class ArDriveIconModal extends StatelessWidget {
         children: [
           GestureDetector(
             onTap: () => Navigator.pop(context),
-            child: Align(
+            child: const Align(
               alignment: Alignment.centerRight,
-              child: ArDriveIcons.closeIcon(),
+              child: ArDriveIcon(
+                icon: ArDriveIconsData.x,
+              ),
             ),
           ),
           const SizedBox(
@@ -276,7 +278,7 @@ class _ModalCloseButton extends StatelessWidget {
       onTap: () {
         Navigator.pop(context);
       },
-      child: ArDriveIcons.closeIconCircle(),
+      child: const ArDriveIcon(icon: ArDriveIconsData.close_circle),
     );
   }
 }
@@ -289,6 +291,7 @@ class ArDriveStandardModal extends StatelessWidget {
     this.content,
     this.actions,
     this.width,
+    this.hasCloseButton = false,
   });
 
   final String? title;
@@ -296,6 +299,7 @@ class ArDriveStandardModal extends StatelessWidget {
   final List<ModalAction>? actions;
   final Widget? content;
   final double? width;
+  final bool hasCloseButton;
 
   @override
   Widget build(BuildContext context) {
@@ -319,12 +323,29 @@ class ArDriveStandardModal extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           children: [
             if (title != null) ...[
-              Align(
-                alignment: Alignment.topLeft,
-                child: Text(
-                  title!,
-                  style: ArDriveTypography.headline.headline5Bold(),
-                ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Flexible(
+                    child: Text(
+                      title!,
+                      style: ArDriveTypography.headline.headline5Bold(),
+                    ),
+                  ),
+                  if (hasCloseButton)
+                    ArDriveClickArea(
+                      child: GestureDetector(
+                        onTap: () => Navigator.pop(context),
+                        child: const Align(
+                          alignment: Alignment.centerRight,
+                          child: ArDriveIcon(
+                            icon: ArDriveIconsData.x,
+                            size: 24,
+                          ),
+                        ),
+                      ),
+                    )
+                ],
               ),
               const SizedBox(
                 height: 24,
@@ -381,16 +402,44 @@ class ArDriveStandardModal extends StatelessWidget {
           Padding(
             padding: const EdgeInsets.only(left: 16),
             child: ArDriveButton(
+              style: actions.length > 2
+                  ? ArDriveButtonStyle.secondary
+                  : ArDriveButtonStyle.primary,
               maxHeight: buttonActionHeight,
               backgroundColor:
                   ArDriveTheme.of(context).themeData.colors.themeFgDefault,
               fontStyle: ArDriveTypography.body.buttonNormalRegular(
-                color:
-                    ArDriveTheme.of(context).themeData.colors.themeAccentSubtle,
+                color: actions.length > 2
+                    ? ArDriveTheme.of(context).themeData.colors.themeFgDefault
+                    : ArDriveTheme.of(context)
+                        .themeData
+                        .colors
+                        .themeAccentSubtle,
               ),
               isDisabled: !actions[1].isEnable,
               text: actions[1].title,
               onPressed: actions[1].action,
+            ),
+          ),
+        if (actions.length > 2)
+          Padding(
+            padding: const EdgeInsets.only(left: 16),
+            child: ArDriveButton(
+              style: ArDriveButtonStyle.secondary,
+              maxHeight: buttonActionHeight,
+              backgroundColor:
+                  ArDriveTheme.of(context).themeData.colors.themeFgDefault,
+              fontStyle: ArDriveTypography.body.buttonNormalRegular(
+                color: actions.length > 2
+                    ? ArDriveTheme.of(context).themeData.colors.themeFgDefault
+                    : ArDriveTheme.of(context)
+                        .themeData
+                        .colors
+                        .themeAccentSubtle,
+              ),
+              isDisabled: !actions[2].isEnable,
+              text: actions[2].title,
+              onPressed: actions[2].action,
             ),
           ),
       ],
@@ -415,6 +464,8 @@ Future<void> showAnimatedDialog(
   bool barrierDismissible = true,
   required Widget content,
 }) {
+  final lowScreenWarning = MediaQuery.of(context).size.height < 600;
+
   return showGeneralDialog(
     context: context,
     transitionDuration: const Duration(milliseconds: 200),
@@ -431,6 +482,9 @@ Future<void> showAnimatedDialog(
     barrierLabel: '',
     pageBuilder: (context, a1, a2) {
       return Dialog(
+        insetPadding: lowScreenWarning
+            ? const EdgeInsets.symmetric(horizontal: 0, vertical: 8)
+            : null,
         elevation: 0,
         backgroundColor: Colors.transparent,
         child: content,
