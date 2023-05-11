@@ -42,10 +42,13 @@ WidgetbookCategory textField() {
                 builder: (context) => Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: ArDriveTextField(
+                    showObfuscationToggle:
+                        context.knobs.boolean(label: 'Show obfuscation toggle'),
+                    obscureText: context.knobs.boolean(label: 'Obfuscate text'),
                     label: context.knobs.text(label: 'Label'),
                     hintText: context.knobs.text(label: 'Hint text'),
-                    validator: (s) => false,
-                    errorMessage: context.knobs.text(label: 'Error message'),
+                    validator: (s) =>
+                        context.knobs.text(label: 'Error message'),
                   ),
                 ),
               );
@@ -57,9 +60,12 @@ WidgetbookCategory textField() {
                 return Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: ArDriveTextField(
+                    showObfuscationToggle:
+                        context.knobs.boolean(label: 'Show obfuscation toggle'),
+                    obscureText: context.knobs.boolean(label: 'Obfuscate text'),
                     label: context.knobs.text(label: 'Label'),
                     hintText: context.knobs.text(label: 'Hint text'),
-                    validator: (s) => true,
+                    validator: (s) => null,
                     successMessage:
                         context.knobs.text(label: 'Success message'),
                   ),
@@ -92,6 +98,8 @@ WidgetbookCategory textField() {
                             height: 16,
                           ),
                           const ArDriveTextField(
+                            obscureText: true,
+                            showObfuscationToggle: true,
                             hintText: 'Enter Password',
                           ),
                         ]),

@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:ardrive_ui/ardrive_ui.dart';
 import 'package:flutter/material.dart';
 
@@ -15,7 +17,7 @@ class ArDriveToggleSwitch extends StatefulWidget {
   final String text;
   final bool value;
   final bool isEnabled;
-  final Function(bool value)? onChanged;
+  final FutureOr Function(bool value)? onChanged;
 
   @override
   State<ArDriveToggleSwitch> createState() => ArDriveToggleSwitchState();
@@ -106,7 +108,7 @@ class ArDriveToggleSwitchState extends State<ArDriveToggleSwitch> {
     return MouseRegion(
       cursor: SystemMouseCursors.click,
       child: GestureDetector(
-        onTap: () {
+        onTap: () async {
           if (_isAnimating) {
             return;
           }
@@ -119,12 +121,14 @@ class ArDriveToggleSwitchState extends State<ArDriveToggleSwitch> {
             }
             _checked = !_checked;
 
-            widget.onChanged?.call(_checked);
-
             _isAnimating = true;
 
-            setState(() {});
+            await widget.onChanged?.call(_checked);
+
+            _isAnimating = false;
           }
+
+          setState(() {});
         },
         child: Row(
           mainAxisSize: MainAxisSize.min,

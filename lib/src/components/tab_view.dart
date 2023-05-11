@@ -26,22 +26,27 @@ class _ArDriveTabViewState extends State<ArDriveTabView>
 
   @override
   Widget build(BuildContext context) {
-    return ArDriveCard(
-      backgroundColor: ArDriveTheme.of(context).themeData.colors.themeBgCanvas,
-      content: Column(
-        children: [
-          ArDriveTabBar(
-            tabs: [...widget.tabs.map((tab) => tab.key)],
-            controller: _tabController,
-          ),
-          Expanded(
-            child: TabBarView(
+    return Column(
+      children: [
+        ArDriveTabBar(
+          tabs: [...widget.tabs.map((tab) => tab.key)],
+          controller: _tabController,
+        ),
+        const SizedBox(
+          height: 28,
+        ),
+        Expanded(
+          child: ArDriveCard(
+            contentPadding: EdgeInsets.zero,
+            backgroundColor:
+                ArDriveTheme.of(context).themeData.colors.themeBgCanvas,
+            content: TabBarView(
               controller: _tabController,
               children: [...widget.tabs.map((tab) => tab.value)],
             ),
-          )
-        ],
-      ),
+          ),
+        )
+      ],
     );
   }
 }
@@ -74,9 +79,9 @@ class ArDriveTabBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: 45,
+      height: 40,
       decoration: BoxDecoration(
-        color: ArDriveTheme.of(context).themeData.colors.themeBgSubtle,
+        color: ArDriveTheme.of(context).themeData.tableTheme.backgroundColor,
         borderRadius: BorderRadius.circular(8),
       ),
       child: TabBar(
@@ -86,7 +91,8 @@ class ArDriveTabBar extends StatelessWidget {
             controller.index,
             controller.length,
           ),
-          color: ArDriveTheme.of(context).themeData.colors.themeGbMuted,
+          color:
+              ArDriveTheme.of(context).themeData.tableTheme.selectedItemColor,
         ),
         labelColor: ArDriveTheme.of(context).themeData.colors.themeFgDefault,
         unselectedLabelColor:

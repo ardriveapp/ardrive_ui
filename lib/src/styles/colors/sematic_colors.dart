@@ -52,15 +52,17 @@ class ArDriveColors {
     Color? shadow,
   }) {
     this.themeFgDefault = themeFgDefault ?? white;
-    this.themeFgMuted = themeFgMuted ?? grey.shade100;
+    this.themeFgMuted = themeFgMuted ?? grey.shade200;
     this.themeFgSubtle = themeFgSubtle ?? grey.shade500;
     this.themeFgOnAccent = themeFgOnAccent ?? white;
     this.themeFgOnDisabled = themeFgOnDisabled ?? grey.shade300;
     this.themeFgDisabled = themeFgDisabled ?? grey.shade600;
-    this.themeBgSurface = themeBgSurface ?? grey.shade900;
+    this.themeBgSurface =
+        themeBgSurface ?? const Color(0xff1F1F1F); // grey.shade960
     this.themeGbMuted = themeGbMuted ?? grey.shade600;
     this.themeBgSubtle = themeBgSubtle ?? grey.shade900;
-    this.themeBgCanvas = themeBgCanvas ?? black;
+    this.themeBgCanvas =
+        themeBgCanvas ?? const Color(0xff171717); // grey.shade950;
     this.themeAccentBrand = themeAccentBrand ?? red.shade500;
     this.themeAccentMuted = themeAccentMuted ?? blue.shade400;
     this.themeWarningFg = themeWarningFg ?? yellow.shade400;

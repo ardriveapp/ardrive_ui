@@ -1,7 +1,9 @@
 import 'package:ardrive_ui/ardrive_ui.dart';
+import 'package:ardrive_ui/src/constants/size_constants.dart';
 import 'package:ardrive_ui/src/styles/colors/global_colors.dart';
+import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_portal/flutter_portal.dart';
+import 'package:flutter/services.dart';
 
 class TableColumn {
   TableColumn(this.title, this.size);
@@ -16,7 +18,7 @@ class TableRowWidget {
   final List<Widget> row;
 }
 
-class ArDriveDataTable<T> extends StatefulWidget {
+class ArDriveDataTable<T extends IndexedItem> extends StatefulWidget {
   const ArDriveDataTable({
     super.key,
     required this.columns,
@@ -29,6 +31,12 @@ class ArDriveDataTable<T> extends StatefulWidget {
     this.onChangePage,
     this.maxItemsPerPage = 100,
     required this.rowsPerPageText,
+    this.sortRows,
+    this.onSelectedRows,
+    this.onRowTap,
+    this.onChangeMultiSelecting,
+    this.forceDisableMultiSelect = false,
+    this.lockMultiSelect = false,
   });
 
   final List<TableColumn> columns;
@@ -37,47 +45,308 @@ class ArDriveDataTable<T> extends StatefulWidget {
   final Widget Function(T row)? leading;
   final Widget Function(T row)? trailing;
   final int Function(T a, T b) Function(int columnIndex)? sort;
+  final List<T> Function(List<T> rows, int columnIndex, TableSort sortOrder)?
+      sortRows;
   final Function(int page)? onChangePage;
   final int pageItemsDivisorFactor;
   final int maxItemsPerPage;
   final String rowsPerPageText;
-
+  final Function(List<MultiSelectBox<T>> selectedRows)? onSelectedRows;
+  final Function(T row)? onRowTap;
+  final Function(bool onChangeMultiSelecting)? onChangeMultiSelecting;
+  final bool forceDisableMultiSelect;
+  final bool lockMultiSelect;
   @override
   State<ArDriveDataTable> createState() => _ArDriveDataTableState<T>();
 }
 
 enum TableSort { asc, desc }
 
-class _ArDriveDataTableState<T> extends State<ArDriveDataTable<T>> {
-  late List<T> _rows;
+abstract class IndexedItem with EquatableMixin {
+  IndexedItem(this.index);
+
+  final int index;
+}
+
+class _ArDriveDataTableState<T extends IndexedItem>
+    extends State<ArDriveDataTable<T>> {
+  late List<T> _cachedRows;
   late List<T> _currentPage;
+  final List<MultiSelectBox<T>> _multiSelectBoxes = [];
+  T? _selectedItem;
+
+  final ScrollController _scrollController = ScrollController();
 
   late int _numberOfPages;
   late int _selectedPage;
   late int _pageItemsDivisorFactor;
   late int _numberOfItemsPerPage;
   int? _sortedColumn;
+  bool _isMultiSelectingWithLongPress = false;
 
   TableSort? _tableSort;
+
+  bool _isCtrlPressed = false;
+  int? _shiftSelectionStartIndex;
+
+  bool get _isMultiSelecting {
+    final isMultiSelecting = _isMultiSelectingWithLongPress ||
+        _multiSelectBoxes.isNotEmpty &&
+            _multiSelectBoxes
+                .any((element) => element.selectedItems.isNotEmpty) ||
+        _isCtrlPressed;
+
+    return isMultiSelecting;
+  }
 
   @override
   void initState() {
     super.initState();
-    _rows = widget.rows;
+    _cachedRows = widget.rows;
     _pageItemsDivisorFactor = widget.pageItemsDivisorFactor;
     _numberOfItemsPerPage = _pageItemsDivisorFactor;
-    _numberOfPages = _rows.length ~/ _pageItemsDivisorFactor;
-    if (_rows.length % _pageItemsDivisorFactor != 0) {
+    _numberOfPages = _cachedRows.length ~/ _pageItemsDivisorFactor;
+
+    if (_cachedRows.length % _pageItemsDivisorFactor != 0) {
       _numberOfPages++;
     }
+
     selectPage(0);
+
+    RawKeyboard.instance.addListener(_handleKeyDownEvent);
+    RawKeyboard.instance.addListener(_handleEscapeKey);
+    RawKeyboard.instance.addListener(_handleSelectAllShortcut);
+  }
+
+  void openMultiSelectBox() {
+    if (!_multiSelectBoxes.any((element) => element.page == _selectedPage)) {
+      _multiSelectBoxes.add(
+        MultiSelectBox(
+          selectedItems: [],
+          page: _selectedPage,
+        ),
+      );
+    }
+  }
+
+  MultiSelectBox<T> getMultiSelectBox() {
+    if (!_multiSelectBoxes.any((element) => element.page == _selectedPage)) {
+      openMultiSelectBox();
+    }
+
+    return _multiSelectBoxes.firstWhere(
+      (element) => element.page == _selectedPage,
+    );
+  }
+
+  void recalculatePageForNewNumberOfItemsPerPage(int newItemsPerPage) {
+    setState(() {
+      int newPage =
+          ((_selectedPage) * _numberOfItemsPerPage) ~/ newItemsPerPage;
+
+      _numberOfItemsPerPage = newItemsPerPage;
+
+      // Clear the current selection because the items on the page have changed
+      clearSelection();
+
+      selectPage(newPage);
+    });
+  }
+
+  int _recalculateCurrentPage() {
+    // calculate the new total number of items after removing the items
+    int removedItemCount = _cachedRows.length - widget.rows.length;
+
+    int newTotalItems = _cachedRows.length - removedItemCount;
+
+    // calculate the new last page index
+    int newLastPageIndex = (newTotalItems / _numberOfItemsPerPage).ceil() - 1;
+
+    if (newLastPageIndex < 0) {
+      newLastPageIndex = 0;
+    }
+
+    // if the current page is greater than the new last page index,
+    // move the user to the last page
+    if (_selectedPage > newLastPageIndex) {
+      return newLastPageIndex;
+    }
+
+    return _selectedPage;
+  }
+
+  void clearSelection() {
+    widget.onSelectedRows?.call([]);
+    _multiSelectBoxes.clear();
+    _isMultiSelectingWithLongPress = false;
+    _isCtrlPressed = false;
+    _shiftSelectionStartIndex = null;
+  }
+
+  @override
+  void didChangeDependencies() {
+    if (mounted) {
+      if (getMultiSelectBox().selectedItems.isEmpty) {
+        widget.onChangeMultiSelecting!(false);
+      }
+    }
+
+    super.didChangeDependencies();
+  }
+
+  @override
+  void didUpdateWidget(oldWidget) {
+    super.didUpdateWidget(oldWidget);
+
+    if (oldWidget != widget) {
+      if (widget.forceDisableMultiSelect && _isMultiSelecting) {
+        clearSelection();
+      }
+
+      final temp = <T>[];
+
+      final currentMultiSelectBox = getMultiSelectBox();
+
+      // Updates the list of selected rows if the list of rows has changed
+      if (_cachedRows.length != widget.rows.length) {
+        if (currentMultiSelectBox.selectedItems.isNotEmpty &&
+            !widget.lockMultiSelect) {
+          for (final row in currentMultiSelectBox.selectedItems) {
+            final index = widget.rows.indexWhere((element) => element == row);
+            temp.add(widget.rows[index]);
+          }
+
+          currentMultiSelectBox.clear();
+          currentMultiSelectBox.addAll(temp);
+        }
+
+        _cachedRows = widget.rows;
+
+        selectPage(_recalculateCurrentPage());
+      } else {
+        _cachedRows = widget.rows;
+
+        selectPage(_selectedPage);
+      }
+    }
+  }
+
+  void _handleEscapeKey(RawKeyEvent event) {
+    if (mounted) {
+      if (event.isKeyPressed(LogicalKeyboardKey.escape)) {
+        setState(() {
+          clearSelection();
+
+          if (widget.onChangeMultiSelecting != null) {
+            widget.onChangeMultiSelecting!(false);
+          }
+        });
+      }
+    }
+  }
+
+  /// Selects all items c=with ctrl / command + a
+  void _handleSelectAllShortcut(RawKeyEvent event) {
+    if (event.isKeyPressed(LogicalKeyboardKey.keyA) && _isCtrlPressed) {
+      _selectAllItemsInPage();
+    }
+  }
+
+  void _handleKeyDownEvent(RawKeyEvent event) {
+    if (mounted) {
+      if (widget.lockMultiSelect) {
+        return;
+      }
+
+      setState(() {
+        if (event.isKeyPressed(LogicalKeyboardKey.metaLeft) ||
+            event.isKeyPressed(LogicalKeyboardKey.controlLeft)) {
+          _isCtrlPressed = true;
+        } else {
+          _isCtrlPressed = false;
+        }
+
+        if (widget.onChangeMultiSelecting != null) {
+          widget.onChangeMultiSelecting!(_isMultiSelecting);
+        }
+      });
+    }
+  }
+
+  void _selectMultiSelectItem(T item, int index, bool select) {
+    if (widget.lockMultiSelect) {
+      return;
+    }
+
+    setState(() {
+      if (!_multiSelectBoxes.any((element) => element.page == _selectedPage)) {
+        _multiSelectBoxes.add(
+          MultiSelectBox(
+            selectedItems: [],
+            page: _selectedPage,
+          ),
+        );
+      }
+
+      final multiselectBox = getMultiSelectBox();
+
+      if (_isCtrlPressed) {
+        if (multiselectBox.selectedItems.contains(item)) {
+          multiselectBox.remove(item);
+        } else {
+          multiselectBox.add(item);
+        }
+      } else if (RawKeyboard.instance.keysPressed
+          .contains(LogicalKeyboardKey.shiftLeft)) {
+        if (_shiftSelectionStartIndex != null) {
+          final startIndex = _shiftSelectionStartIndex!;
+          final endIndex = index;
+          final start = startIndex < endIndex ? startIndex : endIndex;
+          final end = startIndex > endIndex ? startIndex : endIndex;
+          multiselectBox.selectedItems.clear();
+
+          for (int i = start; i <= end; i++) {
+            multiselectBox.add(_currentPage[i]);
+          }
+        } else {
+          _shiftSelectionStartIndex = index;
+          multiselectBox.selectedItems.clear();
+          multiselectBox.add(item);
+        }
+      } else {
+        _shiftSelectionStartIndex = null;
+        if (select) {
+          multiselectBox.add(item);
+        } else {
+          multiselectBox.remove(item);
+        }
+      }
+    });
+
+    widget.onSelectedRows?.call(_multiSelectBoxes);
+  }
+
+  void _selectAllItemsInPage() {
+    if (widget.lockMultiSelect) {
+      return;
+    }
+
+    final multiselectPage = getMultiSelectBox();
+
+    setState(() {
+      multiselectPage.addAll(_currentPage);
+    });
+
+    widget.onSelectedRows?.call(_multiSelectBoxes);
   }
 
   int _getNumberOfPages() {
-    _numberOfPages = _rows.length ~/ _numberOfItemsPerPage;
-    if (_rows.length % _numberOfItemsPerPage != 0) {
+    _numberOfPages = _cachedRows.length ~/ _numberOfItemsPerPage;
+
+    if (_cachedRows.length % _numberOfItemsPerPage != 0) {
       _numberOfPages = _numberOfPages + 1;
     }
+
     return _numberOfPages;
   }
 
@@ -88,81 +357,90 @@ class _ArDriveDataTableState<T> extends State<ArDriveDataTable<T>> {
       (index) {
         return Flexible(
           flex: widget.columns[index].size,
-          child: Align(
-            alignment: Alignment.centerLeft,
-            child: GestureDetector(
-              onTap: () {
-                if (widget.sort != null) {
+          child: ArDriveClickArea(
+            child: Align(
+              alignment: Alignment.centerLeft,
+              child: GestureDetector(
+                onTap: () {
+                  final stopwatch = Stopwatch()..start();
+
                   setState(() {
                     if (_sortedColumn == index) {
-                      // toggles the sort state
-                      if (_tableSort == TableSort.asc) {
-                        _tableSort = TableSort.desc;
-                      } else {
-                        _tableSort = TableSort.asc;
-                      }
+                      _tableSort = _tableSort == TableSort.asc
+                          ? TableSort.desc
+                          : TableSort.asc;
                     } else {
+                      _sortedColumn = index;
                       _tableSort = TableSort.asc;
                     }
-                    int sort(T a, T b) {
-                      if (_tableSort == TableSort.desc) {
+                  });
+
+                  if (widget.sortRows != null) {
+                    _cachedRows =
+                        widget.sortRows!(_cachedRows, index, _tableSort!);
+                  } else if (widget.sort != null) {
+                    int sort(a, b) {
+                      if (_tableSort == TableSort.asc) {
                         return widget.sort!.call(index)(a, b);
                       } else {
                         return widget.sort!.call(index)(b, a);
                       }
                     }
 
-                    _sortedColumn = index;
+                    _cachedRows.sort(sort);
+                  }
 
-                    _rows.sort(sort);
+                  selectPage(_selectedPage);
 
-                    selectPage(_selectedPage);
-                  });
-                }
-              },
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.only(right: 4),
-                    child: Text(
-                      widget.columns[index].title,
-                      style: ArDriveTypography.body.buttonNormalBold(),
+                  stopwatch.stop();
+
+                  debugPrint(
+                    'TABLE SORT - Elapsed time: ${stopwatch.elapsedMilliseconds}ms',
+                  );
+                },
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.only(right: 4),
+                      child: Text(
+                        widget.columns[index].title,
+                        style: ArDriveTypography.body.buttonNormalBold(),
+                      ),
                     ),
-                  ),
-                  if (_sortedColumn == index)
-                    _tableSort == TableSort.asc
-                        ? ArDriveIcons.chevronUp(
-                            size: 8,
-                            color: ArDriveTheme.of(context)
-                                .themeData
-                                .colors
-                                .themeFgDefault)
-                        : ArDriveIcons.chevronDown(
-                            size: 8,
-                            color: ArDriveTheme.of(context)
-                                .themeData
-                                .colors
-                                .themeFgDefault,
-                          ),
-                ],
+                    if (_sortedColumn == index)
+                      _tableSort == TableSort.asc
+                          ? ArDriveIcons.carretUp(
+                              color: ArDriveTheme.of(context)
+                                  .themeData
+                                  .colors
+                                  .themeFgDefault)
+                          : ArDriveIcons.carretDown(
+                              color: ArDriveTheme.of(context)
+                                  .themeData
+                                  .colors
+                                  .themeFgDefault,
+                            ),
+                  ],
+                ),
               ),
             ),
           ),
         );
       },
+      growable: false,
     );
     EdgeInsets getPadding() {
       double rightPadding = 0;
       double leftPadding = 0;
 
       if (widget.leading != null) {
-        leftPadding = 80;
+        leftPadding = 60;
       } else {
         leftPadding = 20;
       }
       if (widget.trailing != null) {
-        rightPadding = 80;
+        rightPadding = 135;
       } else {
         rightPadding = 20;
       }
@@ -180,11 +458,19 @@ class _ArDriveDataTableState<T> extends State<ArDriveDataTable<T>> {
           const SizedBox(
             height: 28,
           ),
-          Padding(
-            padding: getPadding(),
-            child: Row(
-              children: columns,
-            ),
+          Row(
+            children: [
+              _masterMultiselectCheckBox(),
+              Flexible(
+                child: AnimatedPadding(
+                  duration: const Duration(milliseconds: 300),
+                  padding: getPadding(),
+                  child: Row(
+                    children: columns,
+                  ),
+                ),
+              ),
+            ],
           ),
           const SizedBox(
             height: 25,
@@ -194,189 +480,268 @@ class _ArDriveDataTableState<T> extends State<ArDriveDataTable<T>> {
               constraints: BoxConstraints(
                 maxHeight: MediaQuery.of(context).size.height,
               ),
-              child: SingleChildScrollView(
-                  child: Column(mainAxisSize: MainAxisSize.min, children: [
-                for (var row in _currentPage) ...[
-                  Padding(
-                    padding: const EdgeInsets.only(top: 5),
-                    child: _buildRowSpacing(
-                      widget.columns,
-                      widget.buildRow(row).row,
-                      row,
-                    ),
-                  ),
-                ],
-              ])),
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.all(36.0),
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Flexible(
-                  flex: 1,
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text(
-                        widget.rowsPerPageText,
-                        style: ArDriveTypography.body.buttonNormalBold(),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.only(left: 42),
-                        child: PaginationSelect(
-                          currentNumber: _numberOfItemsPerPage,
-                          divisorFactor: _pageItemsDivisorFactor,
-                          maxOption: widget.maxItemsPerPage,
-                          maxNumber: widget.rows.length,
-                          onSelect: (n) {
-                            setState(() {
-                              int newPage =
-                                  ((_selectedPage) * _numberOfItemsPerPage) ~/
-                                      n;
-
-                              _numberOfItemsPerPage = n;
-
-                              selectPage(newPage);
-                            });
-                          },
+              child: ArDriveScrollBar(
+                controller: _scrollController,
+                child: ListView.builder(
+                  controller: _scrollController,
+                  itemCount: _currentPage.length,
+                  itemBuilder: (context, index) {
+                    return ArDriveClickArea(
+                      key: ValueKey(_currentPage[index]),
+                      child: Padding(
+                        padding: const EdgeInsets.only(top: 5),
+                        child: _buildRowSpacing(
+                          widget.columns,
+                          widget.buildRow(_currentPage[index]).row,
+                          _currentPage[index],
+                          index,
                         ),
                       ),
+                    );
+                  },
+                ),
+              ),
+            ),
+          ),
+          _pageIndicator(),
+        ],
+      ),
+    );
+  }
+
+  Widget _masterMultiselectCheckBox() {
+    final multiselectPage = getMultiSelectBox();
+
+    final isMasterCheckBoxChecked = multiselectPage.page == _selectedPage &&
+        multiselectPage.selectedItems.length == _currentPage.length;
+
+    return AnimatedContainer(
+      duration: const Duration(milliseconds: 300),
+      width: _isMultiSelecting ? checkboxSize + 14 : 0,
+      child: ArDriveCheckBox(
+        key: ValueKey(
+          isMasterCheckBoxChecked.toString() +
+              multiselectPage.page.toString() +
+              multiselectPage.selectedItems.length.toString(),
+        ),
+        checked: isMasterCheckBoxChecked,
+        isIndeterminate: multiselectPage.selectedItems.isNotEmpty &&
+            multiselectPage.selectedItems.length != _currentPage.length,
+        onChange: (value) {
+          setState(() {
+            if (value) {
+              _selectAllItemsInPage();
+            } else {
+              multiselectPage.clear();
+            }
+
+            if (widget.onChangeMultiSelecting != null) {
+              widget.onChangeMultiSelecting!(_isMultiSelecting);
+            }
+          });
+        },
+      ),
+    );
+  }
+
+  Widget _multiSelectColumn(bool selectAll, {required T row, int? index}) {
+    final multiselectPage = getMultiSelectBox();
+
+    final isSelected = multiselectPage.selectedItems.any(
+      (element) => element.index == row.index,
+    );
+
+    return AnimatedContainer(
+      duration: const Duration(milliseconds: 300),
+      width: _isMultiSelecting ? checkboxSize + 14 : 0,
+      child: ArDriveCheckBox(
+        key: ValueKey(
+          index.toString() + isSelected.toString(),
+        ),
+        checked: isSelected,
+        onChange: (value) {
+          _onChangeItemCheck(
+            row: row,
+            index: index,
+            value: value,
+          );
+        },
+      ),
+    );
+  }
+
+  void _onChangeItemCheck({
+    T? row,
+    int? index,
+    required bool value,
+  }) {
+    setState(
+      () {
+        if (row != null && index != null) {
+          _selectMultiSelectItem(row, index, value);
+        }
+
+        if (_isMultiSelectingWithLongPress &&
+            !value &&
+            getMultiSelectBox().selectedItems.isEmpty) {
+          _isMultiSelectingWithLongPress = false;
+
+          if (widget.onChangeMultiSelecting != null) {
+            widget.onChangeMultiSelecting!(_isMultiSelecting);
+          }
+
+          return;
+        }
+      },
+    );
+  }
+
+  Widget _pageIndicator() {
+    return Padding(
+      padding: const EdgeInsets.all(36.0),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            mainAxisSize: MainAxisSize.max,
+            children: [
+              ArDriveClickArea(
+                showCursor: _selectedPage > 0,
+                child: GestureDetector(
+                  behavior: HitTestBehavior.translucent,
+                  onTap: () {
+                    if (_selectedPage > 0) {
+                      goToPreviousPage();
+                    }
+                  },
+                  child: SizedBox(
+                    height: 32,
+                    width: 32,
+                    child: Center(
+                      child: ArDriveIcons.carretLeft(
+                        color: _selectedPage > 0
+                            ? ArDriveTheme.of(context)
+                                .themeData
+                                .colors
+                                .themeFgDefault
+                            : grey,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+              if (_getPagesToShow().first > 1) ...[
+                _pageNumber(0),
+                if (_getPagesToShow().first > 2)
+                  Row(
+                    children: [
+                      ArDriveIcons.dots(
+                        size: 24,
+                        color: ArDriveTheme.of(context)
+                            .themeData
+                            .colors
+                            .themeFgDefault,
+                      ),
+                    ],
+                  ),
+              ],
+              ..._getPagesIndicators(),
+              if (_getPagesToShow().last < _getNumberOfPages() &&
+                  _getPagesToShow().last < _getNumberOfPages() - 1)
+                GestureDetector(
+                  onTap: () {
+                    goToLastPage();
+                  },
+                  child: Row(
+                    children: [
+                      ArDriveIcons.dots(
+                        size: 24,
+                        color: ArDriveTheme.of(context)
+                            .themeData
+                            .colors
+                            .themeFgDefault,
+                      ),
+                      _pageNumber(_getNumberOfPages() - 1),
                     ],
                   ),
                 ),
-                Flexible(
-                  flex: 1,
-                  child: Row(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    mainAxisSize: MainAxisSize.max,
-                    children: [
-                      SizedBox(
-                        height: 32,
-                        width: 32,
-                        child: GestureDetector(
-                          onTap: () {
-                            if (_selectedPage > 0) {
-                              goToPreviousPage();
-                            }
-                          },
-                          child: Center(
-                            child: ArDriveIcons.chevronLeft(
-                              size: 18,
-                              color: _selectedPage > 0
-                                  ? ArDriveTheme.of(context)
-                                      .themeData
-                                      .colors
-                                      .themeFgDefault
-                                  : grey,
-                            ),
-                          ),
-                        ),
+              ArDriveClickArea(
+                showCursor: _selectedPage + 1 < _getNumberOfPages(),
+                child: GestureDetector(
+                  behavior: HitTestBehavior.translucent,
+                  onTap: () {
+                    if (_selectedPage + 1 < _getNumberOfPages()) {
+                      goToNextPage();
+                    }
+                  },
+                  child: SizedBox(
+                    height: 32,
+                    width: 32,
+                    child: Center(
+                      child: ArDriveIcons.carretRight(
+                        color: _selectedPage + 1 < _getNumberOfPages()
+                            ? ArDriveTheme.of(context)
+                                .themeData
+                                .colors
+                                .themeFgDefault
+                            : grey,
                       ),
-                      if (_getNumberOfPages() > 5 && _selectedPage >= 4)
-                        GestureDetector(
-                          onTap: () {
-                            goToFirstPage();
-                          },
-                          child: Row(
-                            children: [
-                              _pageNumber(0),
-                              ArDriveIcons.dots(
-                                size: 24,
-                                color: ArDriveTheme.of(context)
-                                    .themeData
-                                    .colors
-                                    .themeFgDefault,
-                              ),
-                            ],
-                          ),
-                        ),
-                      ..._getPagesIndicators(),
-                      if (_getNumberOfPages() > 5 &&
-                          _selectedPage < _numberOfPages - 4)
-                        GestureDetector(
-                          onTap: () {
-                            goToLastPage();
-                          },
-                          child: Row(
-                            children: [
-                              ArDriveIcons.dots(
-                                size: 24,
-                                color: ArDriveTheme.of(context)
-                                    .themeData
-                                    .colors
-                                    .themeFgDefault,
-                              ),
-                              _pageNumber(_getNumberOfPages() - 1),
-                            ],
-                          ),
-                        ),
-                      SizedBox(
-                        height: 32,
-                        width: 32,
-                        child: GestureDetector(
-                          onTap: () {
-                            if (_selectedPage + 1 < _getNumberOfPages()) {
-                              goToNextPage();
-                            }
-                          },
-                          child: Center(
-                            child: ArDriveIcons.chevronRight(
-                              color: _selectedPage + 1 < _getNumberOfPages()
-                                  ? ArDriveTheme.of(context)
-                                      .themeData
-                                      .colors
-                                      .themeFgDefault
-                                  : grey,
-                              size: 18,
-                            ),
-                          ),
-                        ),
-                      ),
-                    ],
+                    ),
                   ),
-                )
-              ],
-            ),
+                ),
+              ),
+            ],
           )
         ],
       ),
     );
   }
 
+  List<int> _getPagesToShow() {
+    late int visiblePages;
+    final int numberOfPages = _getNumberOfPages();
+
+    if (numberOfPages < 5) {
+      visiblePages = numberOfPages;
+    } else {
+      visiblePages = 5;
+    }
+
+    final int half = visiblePages ~/ 2;
+    final int start = _selectedPage + 1 - half;
+    final int end = _selectedPage + 1 + half;
+
+    if (start <= 0) {
+      return List.generate(
+        visiblePages,
+        (index) => index + 1,
+        growable: false,
+      );
+    }
+
+    if (end >= numberOfPages) {
+      return List.generate(
+        visiblePages,
+        (index) => numberOfPages - visiblePages + index + 1,
+        growable: false,
+      );
+    }
+
+    return List.generate(
+      visiblePages,
+      (index) => start + index,
+      growable: false,
+    );
+  }
+
   /// The pages are counted starting from 0, so, to show correctly add + 1
   ///
   List<Widget> _getPagesIndicators() {
-    if (_numberOfPages < 6) {
-      return List.generate(_numberOfPages, (index) {
-        return _pageNumber(index);
-      });
-    } else {
-      List<Widget> items = [];
-
-      /// 1, 2, 3, 4, 5, 6 ... max
-      if (_selectedPage <= 1) {
-        return List.generate(5, (index) {
-          return _pageNumber(index);
-        });
-      } else if (_selectedPage >= _numberOfPages - 2) {
-        /// 1 ... x1, x2, x3, x4, max
-        for (int i = _numberOfPages - 1; i >= _selectedPage - 4; i--) {
-          items.add(_pageNumber(i));
-        }
-
-        return items.reversed.toList();
-      } else {
-        /// 1...x1, x2, selectedPage, x3, x4 ... max
-        for (int i = _selectedPage - 2; i <= _selectedPage + 2; i++) {
-          items.add(_pageNumber(i));
-        }
-
-        return items;
-      }
-    }
+    return _getPagesToShow().map((page) {
+      return _pageNumber(page - 1);
+    }).toList();
   }
 
   Widget _pageNumber(int page) {
@@ -390,43 +755,100 @@ class _ArDriveDataTableState<T> extends State<ArDriveDataTable<T>> {
   }
 
   Widget _buildRowSpacing(
-      List<TableColumn> columns, List<Widget> buildRow, T row) {
-    return ArDriveCard(
-      backgroundColor: ArDriveTheme.of(context)
-          .themeData
-          .colors
-          .themeBorderDefault
-          .withOpacity(0.25),
-      contentPadding: const EdgeInsets.symmetric(horizontal: 15, vertical: 8),
-      content: Row(
+    List<TableColumn> columns,
+    List<Widget> buildRow,
+    T row,
+    int index,
+  ) {
+    final multiselect = getMultiSelectBox();
+
+    return GestureDetector(
+      onTap: () {
+        if (_isMultiSelecting) {
+          _onChangeItemCheck(
+            value: !multiselect.selectedItems.any((r) => r.index == row.index),
+            row: row,
+            index: row.index,
+          );
+        } else {
+          setState(() {
+            _selectedItem = row;
+          });
+
+          widget.onRowTap?.call(row);
+        }
+      },
+      onLongPress: () {
+        setState(() {
+          _isMultiSelectingWithLongPress = !_isMultiSelectingWithLongPress;
+        });
+
+        if (widget.onChangeMultiSelecting != null) {
+          widget.onChangeMultiSelecting!(_isMultiSelecting);
+        }
+      },
+      behavior: HitTestBehavior.opaque,
+      child: Row(
         children: [
-          if (widget.leading != null)
-            Padding(
-              padding: const EdgeInsets.only(right: 20),
-              child: SizedBox(
-                height: 40,
-                width: 40,
-                child: widget.leading!.call(row),
+          _multiSelectColumn(false, index: index, row: row),
+          Flexible(
+            child: ArDriveCard(
+              key: ValueKey(row),
+              backgroundColor: (!_isMultiSelecting && _selectedItem == row) ||
+                      multiselect.selectedItems.contains(row)
+                  ? ArDriveTheme.of(context)
+                      .themeData
+                      .tableTheme
+                      .selectedItemColor
+                  : ArDriveTheme.of(context)
+                      .themeData
+                      .colors
+                      .themeBorderDefault
+                      .withOpacity(0.25),
+              contentPadding:
+                  const EdgeInsets.symmetric(horizontal: 15, vertical: 0),
+              content: Row(
+                children: [
+                  if (widget.leading != null)
+                    Padding(
+                      padding: const EdgeInsets.only(right: 16),
+                      child: ConstrainedBox(
+                        constraints: const BoxConstraints(
+                          maxWidth: 40,
+                          maxHeight: 40,
+                        ),
+                        child: widget.leading!.call(row),
+                      ),
+                    ),
+                  ...List.generate(
+                    columns.length,
+                    (index) {
+                      return Flexible(
+                        flex: columns[index].size,
+                        child: ArDriveClickArea(
+                          child: Align(
+                            alignment: Alignment.centerLeft,
+                            child: buildRow[index],
+                          ),
+                        ),
+                      );
+                    },
+                    growable: false,
+                  ),
+                  if (widget.trailing != null)
+                    Padding(
+                      padding: const EdgeInsets.only(left: 20),
+                      child: Container(
+                        alignment: Alignment.center,
+                        height: 44,
+                        width: 100,
+                        child: widget.trailing!.call(row),
+                      ),
+                    ),
+                ],
               ),
             ),
-          ...List.generate(columns.length, (index) {
-            return Flexible(
-              flex: columns[index].size,
-              child: Align(
-                alignment: Alignment.centerLeft,
-                child: buildRow[index],
-              ),
-            );
-          }),
-          if (widget.trailing != null)
-            Padding(
-              padding: const EdgeInsets.only(left: 20),
-              child: SizedBox(
-                height: 40,
-                width: 40,
-                child: widget.trailing!.call(row),
-              ),
-            ),
+          ),
         ],
       ),
     );
@@ -435,13 +857,14 @@ class _ArDriveDataTableState<T> extends State<ArDriveDataTable<T>> {
   void selectPage(int page) {
     setState(() {
       _selectedPage = page;
-      int maxIndex = _rows.length - 1 < (page + 1) * _numberOfItemsPerPage
-          ? _rows.length - 1
+
+      int maxIndex = _cachedRows.length < (page + 1) * _numberOfItemsPerPage
+          ? _cachedRows.length
           : (page + 1) * _numberOfItemsPerPage;
 
       int minIndex = (_selectedPage * _numberOfItemsPerPage);
 
-      _currentPage = _rows.sublist(minIndex, maxIndex);
+      _currentPage = _cachedRows.sublist(minIndex, maxIndex);
     });
   }
 
@@ -524,9 +947,11 @@ class _PaginationSelectState extends State<PaginationSelect> {
             ),
           ),
       ],
-      child: _PageNumber(
-        page: currentNumber - 1,
-        isSelected: false,
+      child: ArDriveClickArea(
+        child: _PageNumber(
+          page: currentNumber - 1,
+          isSelected: false,
+        ),
       ),
     );
   }
@@ -545,44 +970,52 @@ class _PageNumber extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: onPressed,
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 4.0),
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Container(
-              alignment: Alignment.center,
-              padding: const EdgeInsets.fromLTRB(10, 2, 10, 4),
-              decoration: BoxDecoration(
-                border: Border.all(
-                  width: 2,
+    return ArDriveClickArea(
+      child: GestureDetector(
+        onTap: onPressed,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 4.0),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Container(
+                alignment: Alignment.center,
+                padding: const EdgeInsets.fromLTRB(10, 2, 10, 4),
+                decoration: BoxDecoration(
+                  border: Border.all(
+                    width: 2,
+                    color: isSelected
+                        ? ArDriveTheme.of(context)
+                            .themeData
+                            .colors
+                            .themeFgDefault
+                        : ArDriveTheme.of(context)
+                            .themeData
+                            .colors
+                            .themeGbMuted,
+                  ),
+                  borderRadius: BorderRadius.circular(4),
                   color: isSelected
                       ? ArDriveTheme.of(context).themeData.colors.themeFgDefault
-                      : ArDriveTheme.of(context).themeData.colors.themeGbMuted,
+                      : null,
                 ),
-                borderRadius: BorderRadius.circular(4),
-                color: isSelected
-                    ? ArDriveTheme.of(context).themeData.colors.themeFgDefault
-                    : null,
-              ),
-              child: Text(
-                _showSemanticPageNumber(page),
-                style: ArDriveTypography.body.buttonNormalBold(
-                  color: isSelected
-                      ? ArDriveTheme.of(context)
-                          .themeData
-                          .tableTheme
-                          .backgroundColor
-                      : ArDriveTheme.of(context)
-                          .themeData
-                          .colors
-                          .themeFgDefault,
+                child: Text(
+                  _showSemanticPageNumber(page),
+                  style: ArDriveTypography.body.buttonNormalBold(
+                    color: isSelected
+                        ? ArDriveTheme.of(context)
+                            .themeData
+                            .tableTheme
+                            .backgroundColor
+                        : ArDriveTheme.of(context)
+                            .themeData
+                            .colors
+                            .themeFgDefault,
+                  ),
                 ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
@@ -591,4 +1024,31 @@ class _PageNumber extends StatelessWidget {
 
 String _showSemanticPageNumber(int page) {
   return (page + 1).toString();
+}
+
+class MultiSelectBox<T> {
+  final int page;
+  final List<T> selectedItems;
+
+  MultiSelectBox({
+    required this.page,
+    required this.selectedItems,
+  });
+
+  void add(T item) {
+    selectedItems.add(item);
+  }
+
+  void addAll(List<T> items) {
+    selectedItems.clear();
+    selectedItems.addAll(items);
+  }
+
+  void remove(T item) {
+    selectedItems.remove(item);
+  }
+
+  void clear() {
+    selectedItems.clear();
+  }
 }

@@ -1,8 +1,9 @@
-import 'dart:async';
-
 import 'package:ardrive_ui/ardrive_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_portal/flutter_portal.dart';
+
+export 'package:flutter_portal/flutter_portal.dart'
+    show Anchor, Aligned, Filled;
 
 class ArDriveDropdown extends StatefulWidget {
   const ArDriveDropdown({
@@ -10,13 +11,14 @@ class ArDriveDropdown extends StatefulWidget {
     required this.items,
     required this.child,
     this.contentPadding,
-    this.height = 60,
+    this.height = 48,
     this.width = 200,
     this.anchor = const Aligned(
       follower: Alignment.topLeft,
       target: Alignment.bottomLeft,
       offset: Offset(0, 4),
     ),
+    this.calculateVerticalAlignment,
   });
 
   final double height;
@@ -26,71 +28,191 @@ class ArDriveDropdown extends StatefulWidget {
   final EdgeInsets? contentPadding;
   final Anchor anchor;
 
+  // retruns the alignment based if the current widget y coordinate is greater than half the screen height
+  final Alignment Function(bool)? calculateVerticalAlignment;
+
   @override
   State<ArDriveDropdown> createState() => _ArDriveDropdownState();
 }
 
 class _ArDriveDropdownState extends State<ArDriveDropdown> {
-  bool? visible;
+  bool visible = false;
+  late Anchor _anchor;
+
+  double dropdownHeight = 0;
+
+  @override
+  void initState() {
+    _anchor = widget.anchor;
+
+    super.initState();
+  }
+
+  @override
+  void didChangeDependencies() {
+    if (mounted) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        final renderBox = context.findRenderObject() as RenderBox?;
+
+        final position = renderBox?.localToGlobal(Offset.zero);
+
+        if (position != null && widget.calculateVerticalAlignment != null) {
+          final y = position.dy;
+
+          final screenHeight = MediaQuery.of(context).size.height;
+
+          Alignment alignment;
+
+          alignment =
+              widget.calculateVerticalAlignment!.call(y > screenHeight / 2);
+
+          _anchor = Aligned(
+            follower: alignment,
+            target: Alignment.bottomLeft,
+          );
+        }
+      });
+    }
+
+    super.didChangeDependencies();
+  }
 
   @override
   Widget build(BuildContext context) {
-    double dropdownHeight = widget.items.length * widget.height;
+    dropdownHeight = widget.items.length * widget.height;
 
     return ArDriveOverlay(
+      onVisibleChange: (value) {
+        setState(() {
+          visible = value;
+        });
+      },
       visible: visible,
-      anchor: widget.anchor,
-      content: TweenAnimationBuilder<double>(
-        duration: kThemeAnimationDuration,
-        curve: Curves.easeOut,
-        tween: Tween(begin: 50, end: dropdownHeight),
-        builder: (context, size, _) {
-          return SizedBox(
-            height: size,
-            child: ArDriveCard(
-              contentPadding: EdgeInsets.zero,
-              content: ClipRRect(
-                borderRadius: BorderRadius.circular(8),
+      anchor: _anchor,
+      content: _ArDriveDropdownContent(
+        height: dropdownHeight,
+        child: ArDriveScrollBar(
+          isVisible: false,
+          child: ArDriveCard(
+            border: Border.all(
+              color: ArDriveTheme.of(context)
+                  .themeData
+                  .dropdownTheme
+                  .backgroundColor,
+              width: 1,
+            ),
+            boxShadow: BoxShadowCard.shadow80,
+            elevation: 5,
+            contentPadding: widget.contentPadding ?? EdgeInsets.zero,
+            content: SizedBox(
+              width: widget.width,
+              child: SingleChildScrollView(
                 child: Column(
                   children: List.generate(widget.items.length, (index) {
-                    return FutureBuilder<bool>(
-                        future: Future.delayed(
-                          Duration(milliseconds: (index + 1) * 50),
-                          () => true,
+                    return Column(
+                      children: [
+                        GestureDetector(
+                          onTap: () {
+                            widget.items[index].onClick?.call();
+                            setState(() {
+                              visible = false;
+                            });
+                          },
+                          child: SizedBox(
+                            width: widget.width,
+                            height: widget.height,
+                            child: widget.items[index],
+                          ),
                         ),
-                        builder: (context, snapshot) {
-                          return AnimatedCrossFade(
-                            duration: const Duration(milliseconds: 100),
-                            firstChild: SizedBox(
-                              width: widget.width,
-                              height: widget.height,
-                              child: GestureDetector(
-                                onTap: () {
-                                  widget.items[index].onClick?.call();
-                                  setState(() {
-                                    visible = false;
-                                  });
-                                },
-                                child: widget.items[index],
-                              ),
-                            ),
-                            secondChild: SizedBox(
-                              height: 0,
-                              width: widget.width,
-                            ),
-                            crossFadeState: snapshot.hasData && snapshot.data!
-                                ? CrossFadeState.showFirst
-                                : CrossFadeState.showSecond,
-                          );
-                        });
+                        if (index != widget.items.length - 1)
+                          Divider(
+                            height: 0,
+                            thickness: 1,
+                            color: ArDriveTheme.of(context)
+                                .themeData
+                                .colors
+                                .themeBorderDefault,
+                          ),
+                      ],
+                    );
                   }),
                 ),
               ),
-              boxShadow: BoxShadowCard.shadow80,
             ),
-          );
-        },
+          ),
+        ),
       ),
+      child: GestureDetector(
+        onTap: () {
+          setState(() {
+            visible = !visible;
+          });
+        },
+        child: IgnorePointer(ignoring: visible, child: widget.child),
+      ),
+    );
+  }
+}
+
+// GestureDetector(
+//           behavior: HitTestBehavior.translucent,
+//           onTap: () {
+//             setState(() {
+//               _visible = true;
+//             });
+//           },
+//           child: IgnorePointer(
+//             ignoring: _visible,
+//             child: widget.child,
+//           ),
+//         ),
+
+class _ArDriveDropdownContent extends StatefulWidget {
+  @override
+  _ArDriveDropdownContentState createState() => _ArDriveDropdownContentState();
+
+  const _ArDriveDropdownContent({
+    required this.child,
+    this.height = 200,
+  });
+
+  final Widget child;
+  final double height;
+}
+
+class _ArDriveDropdownContentState extends State<_ArDriveDropdownContent>
+    with TickerProviderStateMixin {
+  late AnimationController _animationController;
+  late Animation<double> _animation;
+  double _height = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    _animationController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 200),
+    );
+    _animation = Tween<double>(begin: 0, end: widget.height)
+        .animate(_animationController)
+      ..addListener(() {
+        setState(() {
+          _height = _animation.value;
+        });
+      });
+    _animationController.forward();
+  }
+
+  @override
+  void dispose() {
+    _animationController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      height: _height,
       child: widget.child,
     );
   }
@@ -104,6 +226,7 @@ class ArDriveOverlay extends StatefulWidget {
     required this.child,
     required this.anchor,
     this.visible,
+    this.onVisibleChange,
   });
 
   final Widget child;
@@ -111,6 +234,7 @@ class ArDriveOverlay extends StatefulWidget {
   final EdgeInsets contentPadding;
   final Anchor anchor;
   final bool? visible;
+  final Function(bool)? onVisibleChange;
   @override
   State<ArDriveOverlay> createState() => _ArDriveOverlayState();
 }
@@ -119,15 +243,18 @@ class _ArDriveOverlayState extends State<ArDriveOverlay> {
   @override
   void initState() {
     super.initState();
+    _visible = widget.visible ?? false;
     _updateVisibleState();
   }
 
   @override
   void didUpdateWidget(oldWidget) {
     super.didUpdateWidget(oldWidget);
-    setState(() {
-      _updateVisibleState();
-    });
+    if (widget.visible != oldWidget.visible) {
+      setState(() {
+        _updateVisibleState();
+      });
+    }
   }
 
   void _updateVisibleState() {
@@ -136,15 +263,19 @@ class _ArDriveOverlayState extends State<ArDriveOverlay> {
     } else {
       _visible = false;
     }
+
+    // widget.onVisibleChange?.call(_visible);
   }
 
   late bool _visible;
+
   @override
   Widget build(BuildContext context) {
     return Barrier(
       onClose: () {
         setState(() {
           _visible = !_visible;
+          widget.onVisibleChange?.call(_visible);
         });
       },
       visible: _visible,
@@ -152,17 +283,7 @@ class _ArDriveOverlayState extends State<ArDriveOverlay> {
         anchor: widget.anchor,
         portalFollower: widget.content,
         visible: _visible,
-        child: GestureDetector(
-          onTap: () {
-            setState(() {
-              _visible = true;
-            });
-          },
-          child: IgnorePointer(
-            ignoring: _visible,
-            child: widget.child,
-          ),
-        ),
+        child: widget.child,
       ),
     );
   }
@@ -215,6 +336,7 @@ class _ArDriveDropdownItemState extends State<ArDriveDropdownItem> {
     final theme = ArDriveTheme.of(context).themeData.dropdownTheme;
 
     return MouseRegion(
+      cursor: SystemMouseCursors.click,
       onHover: (event) {
         setState(() {
           hovering = true;
@@ -225,7 +347,7 @@ class _ArDriveDropdownItemState extends State<ArDriveDropdownItem> {
       }),
       child: Container(
         color: hovering ? theme.hoverColor : theme.backgroundColor,
-        alignment: Alignment.center,
+        // alignment: Alignment.center,
         child: widget.content,
       ),
     );

@@ -1,74 +1,395 @@
 import 'package:ardrive_ui/ardrive_ui.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/svg.dart';
 
 class ArDriveIcon extends StatelessWidget {
   const ArDriveIcon({
     super.key,
-    required this.path,
     this.color,
-    this.size = 20,
+    this.size = 24,
+    required this.icon,
   });
 
-  final String path;
   final double? size;
   final Color? color;
+  final IconData icon;
 
   @override
   Widget build(BuildContext context) {
-    return SvgPicture.asset(
-      color: color ?? ArDriveTheme.of(context).themeData.colors.themeFgOnAccent,
-      path,
-      height: size,
-      width: size,
-      package: 'ardrive_ui',
+    return Icon(
+      icon,
+      size: size,
+      color: color ?? ArDriveTheme.of(context).themeData.colors.themeFgDefault,
+    );
+  }
+
+  ArDriveIcon copyWith({
+    double? size,
+    Color? color,
+    IconData? icon,
+  }) {
+    return ArDriveIcon(
+      icon: icon ?? this.icon,
+      size: size ?? this.size,
+      color: color ?? this.color,
     );
   }
 }
 
 class ArDriveIcons {
-  static ArDriveIcon closeIconCircle({double? size}) =>
-      const ArDriveIcon(path: 'assets/icons/close_icon_circle.svg');
-  static ArDriveIcon closeIcon({double? size}) =>
-      const ArDriveIcon(path: 'assets/icons/close_icon.svg');
-  static ArDriveIcon uploadCloud({double? size, Color? color}) => ArDriveIcon(
-      path: 'assets/icons/cloud_upload.svg', size: size, color: color);
-  static ArDriveIcon checkSuccess({double? size, Color? color}) => ArDriveIcon(
-      path: 'assets/icons/check_success.svg', size: size, color: color);
-  static ArDriveIcon warning({double? size, Color? color}) =>
-      ArDriveIcon(path: 'assets/icons/warning.svg', size: size, color: color);
-  static ArDriveIcon checked({double? size, Color? color}) =>
-      ArDriveIcon(path: 'assets/icons/checked.svg', size: size, color: color);
-  static ArDriveIcon indeterminateIndicator({double? size, Color? color}) =>
+  const ArDriveIcons._();
+
+  static ArDriveIcon iconAddDrive({double? size, Color? color}) => ArDriveIcon(
+        icon: ArDriveIconsData.icon_add_drive,
+        size: size,
+        color: color,
+      );
+
+  static ArDriveIcon iconNewFolder1({double? size, Color? color}) =>
       ArDriveIcon(
-        path: 'assets/icons/indeterminate_indicator.svg',
+        icon: ArDriveIconsData.icon_new_folder1,
         size: size,
         color: color,
       );
 
-  static ArDriveIcon chevronRight({double? size, Color? color}) => ArDriveIcon(
-        path: 'assets/icons/chevron_right.svg',
-        size: size,
-        color: color,
-      );
-  static ArDriveIcon chevronLeft({double? size, Color? color}) => ArDriveIcon(
-        path: 'assets/icons/chevron_left.svg',
+  static ArDriveIcon iconUploadFolder1({double? size, Color? color}) =>
+      ArDriveIcon(
+        icon: ArDriveIconsData.icon_upload_folder1,
         size: size,
         color: color,
       );
 
-  static ArDriveIcon chevronUp({double? size, Color? color}) => ArDriveIcon(
-        path: 'assets/icons/chevron_up.svg',
+  static ArDriveIcon iconUploadFiles({double? size, Color? color}) =>
+      ArDriveIcon(
+        icon: ArDriveIconsData.icon_upload_files,
         size: size,
         color: color,
       );
-  static ArDriveIcon chevronDown({double? size, Color? color}) => ArDriveIcon(
-        path: 'assets/icons/chevron_down.svg',
+
+  static ArDriveIcon iconCreateSnapshot({double? size, Color? color}) =>
+      ArDriveIcon(
+        icon: ArDriveIconsData.icon_create_snapshot,
         size: size,
         color: color,
       );
+
+  static ArDriveIcon iconAttachDrive({double? size, Color? color}) =>
+      ArDriveIcon(
+        icon: ArDriveIconsData.icon_attach_drive,
+        size: size,
+        color: color,
+      );
+
+  static ArDriveIcon arconnectIcon1({double? size, Color? color}) =>
+      ArDriveIcon(
+        icon: ArDriveIconsData.arconnect_icon_1,
+        size: size,
+        color: color,
+      );
+
+  static ArDriveIcon addDrive({double? size, Color? color}) => ArDriveIcon(
+        icon: ArDriveIconsData.add_drive,
+        size: size,
+        color: color,
+      );
+
+  static ArDriveIcon arrowLeftFilled({double? size, Color? color}) =>
+      ArDriveIcon(
+        icon: ArDriveIconsData.arrow_left_filled,
+        size: size,
+        color: color,
+      );
+
+  static ArDriveIcon arrowLeftOutline({double? size, Color? color}) =>
+      ArDriveIcon(
+        icon: ArDriveIconsData.arrow_left_outline,
+        size: size,
+        color: color,
+      );
+
+  static ArDriveIcon arrowLeft({double? size, Color? color}) => ArDriveIcon(
+        icon: ArDriveIconsData.arrow_left,
+        size: size,
+        color: color,
+      );
+
+  static ArDriveIcon arrowRightFilled({double? size, Color? color}) =>
+      ArDriveIcon(
+        icon: ArDriveIconsData.arrow_right_filled,
+        size: size,
+        color: color,
+      );
+
+  static ArDriveIcon arrowRightOutline({double? size, Color? color}) =>
+      ArDriveIcon(
+        icon: ArDriveIconsData.arrow_right_outline,
+        size: size,
+        color: color,
+      );
+
+  static ArDriveIcon bullertList({double? size, Color? color}) => ArDriveIcon(
+        icon: ArDriveIconsData.bullert_list,
+        size: size,
+        color: color,
+      );
+
+  static ArDriveIcon camera1({double? size, Color? color}) => ArDriveIcon(
+        icon: ArDriveIconsData.camera_1,
+        size: size,
+        color: color,
+      );
+
+  static ArDriveIcon camera2({double? size, Color? color}) => ArDriveIcon(
+        icon: ArDriveIconsData.camera_2,
+        size: size,
+        color: color,
+      );
+
+  static ArDriveIcon carretDown({double? size, Color? color}) => ArDriveIcon(
+        icon: ArDriveIconsData.carret_down,
+        size: size,
+        color: color,
+      );
+
+  static ArDriveIcon carretLeft({double? size, Color? color}) => ArDriveIcon(
+        icon: ArDriveIconsData.carret_left,
+        size: size,
+        color: color,
+      );
+
+  static ArDriveIcon carretRight({double? size, Color? color}) => ArDriveIcon(
+        icon: ArDriveIconsData.carret_right,
+        size: size,
+        color: color,
+      );
+
+  static ArDriveIcon carretUp({double? size, Color? color}) => ArDriveIcon(
+        icon: ArDriveIconsData.carret_up,
+        size: size,
+        color: color,
+      );
+
+  static ArDriveIcon checkCirle({double? size, Color? color}) => ArDriveIcon(
+        icon: ArDriveIconsData.check_cirle,
+        size: size,
+        color: color,
+      );
+
+  static ArDriveIcon checkmark({double? size, Color? color}) => ArDriveIcon(
+        icon: ArDriveIconsData.checkmark,
+        size: size,
+        color: color,
+      );
+
+  static ArDriveIcon closeCircle({double? size, Color? color}) => ArDriveIcon(
+        icon: ArDriveIconsData.close_circle,
+        size: size,
+        color: color,
+      );
+
+  static ArDriveIcon closeRectangle({double? size, Color? color}) =>
+      ArDriveIcon(
+        icon: ArDriveIconsData.close_rectangle,
+        size: size,
+        color: color,
+      );
+
+  static ArDriveIcon copy({double? size, Color? color}) => ArDriveIcon(
+        icon: ArDriveIconsData.copy,
+        size: size,
+        color: color,
+      );
+
   static ArDriveIcon dots({double? size, Color? color}) => ArDriveIcon(
-        path: 'assets/icons/dots.svg',
+        icon: ArDriveIconsData.dots,
+        size: size,
+        color: color,
+      );
+
+  static ArDriveIcon download({double? size, Color? color}) => ArDriveIcon(
+        icon: ArDriveIconsData.download,
+        size: size,
+        color: color,
+      );
+
+  static ArDriveIcon editFilled({double? size, Color? color}) => ArDriveIcon(
+        icon: ArDriveIconsData.edit_filled,
+        size: size,
+        color: color,
+      );
+
+  static ArDriveIcon edit({double? size, Color? color}) => ArDriveIcon(
+        icon: ArDriveIconsData.edit,
+        size: size,
+        color: color,
+      );
+
+  static ArDriveIcon fileX({double? size, Color? color}) => ArDriveIcon(
+        icon: ArDriveIconsData.file_x,
+        size: size,
+        color: color,
+      );
+
+  static ArDriveIcon file({double? size, Color? color}) => ArDriveIcon(
+        icon: ArDriveIconsData.file,
+        size: size,
+        color: color,
+      );
+
+  // file outlined
+  static ArDriveIcon fileOutlined({double? size, Color? color}) => ArDriveIcon(
+        icon: ArDriveIconsData.file,
+        size: size,
+        color: color,
+      );
+
+  static ArDriveIcon folderFilled({double? size, Color? color}) => ArDriveIcon(
+        icon: ArDriveIconsData.folder_filled,
+        size: size,
+        color: color,
+      );
+
+  static ArDriveIcon folderOutline({double? size, Color? color}) => ArDriveIcon(
+        icon: ArDriveIconsData.folder_outline,
+        size: size,
+        color: color,
+      );
+
+  static ArDriveIcon upload({double? size, Color? color}) => ArDriveIcon(
+        icon: ArDriveIconsData.upload,
+        size: size,
+        color: color,
+      );
+
+  static ArDriveIcon triangle({double? size, Color? color}) => ArDriveIcon(
+        icon: ArDriveIconsData.triangle,
+        size: size,
+        color: color,
+      );
+
+  // menu
+  static ArDriveIcon menu({double? size, Color? color}) => ArDriveIcon(
+        icon: ArDriveIconsData.menu,
+        size: size,
+        color: color,
+      );
+
+  // refresh
+  static ArDriveIcon refresh({double? size, Color? color}) => ArDriveIcon(
+        icon: ArDriveIconsData.refresh,
+        size: size,
+        color: color,
+      );
+
+  // x
+  static ArDriveIcon x({double? size, Color? color}) => ArDriveIcon(
+        icon: ArDriveIconsData.x,
+        size: size,
+        color: color,
+      );
+
+  // new window
+  static ArDriveIcon newWindow({double? size, Color? color}) => ArDriveIcon(
+        icon: ArDriveIconsData.new_window,
+        size: size,
+        color: color,
+      );
+  // share
+  static ArDriveIcon share({double? size, Color? color}) => ArDriveIcon(
+        icon: ArDriveIconsData.share,
+        size: size,
+        color: color,
+      );
+  // move
+  static ArDriveIcon move({double? size, Color? color}) => ArDriveIcon(
+        icon: ArDriveIconsData.move,
+        size: size,
+        color: color,
+      );
+  // plus
+  static ArDriveIcon plus({double? size, Color? color}) => ArDriveIcon(
+        icon: ArDriveIconsData.plus,
+        size: size,
+        color: color,
+      );
+  // tournament
+  static ArDriveIcon tournament({double? size, Color? color}) => ArDriveIcon(
+        icon: ArDriveIconsData.tournament,
+        size: size,
+        color: color,
+      );
+
+  // logout
+  static ArDriveIcon logout({double? size, Color? color}) => ArDriveIcon(
+        icon: ArDriveIconsData.logout,
+        size: size,
+        color: color,
+      );
+
+  // user
+  static ArDriveIcon user({double? size, Color? color}) => ArDriveIcon(
+        icon: ArDriveIconsData.user,
+        size: size,
+        color: color,
+      );
+
+  // zip
+  static ArDriveIcon zip({double? size, Color? color}) => ArDriveIcon(
+        icon: ArDriveIconsData.zip,
+        size: size,
+        color: color,
+      );
+
+  // help
+  static ArDriveIcon question({double? size, Color? color}) => ArDriveIcon(
+        icon: ArDriveIconsData.question,
+        size: size,
+        color: color,
+      );
+
+  // image
+  static ArDriveIcon image({double? size, Color? color}) => ArDriveIcon(
+        icon: ArDriveIconsData.image,
+        size: size,
+        color: color,
+      );
+
+  // ivdeo
+  static ArDriveIcon video({double? size, Color? color}) => ArDriveIcon(
+        icon: ArDriveIconsData.video,
+        size: size,
+        color: color,
+      );
+
+  // music
+  static ArDriveIcon music({double? size, Color? color}) => ArDriveIcon(
+        icon: ArDriveIconsData.music,
+        size: size,
+        color: color,
+      );
+
+  // info
+  static ArDriveIcon info({double? size, Color? color}) => ArDriveIcon(
+        icon: ArDriveIconsData.info,
+        size: size,
+        color: color,
+      );
+  // kebab menu
+  static ArDriveIcon kebabMenu({double? size, Color? color}) => ArDriveIcon(
+        icon: ArDriveIconsData.kebab_menu,
+        size: size,
+        color: color,
+      );
+
+  // eye_closed
+  static ArDriveIcon eyeClosed({double? size, Color? color}) => ArDriveIcon(
+        icon: ArDriveIconsData.eye_closed,
+        size: size,
+        color: color,
+      );
+
+  // eye_open
+  static ArDriveIcon eyeOpen({double? size, Color? color}) => ArDriveIcon(
+        icon: ArDriveIconsData.eye_open,
         size: size,
         color: color,
       );

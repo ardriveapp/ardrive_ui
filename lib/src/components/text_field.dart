@@ -1,7 +1,55 @@
+import 'dart:async';
+
 import 'package:ardrive_ui/ardrive_ui.dart';
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+
+class ArDriveForm extends StatefulWidget {
+  final Widget child;
+  const ArDriveForm({
+    super.key,
+    required this.child,
+  });
+
+  @override
+  State<ArDriveForm> createState() => ArDriveFormState();
+}
+
+class ArDriveFormState extends State<ArDriveForm> {
+  bool _isValid = true;
+
+  bool validate() {
+    _isValid = true;
+
+    context.visitChildElements((element) {
+      if (element is! ArDriveTextField) {
+        return _findAndValidateTextField(element);
+      }
+    });
+
+    return _isValid;
+  }
+
+  void _findAndValidateTextField(Element e) {
+    e.visitChildElements((element) {
+      if (element.widget is! ArDriveTextField) {
+        return _findAndValidateTextField(element);
+      }
+
+      WidgetsBinding.instance.addPostFrameCallback((_) async {
+        _isValid = _isValid &&
+            await ((element as StatefulElement).state as ArDriveTextFieldState)
+                .validate();
+      });
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return widget.child;
+  }
+}
 
 class ArDriveTextField extends StatefulWidget {
   const ArDriveTextField({
@@ -12,8 +60,7 @@ class ArDriveTextField extends StatefulWidget {
     this.onChanged,
     this.obscureText = false,
     this.autofillHints,
-    this.autovalidateMode,
-    this.errorMessage,
+    this.autovalidateMode = AutovalidateMode.disabled,
     this.successMessage,
     this.autocorrect = true,
     this.autofocus = false,
@@ -27,16 +74,18 @@ class ArDriveTextField extends StatefulWidget {
     this.maxLength,
     this.label,
     this.isFieldRequired = false,
+    this.showObfuscationToggle = false,
+    this.textInputAction = TextInputAction.done,
+    this.suffixIcon,
   });
 
   final bool isEnabled;
-  final bool Function(String?)? validator;
+  final FutureOr<String?>? Function(String?)? validator;
   final Function(String)? onChanged;
   final String? hintText;
   final bool obscureText;
   final List<String>? autofillHints;
   final AutovalidateMode? autovalidateMode;
-  final String? errorMessage;
   final String? successMessage;
   final bool autocorrect;
   final bool autofocus;
@@ -50,6 +99,9 @@ class ArDriveTextField extends StatefulWidget {
   final FocusNode? focusNode;
   final String? label;
   final bool isFieldRequired;
+  final bool showObfuscationToggle;
+  final TextInputAction textInputAction;
+  final Widget? suffixIcon;
 
   @override
   State<ArDriveTextField> createState() => ArDriveTextFieldState();
@@ -65,8 +117,14 @@ class ArDriveTextFieldState extends State<ArDriveTextField> {
   @override
   void initState() {
     textFieldState = TextFieldState.unfocused;
+    _isObscureText = widget.obscureText;
     super.initState();
   }
+
+  late bool _isObscureText;
+
+  String? _errorMessage;
+  String? _currentText;
 
   @override
   Widget build(BuildContext context) {
@@ -95,31 +153,44 @@ class ArDriveTextFieldState extends State<ArDriveTextField> {
             maxLength: widget.maxLength,
             focusNode: widget.focusNode,
             key: widget.key,
-            obscureText: widget.obscureText,
+            textInputAction: widget.textInputAction,
+            obscureText: _isObscureText,
             style: ArDriveTypography.body.inputLargeRegular(
               color: ArDriveTheme.of(context).themeData.colors.themeInputText,
             ),
-            autovalidateMode: AutovalidateMode.always,
+            autovalidateMode: widget.autovalidateMode,
             onChanged: (text) {
-              setState(
-                () {
-                  final textIsValid = widget.validator?.call(text);
-
-                  if (text.isEmpty) {
-                    textFieldState = TextFieldState.focused;
-                  } else if (textIsValid != null && !textIsValid) {
-                    textFieldState = TextFieldState.error;
-                  } else if (textIsValid != null && textIsValid) {
-                    textFieldState = TextFieldState.success;
-                  }
-
-                  widget.onChanged?.call(text);
-                },
-              );
+              validate(text: text);
+              widget.onChanged?.call(text);
+              _currentText = text;
             },
             autofillHints: widget.autofillHints,
             enabled: widget.isEnabled,
             decoration: InputDecoration(
+              suffix: widget.suffixIcon ??
+                  GestureDetector(
+                    onTap: () {
+                      setState(() {
+                        _isObscureText = !_isObscureText;
+                      });
+                    },
+                    child: ArDriveClickArea(
+                      child: Padding(
+                        padding: const EdgeInsets.only(right: 8),
+                        child: widget.showObfuscationToggle
+                            ? ArDriveIcon(
+                                icon: _isObscureText
+                                    ? ArDriveIconsData.eye_closed
+                                    : ArDriveIconsData.eye_open,
+                                color: ArDriveTheme.of(context)
+                                    .themeData
+                                    .colors
+                                    .themeInputText,
+                              )
+                            : null,
+                      ),
+                    ),
+                  ),
               errorStyle: const TextStyle(height: 0),
               hintText: widget.hintText,
               hintStyle: ArDriveTypography.body
@@ -134,7 +205,16 @@ class ArDriveTextFieldState extends State<ArDriveTextField> {
                   .themeInputBackground,
             ),
           ),
-          if (widget.errorMessage != null) _errorMessage(widget.errorMessage!),
+          if (widget.validator != null && widget.validator is Future<String?>)
+            FutureBuilder(
+              future: widget.validator?.call(_currentText) as Future,
+              builder: (context, snapshot) {
+                return _errorMessageLabel();
+              },
+            ),
+          if (widget.validator != null &&
+              widget.validator is String Function(String?))
+            _errorMessageLabel(),
           if (widget.successMessage != null)
             _successMessage(widget.successMessage!),
         ],
@@ -142,10 +222,10 @@ class ArDriveTextFieldState extends State<ArDriveTextField> {
     );
   }
 
-  Widget _errorMessage(String message) {
+  Widget _errorMessageLabel() {
     return AnimatedTextFieldLabel(
-      text: message,
-      showing: textFieldState == TextFieldState.error,
+      text: _errorMessage,
+      showing: _errorMessage != null,
       color: ArDriveTheme.of(context).themeData.colors.themeErrorDefault,
     );
   }
@@ -206,7 +286,7 @@ class ArDriveTextFieldState extends State<ArDriveTextField> {
     }
 
     return _getBorder(
-      ArDriveTheme.of(context).themeData.colors.themeAccentEmphasis,
+      ArDriveTheme.of(context).themeData.colors.themeFgDefault,
     );
   }
 
@@ -234,6 +314,30 @@ class ArDriveTextFieldState extends State<ArDriveTextField> {
     }
     return ArDriveTheme.of(context).themeData.colors.themeFgDisabled;
   }
+
+  FutureOr<bool> validate({String? text}) async {
+    String? textToValidate = text;
+
+    if (textToValidate == null && widget.controller != null) {
+      textToValidate = widget.controller?.text;
+    }
+
+    final validation = await widget.validator?.call(textToValidate);
+
+    setState(() {
+      if (textToValidate?.isEmpty ?? true) {
+        textFieldState = TextFieldState.focused;
+      } else if (validation != null) {
+        textFieldState = TextFieldState.error;
+      } else if (validation == null) {
+        textFieldState = TextFieldState.success;
+      }
+    });
+
+    _errorMessage = validation;
+
+    return validation == null;
+  }
 }
 
 @visibleForTesting
@@ -245,16 +349,20 @@ class AnimatedTextFieldLabel extends StatefulWidget {
     required this.color,
   });
 
-  final String text;
+  final String? text;
   final bool showing;
   final Color color;
 
   @override
-  State<AnimatedTextFieldLabel> createState() => _AnimatedTextFieldLabelState();
+  State<AnimatedTextFieldLabel> createState() => AnimatedTextFieldLabelState();
 }
 
-class _AnimatedTextFieldLabelState extends State<AnimatedTextFieldLabel> {
-  bool _visible = false;
+class AnimatedTextFieldLabelState extends State<AnimatedTextFieldLabel> {
+  @visibleForTesting
+  bool visible = false;
+
+  @visibleForTesting
+  bool showing = false;
 
   @override
   void initState() {
@@ -263,25 +371,26 @@ class _AnimatedTextFieldLabelState extends State<AnimatedTextFieldLabel> {
 
   @override
   Widget build(BuildContext context) {
-    if (!widget.showing) {
-      _visible = false;
+    showing = widget.showing;
+    if (!showing) {
+      visible = false;
     }
 
     return Align(
       alignment: Alignment.centerLeft,
       child: AnimatedContainer(
         onEnd: () => setState(() {
-          _visible = !_visible;
+          visible = !visible;
         }),
         duration: const Duration(milliseconds: 300),
-        height: widget.showing ? 35 : 0,
+        height: showing ? 35 : 0,
         width: double.infinity,
         child: AnimatedOpacity(
-          opacity: _visible ? 1.0 : 0.0,
-          duration: Duration(milliseconds: !_visible ? 100 : 300),
+          opacity: visible ? 1.0 : 0.0,
+          duration: Duration(milliseconds: !visible ? 100 : 300),
           child: TextFieldLabel(
             color: widget.color,
-            text: widget.text,
+            text: widget.text ?? '',
           ),
         ),
       ),
