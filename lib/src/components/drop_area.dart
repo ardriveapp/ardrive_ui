@@ -5,6 +5,8 @@ import 'package:ardrive_ui/ardrive_ui.dart';
 import 'package:ardrive_ui/src/constants/size_constants.dart';
 import 'package:desktop_drop/desktop_drop.dart';
 import 'package:dotted_border/dotted_border.dart';
+// ignore: depend_on_referenced_packages
+import 'package:file_selector/file_selector.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -19,6 +21,7 @@ class ArDriveDropZone extends StatefulWidget {
     this.onDragEntered,
     this.onDragExited,
     this.onError,
+    this.withBorder = true,
   });
 
   final Widget child;
@@ -26,6 +29,7 @@ class ArDriveDropZone extends StatefulWidget {
   final Function()? onDragEntered;
   final Function()? onDragExited;
   final Function(Object e)? onError;
+  final bool withBorder;
 
   @override
   State<ArDriveDropZone> createState() => _ArDriveDropZoneState();
@@ -37,8 +41,14 @@ class _ArDriveDropZoneState extends State<ArDriveDropZone> {
     return DropTarget(
       onDragDone: (detail) async {
         try {
-          final files = await Future.wait(
-              detail.files.map((e) => IOFileAdapter().fromXFile(e)));
+          final files = await Future.wait(detail.files.map((e) async {
+            if (await verifyIfFolder(e)) {
+              throw DropzoneWrongInputException();
+            }
+
+            return IOFileAdapter().fromXFile(e);
+          }));
+
           widget.onDragDone?.call(files);
         } catch (e) {
           widget.onError?.call(e);
@@ -50,13 +60,28 @@ class _ArDriveDropZoneState extends State<ArDriveDropZone> {
       onDragExited: (detail) {
         widget.onDragExited?.call();
       },
-      child: DottedBorder(
-        strokeWidth: 1,
-        strokeCap: StrokeCap.butt,
-        color: ArDriveTheme.of(context).themeData.colors.themeFgMuted,
-        child: widget.child,
-      ),
+      child: widget.withBorder ? _borderedChild() : widget.child,
     );
+  }
+
+  Widget _borderedChild() {
+    return DottedBorder(
+      borderType: BorderType.RRect,
+      radius: const Radius.circular(8),
+      color: ArDriveTheme.of(context).themeData.colors.themeFgMuted,
+      child: widget.child,
+    );
+  }
+
+  // A folder is not a valid input
+  Future<bool> verifyIfFolder(XFile file) async {
+    try {
+      await file.openRead(0, 1).listen((event) {}).asFuture();
+    } catch (e) {
+      return true;
+    }
+
+    return false;
   }
 }
 
@@ -132,14 +157,14 @@ class _ArDriveDropAreaSingleInputState
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
                               controller.file != null
-                                  ? ArDriveIcons.checkSuccess(
+                                  ? ArDriveIcons.checkCirle(
                                       size: dropAreaIconSize,
                                       color: ArDriveTheme.of(context)
                                           .themeData
                                           .colors
                                           .themeFgMuted,
                                     )
-                                  : ArDriveIcons.uploadCloud(
+                                  : ArDriveIcons.upload(
                                       size: dropAreaIconSize,
                                       color: ArDriveTheme.of(context)
                                           .themeData
@@ -193,7 +218,7 @@ class _ArDriveDropAreaSingleInputState
   Widget _errorView() {
     return Column(
       children: [
-        ArDriveIcons.warning(),
+        ArDriveIcons.triangle(),
         const SizedBox(
           height: 8,
         ),
@@ -299,3 +324,5 @@ class ArDriveDropAreaSingleInputController with ChangeNotifier {
 }
 
 class DropzoneValidationException implements Exception {}
+
+class DropzoneWrongInputException implements Exception {}

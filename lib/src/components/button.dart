@@ -10,7 +10,7 @@ class ArDriveButton extends StatefulWidget {
   const ArDriveButton({
     super.key,
     required this.text,
-    required this.onPressed,
+    this.onPressed,
     this.style = ArDriveButtonStyle.primary,
     this.backgroundColor,
     this.fontStyle,
@@ -22,7 +22,7 @@ class ArDriveButton extends StatefulWidget {
   });
 
   final String text;
-  final Function() onPressed;
+  final Function()? onPressed;
   final ArDriveButtonStyle style;
   final Color? backgroundColor;
   final TextStyle? fontStyle;
@@ -93,8 +93,10 @@ class _ArDriveButtonState extends State<ArDriveButton> {
               maximumSize: _maxSize,
               shape: _shapeOutlined,
               side: _borderSize,
+              overlayColor: _overlayColor,
               alignment: Alignment.center,
               backgroundColor: _backgroundColor,
+              foregroundColor: _backgroundColor,
             ),
             child: Row(
               mainAxisSize: MainAxisSize.min,
@@ -132,6 +134,20 @@ class _ArDriveButtonState extends State<ArDriveButton> {
     }
   }
 
+  // overlay color for the secundary
+  MaterialStateProperty<Color?> get _overlayColor =>
+      MaterialStateProperty.resolveWith<Color?>(
+        (Set<MaterialState> states) {
+          final color = ArDriveTheme.of(context)
+              .themeData
+              .colors
+              .themeFgDefault
+              .withOpacity(0.1);
+
+          return color;
+        },
+      );
+
   MaterialStateProperty<OutlinedBorder> get _shape =>
       MaterialStateProperty.resolveWith<OutlinedBorder>(
         (Set<MaterialState> states) {
@@ -140,6 +156,7 @@ class _ArDriveButtonState extends State<ArDriveButton> {
           );
         },
       );
+
   MaterialStateProperty<OutlinedBorder> get _shapeOutlined =>
       MaterialStateProperty.resolveWith<OutlinedBorder>(
         (Set<MaterialState> states) {
@@ -175,8 +192,9 @@ class _ArDriveButtonState extends State<ArDriveButton> {
       MaterialStateProperty.resolveWith<Color?>(
         (Set<MaterialState> states) {
           if (widget.style == ArDriveButtonStyle.secondary) {
-            return null;
+            return ArDriveTheme.of(context).themeData.colors.themeBgSurface;
           }
+
           if (widget.isDisabled) {
             return ArDriveTheme.of(context)
                 .themeData
@@ -196,7 +214,7 @@ class ArDriveTextButton extends StatelessWidget {
     required this.onPressed,
   });
   final String text;
-  final Function() onPressed;
+  final Function()? onPressed;
 
   @override
   Widget build(BuildContext context) {

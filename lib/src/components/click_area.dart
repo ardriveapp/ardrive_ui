@@ -5,16 +5,21 @@ class ArDriveClickArea extends StatelessWidget {
     super.key,
     required this.child,
     this.showCursor = true,
+    this.tooltip,
   });
 
   final Widget child;
   final bool showCursor;
+  final String? tooltip;
 
   @override
   Widget build(BuildContext context) {
-    return MouseRegion(
-      cursor: showCursor ? SystemMouseCursors.click : MouseCursor.defer,
-      child: child,
+    return Tooltip(
+      message: tooltip ?? '',
+      child: MouseRegion(
+        cursor: showCursor ? SystemMouseCursors.click : MouseCursor.defer,
+        child: child,
+      ),
     );
   }
 }

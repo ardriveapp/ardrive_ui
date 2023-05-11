@@ -8,14 +8,14 @@ class ArDriveCheckBox extends StatefulWidget {
     this.checked = false,
     this.isDisabled = false,
     this.isIndeterminate = false,
-    required this.title,
+    this.title,
     this.onChange,
   });
 
   final bool checked;
   final bool isDisabled;
   final bool isIndeterminate;
-  final String title;
+  final String? title;
   final Function(bool value)? onChange;
 
   @override
@@ -35,7 +35,7 @@ class ArDriveCheckBoxState extends State<ArDriveCheckBox> {
   @override
   void initState() {
     checked = widget.checked;
-    if (checked && !widget.isDisabled && !widget.isIndeterminate) {
+    if (checked && !widget.isDisabled) {
       state = CheckBoxState.checked;
     } else if (widget.isDisabled) {
       state = CheckBoxState.disabled;
@@ -44,9 +44,6 @@ class ArDriveCheckBoxState extends State<ArDriveCheckBox> {
     } else {
       state = CheckBoxState.normal;
     }
-
-    // You can't have the checkbox checked and with the indeterminate state.
-    assert(!(widget.checked && widget.isIndeterminate));
 
     super.initState();
   }
@@ -64,6 +61,9 @@ class ArDriveCheckBoxState extends State<ArDriveCheckBox> {
             });
             break;
           case CheckBoxState.indeterminate:
+            setState(() {
+              checked = !checked;
+            });
             break;
           case CheckBoxState.checked:
             setState(() {
@@ -76,49 +76,58 @@ class ArDriveCheckBoxState extends State<ArDriveCheckBox> {
         }
         widget.onChange?.call(checked);
       },
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          AnimatedContainer(
-            height: checkboxSize,
-            width: checkboxSize,
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(checkboxBorderRadius),
-              border: state == CheckBoxState.indeterminate
-                  ? null
-                  : Border.all(
-                      color: _boxColor(),
-                      width: 2,
-                    ),
-            ),
-            duration: const Duration(milliseconds: 300),
-            child: checked
-                ? Padding(
-                    padding: const EdgeInsets.all(3),
-                    child: ArDriveIcons.checked(
-                      color: _checkColor(),
-                    ),
+      child: SizedBox(
+        height: 24,
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            state == CheckBoxState.indeterminate
+                ? ArDriveIcon(
+                    icon: ArDriveIconsData.minus_rectangle,
+                    size: 22,
+                    color: ArDriveTheme.of(context)
+                        .themeData
+                        .colors
+                        .themeFgDefault,
                   )
-                : state == CheckBoxState.indeterminate
-                    ? ArDriveIcons.indeterminateIndicator(
-                        color: _checkColor(),
-                      )
-                    : null,
-          ),
-          const SizedBox(
-            width: 8,
-          ),
-          Padding(
-            padding: const EdgeInsets.only(bottom: 4.0),
-            child: Text(
-              widget.title,
-              style: ArDriveTypography.body.bodyRegular(
-                color: _textColor(),
+                : AnimatedContainer(
+                    height: 18.5,
+                    width: 16.5,
+                    margin: const EdgeInsets.fromLTRB(3.25, 3.5, 5, 4),
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(checkboxBorderRadius),
+                      border: Border.all(
+                        color: _boxColor(),
+                        width: 2,
+                      ),
+                      color: _backgroundColor(),
+                    ),
+                    duration: const Duration(milliseconds: 300),
+                    child: checked
+                        ? ArDriveIcon(
+                            icon: ArDriveIconsData.checkmark,
+                            size: 12,
+                            color: _checkColor(),
+                          )
+                        : null,
+                  ),
+            if (widget.title != null) ...[
+              const SizedBox(
+                width: 8,
               ),
-            ),
-          )
-        ],
+              Padding(
+                padding: const EdgeInsets.only(bottom: 4.0),
+                child: Text(
+                  widget.title!,
+                  style: ArDriveTypography.body.bodyRegular(
+                    color: _textColor(),
+                  ),
+                ),
+              )
+            ]
+          ],
+        ),
       ),
     );
   }
@@ -132,7 +141,21 @@ class ArDriveCheckBoxState extends State<ArDriveCheckBox> {
       case CheckBoxState.disabled:
         return ArDriveTheme.of(context).themeData.colors.themeFgDisabled;
       case CheckBoxState.normal:
-        return ArDriveTheme.of(context).themeData.colors.themeAccentDefault;
+        return ArDriveTheme.of(context).themeData.colors.themeFgDefault;
+    }
+  }
+
+  Color _backgroundColor() {
+    switch (state) {
+      case CheckBoxState.indeterminate:
+      case CheckBoxState.checked:
+      case CheckBoxState.hover:
+        return ArDriveTheme.of(context).themeData.colors.themeFgDefault;
+      case CheckBoxState.disabled:
+        return Colors.transparent;
+
+      case CheckBoxState.normal:
+        return Colors.transparent;
     }
   }
 
@@ -141,7 +164,7 @@ class ArDriveCheckBoxState extends State<ArDriveCheckBox> {
       case CheckBoxState.indeterminate:
       case CheckBoxState.checked:
       case CheckBoxState.hover:
-        return ArDriveTheme.of(context).themeData.colors.themeFgDefault;
+        return ArDriveTheme.of(context).themeData.colors.themeBgSubtle;
       case CheckBoxState.disabled:
         return ArDriveTheme.of(context).themeData.colors.themeFgDisabled;
       case CheckBoxState.normal:

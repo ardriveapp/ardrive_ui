@@ -2,30 +2,101 @@ import 'package:ardrive_ui/ardrive_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_portal/flutter_portal.dart';
 
+// ignore: library_private_types_in_public_api
+GlobalKey<_ArDriveAppState> arDriveAppKey = GlobalKey();
+
+class ArDriveUIThemeSwitcher {
+  static void changeTheme(ArDriveThemes theme) {
+    arDriveAppKey.currentState?.changeTheme(theme);
+  }
+}
+
+enum ArDriveThemes { light, dark }
+
 class ArDriveApp extends StatefulWidget {
   const ArDriveApp({
     super.key,
     required this.builder,
     this.themeData,
+    this.onThemeChanged,
   });
+
   final Widget Function(BuildContext context) builder;
   final ArDriveThemeData? themeData;
+  final Function(ArDriveThemes)? onThemeChanged;
 
   @override
   State<ArDriveApp> createState() => _ArDriveAppState();
 }
 
 class _ArDriveAppState extends State<ArDriveApp> {
+  bool isDefault = true;
+
+  late ArDriveThemes _theme;
+
+  void changeTheme(ArDriveThemes theme) {
+    setState(() {
+      _theme = theme;
+    });
+  }
+
+  @override
+  void initState() {
+    super.initState();
+
+    var window = WidgetsBinding.instance.window;
+    WidgetsBinding.instance.handlePlatformBrightnessChanged();
+
+    window.onPlatformBrightnessChanged = () {
+      // This callback is called every time the brightness changes.
+      var brightness = window.platformBrightness;
+
+      if (brightness == Brightness.dark) {
+        setState(() {
+          _theme = ArDriveThemes.dark;
+        });
+      } else {
+        setState(() {
+          _theme = ArDriveThemes.light;
+        });
+      }
+
+      widget.onThemeChanged?.call(_theme);
+    };
+
+    switch (widget.themeData?.name) {
+      case 'ArDriveThemes.dark':
+        _theme = ArDriveThemes.dark;
+        break;
+      case 'ArDriveThemes.light':
+        _theme = ArDriveThemes.light;
+        break;
+      default:
+        _theme = ArDriveThemes.dark;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return ArDriveTheme(
-      themeData: widget.themeData,
+      themeData: _getTheme(),
       child: Portal(
         child: Builder(builder: (context) {
           return widget.builder(context);
         }),
       ),
     );
+  }
+
+  ArDriveThemeData _getTheme() {
+    switch (_theme) {
+      case ArDriveThemes.dark:
+        return widget.themeData ?? ArDriveThemeData();
+      case ArDriveThemes.light:
+        return lightTheme();
+      default:
+        return ArDriveThemeData();
+    }
   }
 }
 
@@ -57,6 +128,7 @@ class ArDriveThemeData {
         ArDriveTableTheme(
           backgroundColor: const Color(0xff121212),
           cellColor: const Color(0xff191919),
+          selectedItemColor: const Color(0xff2C2C2C),
         );
     this.dropdownTheme = dropdownTheme ??
         ArDriveDropdownTheme(
@@ -67,7 +139,7 @@ class ArDriveThemeData {
     this.backgroundColor = backgroundColor ?? const Color(0xff010905);
     this.primaryColor = primaryColor ?? this.colors.themeAccentBrand;
     this.materialThemeData = materialThemeData ?? darkMaterialTheme();
-    this.name = name ?? 'default';
+    this.name = name ?? 'dark';
   }
 
   late Color backgroundColor;
@@ -86,7 +158,7 @@ ThemeData lightMaterialTheme() {
   ArDriveColors colors = ArDriveColors.light();
 
   return ThemeData(
-    fontFamily: 'Wavehaus',
+    fontFamily: _fontFamily,
     primaryColor: colors.themeAccentBrand,
     primaryColorLight: colors.themeAccentBrand,
     colorScheme: theme.colorScheme.copyWith(
@@ -97,7 +169,7 @@ ThemeData lightMaterialTheme() {
       onSurface: colors.themeBgSurface,
     ),
     textTheme: theme.textTheme.apply(
-      fontFamily: 'Wavehaus',
+      fontFamily: _fontFamily,
       bodyColor: colors.themeFgDefault,
     ),
   );
@@ -112,6 +184,7 @@ ArDriveThemeData lightTheme() {
     tableTheme: ArDriveTableTheme(
       backgroundColor: const Color(0xffFAFAFA),
       cellColor: const Color(0xffF1EFF0),
+      selectedItemColor: const Color(0xffF1EFF0),
     ),
     dropdownTheme: ArDriveDropdownTheme(
       backgroundColor: const Color(0xffFAFAFA),
@@ -170,10 +243,12 @@ class ArDriveTableTheme {
   ArDriveTableTheme({
     required this.backgroundColor,
     required this.cellColor,
+    required this.selectedItemColor,
   });
 
   final Color backgroundColor;
   final Color cellColor;
+  final Color selectedItemColor;
 }
 
 class ArDriveDropdownTheme {
@@ -191,7 +266,7 @@ ThemeData darkMaterialTheme() {
   ArDriveColors colors = ArDriveColors.dark();
 
   return ThemeData(
-    fontFamily: 'Wavehaus',
+    fontFamily: _fontFamily,
     primaryColor: colors.themeAccentBrand,
     primaryColorLight: colors.themeAccentBrand,
     colorScheme: theme.colorScheme.copyWith(
@@ -202,8 +277,10 @@ ThemeData darkMaterialTheme() {
       onSurface: colors.themeBgSurface,
     ),
     textTheme: theme.textTheme.apply(
-      fontFamily: 'Wavehaus',
+      fontFamily: _fontFamily,
       bodyColor: colors.themeFgDefault,
     ),
   );
 }
+
+const _fontFamily = 'packages/ardrive_ui/Wavehaus';
