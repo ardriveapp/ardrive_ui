@@ -196,19 +196,6 @@ class _ArDriveDropdownState extends State<ArDriveDropdown> {
   }
 }
 
-// GestureDetector(
-//           behavior: HitTestBehavior.translucent,
-//           onTap: () {
-//             setState(() {
-//               _visible = true;
-//             });
-//           },
-//           child: IgnorePointer(
-//             ignoring: _visible,
-//             child: widget.child,
-//           ),
-//         ),
-
 class _ArDriveDropdownContent extends StatefulWidget {
   @override
   _ArDriveDropdownContentState createState() => _ArDriveDropdownContentState();
@@ -376,7 +363,12 @@ class _ArDriveDropdownItemState extends State<ArDriveDropdownItem> {
   @override
   Widget build(BuildContext context) {
     final theme = ArDriveTheme.of(context).themeData.dropdownTheme;
-
+    if (widget.onClick == null) {
+      return Container(
+        color: theme.backgroundColor,
+        child: widget.content,
+      );
+    }
     return MouseRegion(
       cursor: SystemMouseCursors.click,
       onHover: (event) {
