@@ -4,13 +4,13 @@ import 'package:storybook/src/ardrive_app_base.dart';
 import 'package:widgetbook/widgetbook.dart';
 
 WidgetbookCategory button() {
-  return WidgetbookCategory(name: 'Button', widgets: [
+  return WidgetbookCategory(name: 'Button', children: [
     WidgetbookComponent(name: 'Button', useCases: [
       WidgetbookUseCase(
         name: 'Primary',
         builder: (context) {
-          return Center(
-            child: ArDriveButton(
+          return ArDriveStorybookAppBase(
+            builder: (context) => ArDriveButton(
               onPressed: () {
                 debugPrint('Primary Button pressed');
               },

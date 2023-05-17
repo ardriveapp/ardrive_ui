@@ -7,7 +7,7 @@ import 'package:widgetbook/widgetbook.dart';
 import 'ardrive_app_base.dart';
 
 WidgetbookCategory table() {
-  return WidgetbookCategory(name: 'Table', widgets: [
+  return WidgetbookCategory(name: 'Table', children: [
     WidgetbookComponent(name: 'Table ', useCases: [
       WidgetbookUseCase(
           name: 'With content',

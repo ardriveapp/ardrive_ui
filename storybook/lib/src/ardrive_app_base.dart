@@ -12,29 +12,29 @@ class ArDriveStorybookAppBase extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final themes = context.knobs.options(label: 'Themes', options: [
-      Option(
-        label: 'Dark',
-        value: ArDriveThemeData(),
-      ),
-      Option(
-        label: 'Light',
-        value: lightTheme(),
-      ),
-    ]);
-    return ArDriveApp(
-      themeData: themes,
-      builder: (context) {
-        return MaterialApp(
-          theme: themes.materialThemeData,
-          home: Scaffold(
-            key: ValueKey(themes.name),
-            body: Center(
-              child: builder(context),
+    final themes = context.knobs.options<ArDriveThemeData>(
+      labelBuilder: (t) => t.name,
+      label: 'Themes',
+      options: [
+        ArDriveThemeData(),
+        lightTheme(),
+      ],
+    );
+    return SizedBox(
+      height: MediaQuery.of(context).size.height,
+      child: ArDriveApp(
+        themeData: themes,
+        builder: (context) {
+          return MaterialApp(
+            theme: themes.materialThemeData,
+            home: Scaffold(
+              body: Center(
+                child: builder(context),
+              ),
             ),
-          ),
-        );
-      },
+          );
+        },
+      ),
     );
   }
 }
