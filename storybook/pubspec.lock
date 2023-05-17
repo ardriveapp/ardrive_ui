@@ -4,9 +4,11 @@ packages:
   ardrive_io:
     dependency: transitive
     description:
-      path: "../../ardrive_io"
-      relative: true
-    source: path
+      path: "."
+      ref: PE-3773-upgrade-flutter-to-v-3-10-0
+      resolved-ref: db661f1c1439a747247c161bd5e42b1d68ba2ddb
+      url: "https://github.com/ar-io/ardrive_io.git"
+    source: git
     version: "1.2.0"
   ardrive_ui:
     dependency: "direct main"
