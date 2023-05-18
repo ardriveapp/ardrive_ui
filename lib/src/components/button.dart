@@ -16,6 +16,7 @@ class ArDriveButton extends StatefulWidget {
     this.fontStyle,
     this.maxHeight,
     this.maxWidth,
+    this.borderRadius,
     this.icon,
     this.isDisabled = false,
     this.iconAlignment = IconButtonAlignment.left,
@@ -28,6 +29,7 @@ class ArDriveButton extends StatefulWidget {
   final TextStyle? fontStyle;
   final double? maxHeight;
   final double? maxWidth;
+  final double? borderRadius;
   final bool isDisabled;
   final IconButtonAlignment iconAlignment;
 
@@ -152,7 +154,9 @@ class _ArDriveButtonState extends State<ArDriveButton> {
       MaterialStateProperty.resolveWith<OutlinedBorder>(
         (Set<MaterialState> states) {
           return RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(buttonBorderRadius),
+            borderRadius: BorderRadius.circular(
+              widget.borderRadius ?? buttonBorderRadius,
+            ),
           );
         },
       );
@@ -165,7 +169,9 @@ class _ArDriveButtonState extends State<ArDriveButton> {
               style: BorderStyle.solid,
               color: ArDriveTheme.of(context).themeData.colors.themeFgDefault,
             ),
-            borderRadius: BorderRadius.circular(buttonBorderRadius),
+            borderRadius: BorderRadius.circular(
+              widget.borderRadius ?? buttonBorderRadius,
+            ),
           );
         },
       );
