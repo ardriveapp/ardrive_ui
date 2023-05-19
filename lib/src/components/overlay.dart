@@ -325,7 +325,9 @@ class _ArDriveDropdownItemState extends State<ArDriveDropdownItem> {
     final theme = ArDriveTheme.of(context).themeData.dropdownTheme;
 
     return MouseRegion(
-      cursor: SystemMouseCursors.click,
+      cursor: widget.onClick != null
+          ? SystemMouseCursors.click
+          : SystemMouseCursors.basic,
       onHover: (event) {
         if (widget.onClick != null) {
           setState(() {
