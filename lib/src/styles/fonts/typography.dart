@@ -93,7 +93,7 @@ class Body {
       color: color,
       fontFamily: fontFamiliesBody,
       package: _package,
-      fontSize: fontSizeLG,
+      fontSize: fontSizeSM,
       fontWeight: FontWeight.w600,
       height: lineHeightsBodyDefault,
     );
