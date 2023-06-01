@@ -6,6 +6,7 @@ import 'package:widgetbook/widgetbook.dart';
 class ColorOption {
   final String name;
   final Color value;
+  String get description => value.toString();
 
   const ColorOption({required this.name, required this.value});
 }
@@ -17,46 +18,67 @@ WidgetbookCategory getColors() {
           name: 'Foreground',
           builder: (context) {
             return ArDriveStorybookAppBase(builder: (context) {
-              final colors = ArDriveTheme.of(context).themeData.colors;
+              final lightColors = lightTheme().colors;
+              final darkTheme = ArDriveThemeData().colors;
 
-              List<ColorOption> foreground = [
+              List<ColorOption> foregroundLight = [
                 ColorOption(
                   name: 'themeFgDefault',
-                  value: colors.themeFgDefault,
+                  value: lightColors.themeFgDefault,
                 ),
                 ColorOption(
                   name: 'themeFgMuted',
-                  value: colors.themeFgMuted,
+                  value: lightColors.themeFgMuted,
                 ),
                 ColorOption(
                   name: 'themeFgSubtle',
-                  value: colors.themeFgSubtle,
+                  value: lightColors.themeFgSubtle,
                 ),
                 ColorOption(
                   name: 'themeFgOnDisabled',
-                  value: colors.themeFgOnDisabled,
+                  value: lightColors.themeFgOnDisabled,
                 ),
                 ColorOption(
                   name: 'themeFgOnAccent',
-                  value: colors.themeFgOnAccent,
+                  value: lightColors.themeFgOnAccent,
                 ),
                 ColorOption(
                   name: 'themeFgDisabled',
-                  value: colors.themeFgDisabled,
+                  value: lightColors.themeFgDisabled,
                 ),
               ];
-              return Center(
-                child: Container(
-                  height: 120,
-                  width: 120,
-                  color: context.knobs
-                      .options<ColorOption>(
-                        label: 'Colors',
-                        labelBuilder: (c) => c.name,
-                        options: foreground,
-                      )
-                      .value,
+
+              List<ColorOption> foregroundDark = [
+                ColorOption(
+                  name: 'themeFgDefault',
+                  value: darkTheme.themeFgDefault,
                 ),
+                ColorOption(
+                  name: 'themeFgMuted',
+                  value: darkTheme.themeFgMuted,
+                ),
+                ColorOption(
+                  name: 'themeFgSubtle',
+                  value: darkTheme.themeFgSubtle,
+                ),
+                ColorOption(
+                  name: 'themeFgOnDisabled',
+                  value: darkTheme.themeFgOnDisabled,
+                ),
+                ColorOption(
+                  name: 'themeFgOnAccent',
+                  value: darkTheme.themeFgOnAccent,
+                ),
+                ColorOption(
+                  name: 'themeFgDisabled',
+                  value: darkTheme.themeFgDisabled,
+                ),
+              ];
+
+              return _colorWidget(
+                context,
+                optionsDark: foregroundDark,
+                optionsLight: foregroundLight,
               );
             });
           }),
@@ -64,38 +86,51 @@ WidgetbookCategory getColors() {
         name: 'Background',
         builder: (context) {
           return ArDriveStorybookAppBase(builder: (context) {
-            final colors = ArDriveTheme.of(context).themeData.colors;
+            final lightColors = lightTheme().colors;
+            final darkTheme = ArDriveThemeData().colors;
 
-            List<ColorOption> background = [
+            List<ColorOption> backgroundLight = [
               ColorOption(
                 name: 'themeBgSurface',
-                value: colors.themeBgSurface,
+                value: lightColors.themeBgSurface,
               ),
               ColorOption(
                 name: 'themeGbMuted',
-                value: colors.themeGbMuted,
+                value: lightColors.themeGbMuted,
               ),
               ColorOption(
                 name: 'themeBgSubtle',
-                value: colors.themeBgSubtle,
+                value: lightColors.themeBgSubtle,
               ),
               ColorOption(
                 name: 'themeBgCanvas',
-                value: colors.themeBgCanvas,
+                value: lightColors.themeBgCanvas,
               ),
             ];
 
-            return Center(
-              child: Container(
-                  height: 120,
-                  width: 120,
-                  color: context.knobs
-                      .options<ColorOption>(
-                        label: 'Colors',
-                        labelBuilder: (c) => c.name,
-                        options: background,
-                      )
-                      .value),
+            List<ColorOption> backgroundDark = [
+              ColorOption(
+                name: 'themeBgSurface',
+                value: darkTheme.themeBgSurface,
+              ),
+              ColorOption(
+                name: 'themeGbMuted',
+                value: darkTheme.themeGbMuted,
+              ),
+              ColorOption(
+                name: 'themeBgSubtle',
+                value: darkTheme.themeBgSubtle,
+              ),
+              ColorOption(
+                name: 'themeBgCanvas',
+                value: darkTheme.themeBgCanvas,
+              ),
+            ];
+
+            return _colorWidget(
+              context,
+              optionsDark: backgroundDark,
+              optionsLight: backgroundLight,
             );
           });
         },
@@ -104,43 +139,58 @@ WidgetbookCategory getColors() {
         name: 'Accent',
         builder: (context) {
           return ArDriveStorybookAppBase(builder: (context) {
-            final colors = ArDriveTheme.of(context).themeData.colors;
+            // light
+            final lightColors = lightTheme().colors;
+            final darkTheme = ArDriveThemeData().colors;
 
-            List<ColorOption> accent = [
+            List<ColorOption> accentLight = [
               ColorOption(
                 name: 'themeAccentBrand',
-                value: colors.themeAccentBrand,
+                value: lightColors.themeAccentBrand,
               ),
               ColorOption(
                 name: 'themeAccentDisabled',
-                value: colors.themeAccentDisabled,
+                value: lightColors.themeAccentDisabled,
               ),
               ColorOption(
                 name: 'themeAccentEmphasis',
-                value: colors.themeAccentEmphasis,
+                value: lightColors.themeAccentEmphasis,
               ),
               ColorOption(
                 name: 'themeAccentMuted',
-                value: colors.themeAccentMuted,
+                value: lightColors.themeAccentMuted,
               ),
               ColorOption(
                 name: 'themeAccentSubtle',
-                value: colors.themeAccentSubtle,
+                value: lightColors.themeAccentSubtle,
               ),
             ];
 
-            return Center(
-              child: Container(
-                  height: 120,
-                  width: 120,
-                  color: context.knobs
-                      .options<ColorOption>(
-                        label: 'Colors',
-                        labelBuilder: (c) => c.name,
-                        options: accent,
-                      )
-                      .value),
-            );
+            List<ColorOption> accentDark = [
+              ColorOption(
+                name: 'themeAccentBrand',
+                value: darkTheme.themeAccentBrand,
+              ),
+              ColorOption(
+                name: 'themeAccentDisabled',
+                value: darkTheme.themeAccentDisabled,
+              ),
+              ColorOption(
+                name: 'themeAccentEmphasis',
+                value: darkTheme.themeAccentEmphasis,
+              ),
+              ColorOption(
+                name: 'themeAccentMuted',
+                value: darkTheme.themeAccentMuted,
+              ),
+              ColorOption(
+                name: 'themeAccentSubtle',
+                value: darkTheme.themeAccentSubtle,
+              ),
+            ];
+
+            return _colorWidget(context,
+                optionsDark: accentDark, optionsLight: accentLight);
           });
         },
       ),
@@ -148,43 +198,57 @@ WidgetbookCategory getColors() {
         name: 'Warning',
         builder: (context) {
           return ArDriveStorybookAppBase(builder: (context) {
-            final colors = ArDriveTheme.of(context).themeData.colors;
+            final lightColors = lightTheme().colors;
+            final darkTheme = ArDriveThemeData().colors;
 
-            List<ColorOption> warning = [
+            List<ColorOption> warningLight = [
               ColorOption(
                 name: 'themeWarningFg',
-                value: colors.themeWarningFg,
+                value: lightColors.themeWarningFg,
               ),
               ColorOption(
                 name: 'themeWarningEmphasis',
-                value: colors.themeWarningEmphasis,
+                value: lightColors.themeWarningEmphasis,
               ),
               ColorOption(
                 name: 'themeWarningMuted',
-                value: colors.themeWarningMuted,
+                value: lightColors.themeWarningMuted,
               ),
               ColorOption(
                 name: 'themeWarningSubtle',
-                value: colors.themeWarningSubtle,
+                value: lightColors.themeWarningSubtle,
               ),
               ColorOption(
                 name: 'themeWarningOnWarning',
-                value: colors.themeWarningOnWarning,
+                value: lightColors.themeWarningOnWarning,
               ),
             ];
 
-            return Center(
-              child: Container(
-                  height: 120,
-                  width: 120,
-                  color: context.knobs
-                      .options<ColorOption>(
-                        label: 'Colors',
-                        labelBuilder: (c) => c.name,
-                        options: warning,
-                      )
-                      .value),
-            );
+            List<ColorOption> warningDark = [
+              ColorOption(
+                name: 'themeWarningFg',
+                value: darkTheme.themeWarningFg,
+              ),
+              ColorOption(
+                name: 'themeWarningEmphasis',
+                value: darkTheme.themeWarningEmphasis,
+              ),
+              ColorOption(
+                name: 'themeWarningMuted',
+                value: darkTheme.themeWarningMuted,
+              ),
+              ColorOption(
+                name: 'themeWarningSubtle',
+                value: darkTheme.themeWarningSubtle,
+              ),
+              ColorOption(
+                name: 'themeWarningOnWarning',
+                value: darkTheme.themeWarningOnWarning,
+              ),
+            ];
+
+            return _colorWidget(context,
+                optionsDark: warningDark, optionsLight: warningLight);
           });
         },
       ),
@@ -192,40 +256,49 @@ WidgetbookCategory getColors() {
         name: 'Error',
         builder: (context) {
           return ArDriveStorybookAppBase(builder: (context) {
-            final colors = ArDriveTheme.of(context).themeData.colors;
+            final lightColors = lightTheme().colors;
+            final darkTheme = ArDriveThemeData().colors;
 
-            List<ColorOption> error = [
+            List<ColorOption> errorLight = [
               ColorOption(
                 name: 'themeErrorFg',
-                value: colors.themeErrorFg,
+                value: lightColors.themeErrorFg,
               ),
               ColorOption(
                 name: 'themeErrorMuted',
-                value: colors.themeErrorMuted,
+                value: lightColors.themeErrorMuted,
               ),
               ColorOption(
                 name: 'themeErrorSubtle',
-                value: colors.themeErrorSubtle,
+                value: lightColors.themeErrorSubtle,
               ),
               ColorOption(
                 name: 'themeErrorOnError',
-                value: colors.themeErrorOnError,
+                value: lightColors.themeErrorOnError,
               ),
             ];
 
-            return Center(
-              child: Container(
-                height: 120,
-                width: 120,
-                color: context.knobs
-                    .options<ColorOption>(
-                      label: 'Colors',
-                      labelBuilder: (c) => c.name,
-                      options: error,
-                    )
-                    .value,
+            List<ColorOption> errorDark = [
+              ColorOption(
+                name: 'themeErrorFg',
+                value: darkTheme.themeErrorFg,
               ),
-            );
+              ColorOption(
+                name: 'themeErrorMuted',
+                value: darkTheme.themeErrorMuted,
+              ),
+              ColorOption(
+                name: 'themeErrorSubtle',
+                value: darkTheme.themeErrorSubtle,
+              ),
+              ColorOption(
+                name: 'themeErrorOnError',
+                value: darkTheme.themeErrorOnError,
+              ),
+            ];
+
+            return _colorWidget(context,
+                optionsDark: errorDark, optionsLight: errorLight);
           });
         },
       ),
@@ -233,43 +306,57 @@ WidgetbookCategory getColors() {
         name: 'Info',
         builder: (context) {
           return ArDriveStorybookAppBase(builder: (context) {
-            final colors = ArDriveTheme.of(context).themeData.colors;
+            final lightColors = lightTheme().colors;
+            final darkTheme = ArDriveThemeData().colors;
 
-            List<ColorOption> info = [
+            List<ColorOption> infoLight = [
               ColorOption(
                 name: 'themeInfoFb',
-                value: colors.themeInfoFb,
+                value: lightColors.themeInfoFb,
               ),
               ColorOption(
                 name: 'themeInfoEmphasis',
-                value: colors.themeInfoEmphasis,
+                value: lightColors.themeInfoEmphasis,
               ),
               ColorOption(
                 name: 'themeInfoMuted',
-                value: colors.themeInfoMuted,
+                value: lightColors.themeInfoMuted,
               ),
               ColorOption(
                 name: 'themeInfoSubtle',
-                value: colors.themeInfoSubtle,
+                value: lightColors.themeInfoSubtle,
               ),
               ColorOption(
                 name: 'themeInfoOnInfo',
-                value: colors.themeInfoOnInfo,
+                value: lightColors.themeInfoOnInfo,
               ),
             ];
 
-            return Center(
-              child: Container(
-                  height: 120,
-                  width: 120,
-                  color: context.knobs
-                      .options<ColorOption>(
-                        label: 'Colors',
-                        labelBuilder: (c) => c.name,
-                        options: info,
-                      )
-                      .value),
-            );
+            List<ColorOption> infoDark = [
+              ColorOption(
+                name: 'themeInfoFb',
+                value: darkTheme.themeInfoFb,
+              ),
+              ColorOption(
+                name: 'themeInfoEmphasis',
+                value: darkTheme.themeInfoEmphasis,
+              ),
+              ColorOption(
+                name: 'themeInfoMuted',
+                value: darkTheme.themeInfoMuted,
+              ),
+              ColorOption(
+                name: 'themeInfoSubtle',
+                value: darkTheme.themeInfoSubtle,
+              ),
+              ColorOption(
+                name: 'themeInfoOnInfo',
+                value: darkTheme.themeInfoOnInfo,
+              ),
+            ];
+
+            return _colorWidget(context,
+                optionsDark: infoDark, optionsLight: infoLight);
           });
         },
       ),
@@ -277,43 +364,57 @@ WidgetbookCategory getColors() {
         name: 'Success',
         builder: (context) {
           return ArDriveStorybookAppBase(builder: (context) {
-            final colors = ArDriveTheme.of(context).themeData.colors;
+            final lightColors = lightTheme().colors;
+            final darkTheme = ArDriveThemeData().colors;
 
-            List<ColorOption> success = [
+            List<ColorOption> successLight = [
               ColorOption(
                 name: 'themeSuccessFb',
-                value: colors.themeSuccessFb,
+                value: lightColors.themeSuccessFb,
               ),
               ColorOption(
                 name: 'themeSuccessEmphasis',
-                value: colors.themeSuccessEmphasis,
+                value: lightColors.themeSuccessEmphasis,
               ),
               ColorOption(
                 name: 'themeSuccessMuted',
-                value: colors.themeSuccessMuted,
+                value: lightColors.themeSuccessMuted,
               ),
               ColorOption(
                 name: 'themeSuccessSubtle',
-                value: colors.themeSuccessSubtle,
+                value: lightColors.themeSuccessSubtle,
               ),
               ColorOption(
                 name: 'themeSuccessOnSuccess',
-                value: colors.themeSuccessOnSuccess,
+                value: lightColors.themeSuccessOnSuccess,
               ),
             ];
 
-            return Center(
-              child: Container(
-                  height: 120,
-                  width: 120,
-                  color: context.knobs
-                      .options<ColorOption>(
-                        label: 'Colors',
-                        labelBuilder: (c) => c.name,
-                        options: success,
-                      )
-                      .value),
-            );
+            List<ColorOption> successDark = [
+              ColorOption(
+                name: 'themeSuccessFb',
+                value: darkTheme.themeSuccessFb,
+              ),
+              ColorOption(
+                name: 'themeSuccessEmphasis',
+                value: darkTheme.themeSuccessEmphasis,
+              ),
+              ColorOption(
+                name: 'themeSuccessMuted',
+                value: darkTheme.themeSuccessMuted,
+              ),
+              ColorOption(
+                name: 'themeSuccessSubtle',
+                value: darkTheme.themeSuccessSubtle,
+              ),
+              ColorOption(
+                name: 'themeSuccessOnSuccess',
+                value: darkTheme.themeSuccessOnSuccess,
+              ),
+            ];
+
+            return _colorWidget(context,
+                optionsDark: successDark, optionsLight: successLight);
           });
         },
       ),
@@ -347,4 +448,65 @@ WidgetbookCategory getColors() {
       ),
     ]),
   ]);
+}
+
+Widget _colorWidget(BuildContext context,
+    {required List<ColorOption> optionsLight,
+    required List<ColorOption> optionsDark}) {
+  return Center(
+      child: Column(
+    mainAxisSize: MainAxisSize.min,
+    children: [
+      ColoredContainer(
+        color: context.knobs.options<ColorOption>(
+          label: 'Light',
+          labelBuilder: (c) => c.name,
+          options: optionsLight,
+        ),
+        textLabel: 'Light',
+      ),
+      SizedBox(height: 20),
+      ColoredContainer(
+        color: context.knobs.options<ColorOption>(
+          label: 'Dark',
+          labelBuilder: (c) => c.name,
+          options: optionsDark,
+        ),
+        textLabel: 'Dark',
+      ),
+    ],
+  ));
+}
+
+class ColoredContainer extends StatelessWidget {
+  const ColoredContainer({
+    required this.color,
+    required this.textLabel,
+    super.key,
+  });
+
+  final ColorOption color;
+  final String textLabel;
+
+  @override
+  Widget build(BuildContext context) {
+    final Brightness brightness =
+        ThemeData.estimateBrightnessForColor(color.value);
+    final bool useWhiteForeground = brightness == Brightness.dark;
+
+    final Color foregroundColor =
+        useWhiteForeground ? Colors.white : Colors.black;
+
+    return Container(
+      height: 300,
+      width: 300,
+      color: color.value,
+      child: Center(
+        child: Text(
+          '$textLabel\n${color.description}',
+          style: ArDriveTypography.body.buttonLargeBold(color: foregroundColor),
+        ),
+      ),
+    );
+  }
 }
