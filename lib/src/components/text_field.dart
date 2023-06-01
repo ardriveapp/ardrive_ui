@@ -77,6 +77,8 @@ class ArDriveTextField extends StatefulWidget {
     this.showObfuscationToggle = false,
     this.textInputAction = TextInputAction.done,
     this.suffixIcon,
+    this.textStyle,
+    this.useErrorMessageOffset = false,
   });
 
   final bool isEnabled;
@@ -102,6 +104,8 @@ class ArDriveTextField extends StatefulWidget {
   final bool showObfuscationToggle;
   final TextInputAction textInputAction;
   final Widget? suffixIcon;
+  final TextStyle? textStyle;
+  final bool useErrorMessageOffset;
 
   @override
   State<ArDriveTextField> createState() => ArDriveTextFieldState();
@@ -128,6 +132,8 @@ class ArDriveTextFieldState extends State<ArDriveTextField> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = ArDriveTheme.of(context).themeData.textFieldTheme;
+
     return Align(
       alignment: Alignment.center,
       child: Column(
@@ -138,7 +144,7 @@ class ArDriveTextFieldState extends State<ArDriveTextField> {
               padding: const EdgeInsets.only(bottom: 4),
               child: Align(
                 alignment: Alignment.centerLeft,
-                child: _textFieldLabel(widget.label!),
+                child: _textFieldLabel(widget.label!, theme),
               ),
             ),
           TextFormField(
@@ -155,9 +161,7 @@ class ArDriveTextFieldState extends State<ArDriveTextField> {
             key: widget.key,
             textInputAction: widget.textInputAction,
             obscureText: _isObscureText,
-            style: ArDriveTypography.body.inputLargeRegular(
-              color: ArDriveTheme.of(context).themeData.colors.themeInputText,
-            ),
+            style: theme.inputTextStyle,
             autovalidateMode: widget.autovalidateMode,
             onChanged: (text) {
               validate(text: text);
@@ -182,10 +186,7 @@ class ArDriveTextFieldState extends State<ArDriveTextField> {
                                 icon: _isObscureText
                                     ? ArDriveIconsData.eye_closed
                                     : ArDriveIconsData.eye_open,
-                                color: ArDriveTheme.of(context)
-                                    .themeData
-                                    .colors
-                                    .themeInputText,
+                                color: theme.inputTextColor,
                               )
                             : null,
                       ),
@@ -194,69 +195,72 @@ class ArDriveTextFieldState extends State<ArDriveTextField> {
               errorStyle: const TextStyle(height: 0),
               hintText: widget.hintText,
               hintStyle: ArDriveTypography.body
-                  .inputLargeRegular(color: _hintTextColor()),
-              enabledBorder: _getEnabledBorder(),
-              focusedBorder: _getFocusedBoder(),
-              disabledBorder: _getDisabledBorder(),
+                  .inputLargeRegular(color: _hintTextColor(theme)),
+              enabledBorder: _getEnabledBorder(theme),
+              focusedBorder: _getFocusedBoder(theme),
+              disabledBorder: _getDisabledBorder(theme),
               filled: true,
-              fillColor: ArDriveTheme.of(context)
-                  .themeData
-                  .colors
-                  .themeInputBackground,
+              fillColor: theme.inputBackgroundColor,
+              contentPadding: theme.contentPadding,
             ),
           ),
           if (widget.validator != null && widget.validator is Future<String?>)
             FutureBuilder(
               future: widget.validator?.call(_currentText) as Future,
               builder: (context, snapshot) {
-                return _errorMessageLabel();
+                return _errorMessageLabel(theme);
               },
             ),
           if (widget.validator != null &&
-              widget.validator is String Function(String?))
-            _errorMessageLabel(),
+              widget.validator is FutureOr<String?>? Function(String?))
+            _errorMessageLabel(theme),
           if (widget.successMessage != null)
-            _successMessage(widget.successMessage!),
+            _successMessage(widget.successMessage!, theme),
         ],
       ),
     );
   }
 
-  Widget _errorMessageLabel() {
+  Widget _errorMessageLabel(ArDriveTextFieldTheme theme) {
     return AnimatedTextFieldLabel(
       text: _errorMessage,
       showing: _errorMessage != null,
-      color: ArDriveTheme.of(context).themeData.colors.themeErrorDefault,
+      style: ArDriveTypography.body.bodyBold(
+        color: theme.errorColor,
+      ),
+      useLabelOffset: widget.useErrorMessageOffset,
     );
   }
 
-  Widget _textFieldLabel(String message) {
+  Widget _textFieldLabel(String message, ArDriveTextFieldTheme theme) {
     return Row(
       children: [
         TextFieldLabel(
           text: message,
-          bold: true,
-          color: widget.isFieldRequired
-              ? ArDriveTheme.of(context).themeData.colors.themeFgDefault
-              : ArDriveTheme.of(context).themeData.colors.themeAccentDefault,
+          style: ArDriveTypography.body.buttonNormalBold(
+            color: widget.isFieldRequired
+                ? theme.requiredLabelColor
+                : theme.labelColor,
+          ),
         ),
         if (widget.isFieldRequired)
           Text(
-            '*',
-            style: ArDriveTypography.body.bodyRegular(
-              color:
-                  ArDriveTheme.of(context).themeData.colors.themeAccentDefault,
+            ' *',
+            style: ArDriveTypography.body.buttonNormalRegular(
+              color: theme.labelColor,
             ),
           )
       ],
     );
   }
 
-  Widget _successMessage(String message) {
+  Widget _successMessage(String message, ArDriveTextFieldTheme theme) {
     return AnimatedTextFieldLabel(
       text: message,
       showing: textFieldState == TextFieldState.success,
-      color: ArDriveTheme.of(context).themeData.colors.themeSuccessDefault,
+      style: ArDriveTypography.body.bodyRegular(
+        color: theme.successColor,
+      ),
     );
   }
 
@@ -267,22 +271,20 @@ class ArDriveTextFieldState extends State<ArDriveTextField> {
     );
   }
 
-  InputBorder _getEnabledBorder() {
+  InputBorder _getEnabledBorder(ArDriveTextFieldTheme theme) {
     if (textFieldState == TextFieldState.success) {
-      return _getSuccessBorder();
+      return _getSuccessBorder(theme);
     } else if (textFieldState == TextFieldState.error) {
-      return _getErrorBorder();
+      return _getErrorBorder(theme);
     }
-    return _getBorder(
-      ArDriveTheme.of(context).themeData.colors.themeBorderDefault,
-    );
+    return _getBorder(theme.defaultBorderColor);
   }
 
-  InputBorder _getFocusedBoder() {
+  InputBorder _getFocusedBoder(ArDriveTextFieldTheme theme) {
     if (textFieldState == TextFieldState.success) {
-      return _getSuccessBorder();
+      return _getSuccessBorder(theme);
     } else if (textFieldState == TextFieldState.error) {
-      return _getErrorBorder();
+      return _getErrorBorder(theme);
     }
 
     return _getBorder(
@@ -290,29 +292,23 @@ class ArDriveTextFieldState extends State<ArDriveTextField> {
     );
   }
 
-  InputBorder _getDisabledBorder() {
-    return _getBorder(
-      ArDriveTheme.of(context).themeData.colors.themeInputBorderDisabled,
-    );
+  InputBorder _getDisabledBorder(ArDriveTextFieldTheme theme) {
+    return _getBorder(theme.inputDisabledBorderColor);
   }
 
-  InputBorder _getErrorBorder() {
-    return _getBorder(
-      ArDriveTheme.of(context).themeData.colors.themeErrorOnEmphasis,
-    );
+  InputBorder _getErrorBorder(ArDriveTextFieldTheme theme) {
+    return _getBorder(theme.errorBorderColor);
   }
 
-  InputBorder _getSuccessBorder() {
-    return _getBorder(
-      ArDriveTheme.of(context).themeData.colors.themeSuccessEmphasis,
-    );
+  InputBorder _getSuccessBorder(ArDriveTextFieldTheme theme) {
+    return _getBorder(theme.successBorderColor);
   }
 
-  Color _hintTextColor() {
+  Color _hintTextColor(ArDriveTextFieldTheme theme) {
     if (widget.isEnabled) {
-      return ArDriveTheme.of(context).themeData.colors.themeInputPlaceholder;
+      return theme.inputPlaceholderColor;
     }
-    return ArDriveTheme.of(context).themeData.colors.themeFgDisabled;
+    return theme.disabledTextColor;
   }
 
   FutureOr<bool> validate({String? text}) async {
@@ -346,15 +342,17 @@ class AnimatedTextFieldLabel extends StatefulWidget {
     super.key,
     required this.text,
     required this.showing,
-    required this.color,
+    required this.style,
+    this.useLabelOffset = false,
   });
 
   final String? text;
   final bool showing;
-  final Color color;
+  final TextStyle style;
+  final bool useLabelOffset;
 
   @override
-  State<AnimatedTextFieldLabel> createState() => AnimatedTextFieldLabelState();
+  State<AnimatedTextFieldLabel> createState() => AnimatedTextFieldLabelState2();
 }
 
 class AnimatedTextFieldLabelState extends State<AnimatedTextFieldLabel> {
@@ -383,15 +381,66 @@ class AnimatedTextFieldLabelState extends State<AnimatedTextFieldLabel> {
           visible = !visible;
         }),
         duration: const Duration(milliseconds: 300),
-        height: showing ? 35 : 0,
         width: double.infinity,
         child: AnimatedOpacity(
           opacity: visible ? 1.0 : 0.0,
           duration: Duration(milliseconds: !visible ? 100 : 300),
           child: TextFieldLabel(
-            color: widget.color,
+            style: widget.style,
             text: widget.text ?? '',
           ),
+        ),
+      ),
+    );
+  }
+}
+
+class AnimatedTextFieldLabelState2 extends State<AnimatedTextFieldLabel> {
+  @override
+  Widget build(BuildContext context) {
+    return Align(
+      alignment: Alignment.centerLeft,
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 300),
+        width: double.infinity,
+        child: AnimatedSwitcher(
+          duration: const Duration(milliseconds: 300),
+          transitionBuilder: (Widget child, Animation<double> animation) {
+            final inAnimation = Tween<Offset>(
+                    begin: const Offset(0.0, -1.0), end: const Offset(0.0, 0.0))
+                .animate(animation);
+            final outAnimation = Tween<Offset>(
+                    begin: const Offset(0.0, 0.0), end: const Offset(0.0, 1.0))
+                .animate(animation);
+
+            return ClipRect(
+              child: SlideTransition(
+                position: child.key == const ValueKey(true)
+                    ? inAnimation
+                    : outAnimation,
+                child: FadeTransition(
+                  opacity: animation,
+                  child: Align(
+                    alignment: Alignment.centerLeft,
+                    child: child,
+                  ),
+                ),
+              ),
+            );
+          },
+          child: widget.showing
+              ? SizedBox(
+                  height: 22,
+                  key: const ValueKey(true),
+                  child: TextFieldLabel(
+                    style: widget.style,
+                    text: widget.text ?? '',
+                  ),
+                )
+              : Container(
+                  key: const ValueKey(false),
+                  height: widget.useLabelOffset ? 22 : 0,
+                ),
         ),
       ),
     );
@@ -402,24 +451,92 @@ class TextFieldLabel extends StatelessWidget {
   const TextFieldLabel({
     super.key,
     required this.text,
-    required this.color,
-    this.bold = false,
+    required this.style,
   });
   final String text;
-  final Color color;
-  final bool bold;
+  final TextStyle style;
 
   @override
   Widget build(BuildContext context) {
-    return AutoSizeText(
-      text,
-      style: bold
-          ? ArDriveTypography.body.bodyBold(
-              color: color,
-            )
-          : ArDriveTypography.body.bodyRegular(
-              color: color,
-            ),
+    final theme = ArDriveTheme.of(context).themeData.textFieldTheme;
+
+    return AutoSizeText(text, style: style);
+  }
+}
+
+class ArDriveTextFieldTheme {
+  final Color inputTextColor;
+  final Color inputBackgroundColor;
+  final Color inputDisabledBorderColor;
+  final Color errorColor;
+  final Color requiredLabelColor;
+  final Color labelColor;
+  final Color successColor;
+  final Color defaultBorderColor;
+  final Color errorBorderColor;
+  final Color successBorderColor;
+  final Color inputPlaceholderColor;
+  final Color disabledTextColor;
+  final TextStyle inputTextStyle;
+  final TextStyle? labelStyle;
+  final TextStyle? errorLabelStyle;
+  final EdgeInsets? contentPadding;
+
+  const ArDriveTextFieldTheme({
+    required this.inputTextColor,
+    required this.inputBackgroundColor,
+    required this.inputDisabledBorderColor,
+    required this.errorColor,
+    required this.requiredLabelColor,
+    required this.labelColor,
+    required this.successColor,
+    required this.defaultBorderColor,
+    required this.errorBorderColor,
+    required this.successBorderColor,
+    required this.inputPlaceholderColor,
+    required this.disabledTextColor,
+    required this.inputTextStyle,
+    this.labelStyle,
+    this.contentPadding,
+    this.errorLabelStyle,
+  });
+
+  // copy with
+  ArDriveTextFieldTheme copyWith({
+    Color? inputTextColor,
+    Color? inputBackgroundColor,
+    Color? inputDisabledBorderColor,
+    Color? errorColor,
+    Color? requiredLabelColor,
+    Color? labelColor,
+    Color? successColor,
+    Color? defaultBorderColor,
+    Color? errorBorderColor,
+    Color? successBorderColor,
+    Color? inputPlaceholderColor,
+    Color? disabledTextColor,
+    TextStyle? inputTextStyle,
+    TextStyle? labelStyle,
+    EdgeInsets? contentPadding,
+  }) {
+    return ArDriveTextFieldTheme(
+      inputTextColor: inputTextColor ?? this.inputTextColor,
+      inputBackgroundColor: inputBackgroundColor ?? this.inputBackgroundColor,
+      inputDisabledBorderColor:
+          inputDisabledBorderColor ?? this.inputDisabledBorderColor,
+      errorColor: errorColor ?? this.errorColor,
+      requiredLabelColor: requiredLabelColor ?? this.requiredLabelColor,
+      labelColor: labelColor ?? this.labelColor,
+      successColor: successColor ?? this.successColor,
+      defaultBorderColor: defaultBorderColor ?? this.defaultBorderColor,
+      errorBorderColor: errorBorderColor ?? this.errorBorderColor,
+      successBorderColor: successBorderColor ?? this.successBorderColor,
+      inputPlaceholderColor:
+          inputPlaceholderColor ?? this.inputPlaceholderColor,
+      disabledTextColor: disabledTextColor ?? this.disabledTextColor,
+      inputTextStyle: inputTextStyle ?? this.inputTextStyle,
+      labelStyle: labelStyle ?? this.labelStyle,
+      contentPadding: contentPadding ?? this.contentPadding,
     );
   }
 }
