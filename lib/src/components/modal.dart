@@ -9,22 +9,40 @@ class ArDriveModal extends StatelessWidget {
     required this.constraints,
     this.contentPadding = const EdgeInsets.all(16),
     this.action,
+    this.hasCloseButton = false,
   });
 
   final Widget content;
   final BoxConstraints constraints;
   final EdgeInsets contentPadding;
   final ModalAction? action;
+  final bool hasCloseButton;
 
   @override
   Widget build(BuildContext context) {
     return ConstrainedBox(
       constraints: constraints,
       child: ArDriveCard(
-        content: Padding(
-          padding: contentPadding,
-          child: content,
-        ),
+        contentPadding: contentPadding,
+        content: content,
+        // content: Column(
+        //   mainAxisSize: MainAxisSize.min,
+        //   children: [
+        //     content,
+        //     if (hasCloseButton)
+        //       Padding(
+        //         padding: const EdgeInsets.only(
+        //           top: 26,
+        //           right: 26,
+        //         ),
+        //         child: ArDriveClickArea(
+        //           child: GestureDetector(
+        //               onTap: () => Navigator.pop(context),
+        //               child: ArDriveIcons.x()),
+        //         ),
+        //       ),
+        //   ],
+        // ),
         boxShadow: BoxShadowCard.shadow80,
       ),
     );
@@ -463,11 +481,13 @@ Future<void> showAnimatedDialog(
   BuildContext context, {
   bool barrierDismissible = true,
   required Widget content,
+  Color? barrierColor,
 }) {
   final lowScreenWarning = MediaQuery.of(context).size.height < 600;
 
   return showGeneralDialog(
     context: context,
+    barrierColor: barrierColor ?? const Color(0x80000000),
     transitionDuration: const Duration(milliseconds: 200),
     transitionBuilder: (context, a1, a2, widget) {
       return Transform.scale(
