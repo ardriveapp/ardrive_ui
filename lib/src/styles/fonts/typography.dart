@@ -11,116 +11,7 @@ class ArDriveTypography {
 class Body {
   const Body();
 
-  TextStyle leadRegular({Color? color}) {
-    return TextStyle(
-      color: color,
-      fontFamily: fontFamiliesBody,
-      package: _package,
-      fontSize: fontSize2XL,
-      fontWeight: FontWeight.w500,
-      height: lineHeightsBodyDefault,
-    );
-  }
-
-  TextStyle leadBold({Color? color}) {
-    return TextStyle(
-      color: color,
-      fontFamily: fontFamiliesBody,
-      package: _package,
-      fontSize: fontSize2XL,
-      fontWeight: FontWeight.w600,
-      height: lineHeightsBodyDefault,
-    );
-  }
-
-  TextStyle bodyRegular({Color? color}) {
-    return TextStyle(
-      color: color,
-      fontFamily: fontFamiliesBody,
-      package: _package,
-      fontSize: fontSizeLG,
-      fontWeight: FontWeight.w500,
-      height: lineHeightsBodyDefault,
-    );
-  }
-
-  TextStyle bodyBold({Color? color}) {
-    return TextStyle(
-      color: color,
-      fontFamily: fontFamiliesBody,
-      package: _package,
-      fontSize: fontSizeLG,
-      fontWeight: FontWeight.w600,
-      height: lineHeightsBodyDefault,
-    );
-  }
-
-  TextStyle smallRegular({Color? color}) {
-    return TextStyle(
-      color: color,
-      fontFamily: fontFamiliesBody,
-      package: _package,
-      fontSize: fontSizeBase,
-      fontWeight: FontWeight.w500,
-      height: lineHeightsBodyDefault,
-    );
-  }
-
-  TextStyle smallBold({Color? color}) {
-    return TextStyle(
-      color: color,
-      fontFamily: fontFamiliesBody,
-      package: _package,
-      fontSize: fontSizeBase,
-      fontWeight: FontWeight.w600,
-      height: lineHeightsBodyDefault,
-    );
-  }
-
-  TextStyle captionRegular({Color? color}) {
-    return TextStyle(
-      color: color,
-      fontFamily: fontFamiliesBody,
-      package: _package,
-      fontSize: fontSizeSM,
-      fontWeight: FontWeight.w500,
-      height: lineHeightsBodyDefault,
-    );
-  }
-
-  TextStyle captionBold({Color? color}) {
-    return TextStyle(
-      color: color,
-      fontFamily: fontFamiliesBody,
-      package: _package,
-      fontSize: fontSizeSM,
-      fontWeight: FontWeight.w600,
-      height: lineHeightsBodyDefault,
-    );
-  }
-
-  TextStyle xSmallRegular({Color? color}) {
-    return TextStyle(
-      color: color,
-      fontFamily: fontFamiliesBody,
-      package: _package,
-      fontSize: fontSizeXS,
-      fontWeight: FontWeight.w500,
-      height: lineHeightsBodyDefault,
-    );
-  }
-
-  TextStyle xSmallBold({Color? color}) {
-    return TextStyle(
-      color: color,
-      fontFamily: fontFamiliesBody,
-      package: _package,
-      fontSize: fontSizeXS,
-      fontWeight: FontWeight.w600,
-      height: lineHeightsBodyDefault,
-    );
-  }
-
+  /// **fontSizeXXS** - 9px
   TextStyle tinyRegular({Color? color}) {
     return TextStyle(
       color: color,
@@ -132,6 +23,7 @@ class Body {
     );
   }
 
+  /// **fontSizeXXS** - 9px
   TextStyle tinyBold({Color? color}) {
     return TextStyle(
       color: color,
@@ -143,73 +35,44 @@ class Body {
     );
   }
 
-  TextStyle inputLargeRegular({Color? color}) {
+  /// **fontSizeXS** - 11px
+  TextStyle xSmallRegular({Color? color}) {
     return TextStyle(
       color: color,
       fontFamily: fontFamiliesBody,
       package: _package,
-      fontSize: fontSizeLG,
+      fontSize: fontSizeXS,
       fontWeight: FontWeight.w500,
       height: lineHeightsBodyDefault,
     );
   }
 
-  TextStyle inputLargeBold({Color? color}) {
+  /// **fontSizeXS** - 11px
+  TextStyle xSmallBold({Color? color}) {
     return TextStyle(
       color: color,
       fontFamily: fontFamiliesBody,
       package: _package,
-      fontSize: fontSizeLG,
+      fontSize: fontSizeXS,
       fontWeight: FontWeight.w600,
       height: lineHeightsBodyDefault,
     );
   }
 
-  TextStyle inputNormalRegular({Color? color}) {
+  /// **fontSizeSM** - 13px
+  TextStyle captionRegular({Color? color}) {
     return TextStyle(
       color: color,
       fontFamily: fontFamiliesBody,
       package: _package,
-      fontSize: fontSizeBase,
+      fontSize: fontSizeSM,
       fontWeight: FontWeight.w500,
       height: lineHeightsBodyDefault,
     );
   }
 
-  TextStyle inputNormalBold({Color? color}) {
-    return TextStyle(
-      color: color,
-      fontFamily: fontFamiliesBody,
-      package: _package,
-      fontSize: fontSizeBase,
-      fontWeight: FontWeight.w600,
-      height: lineHeightsBodyDefault,
-    );
-  }
-
-  TextStyle buttonLargeRegular({Color? color}) {
-    return TextStyle(
-      color: color,
-      fontFamily: fontFamiliesBody,
-      package: _package,
-      fontSize: fontSizeBase,
-      fontWeight: FontWeight.w500,
-      height: lineHeightsBodyDefault,
-    );
-  }
-
-  TextStyle buttonLargeBold({Color? color}) {
-    return TextStyle(
-      color: color,
-      fontFamily: fontFamiliesBody,
-      package: _package,
-      fontSize: fontSizeBase,
-      fontWeight: FontWeight.w600,
-      height: lineHeightsBodyDefault,
-    );
-  }
-
-  TextStyle buttonNormalRegular({Color? color}) {
+  /// **fontSizeSM** - 13px
+  TextStyle captionBold({Color? color}) {
     return TextStyle(
       color: color,
       fontFamily: fontFamiliesBody,
@@ -220,6 +83,19 @@ class Body {
     );
   }
 
+  /// **fontSizeSM** - 13px
+  TextStyle buttonNormalRegular({Color? color}) {
+    return TextStyle(
+      color: color,
+      fontFamily: fontFamiliesBody,
+      package: _package,
+      fontSize: fontSizeSM,
+      fontWeight: FontWeight.w500,
+      height: lineHeightsBodyDefault,
+    );
+  }
+
+  /// **fontSizeSM** - 13px
   TextStyle buttonNormalBold({Color? color}) {
     return TextStyle(
       color: color,
@@ -231,6 +107,127 @@ class Body {
     );
   }
 
+  /// **fontSizeBase** - 16px
+  TextStyle smallRegular({Color? color}) {
+    return TextStyle(
+      color: color,
+      fontFamily: fontFamiliesBody,
+      package: _package,
+      fontSize: fontSizeBase,
+      fontWeight: FontWeight.w500,
+      height: lineHeightsBodyDefault,
+    );
+  }
+
+  /// **fontSizeBase** - 16px
+  TextStyle smallBold({Color? color}) {
+    return TextStyle(
+      color: color,
+      fontFamily: fontFamiliesBody,
+      package: _package,
+      fontSize: fontSizeBase,
+      fontWeight: FontWeight.w600,
+      height: lineHeightsBodyDefault,
+    );
+  }
+
+  /// **fontSizeBase** - 16px
+  TextStyle inputNormalRegular({Color? color}) {
+    return TextStyle(
+      color: color,
+      fontFamily: fontFamiliesBody,
+      package: _package,
+      fontSize: fontSizeBase,
+      fontWeight: FontWeight.w500,
+      height: lineHeightsBodyDefault,
+    );
+  }
+
+  /// **fontSizeBase** - 16px
+  TextStyle inputNormalBold({Color? color}) {
+    return TextStyle(
+      color: color,
+      fontFamily: fontFamiliesBody,
+      package: _package,
+      fontSize: fontSizeBase,
+      fontWeight: FontWeight.w600,
+      height: lineHeightsBodyDefault,
+    );
+  }
+
+  /// **fontSizeBase** - 16px
+  TextStyle buttonLargeRegular({Color? color}) {
+    return TextStyle(
+      color: color,
+      fontFamily: fontFamiliesBody,
+      package: _package,
+      fontSize: fontSizeBase,
+      fontWeight: FontWeight.w500,
+      height: lineHeightsBodyDefault,
+    );
+  }
+
+  /// **fontSizeBase** - 16px
+  TextStyle buttonLargeBold({Color? color}) {
+    return TextStyle(
+      color: color,
+      fontFamily: fontFamiliesBody,
+      package: _package,
+      fontSize: fontSizeBase,
+      fontWeight: FontWeight.w600,
+      height: lineHeightsBodyDefault,
+    );
+  }
+
+  /// **fontSizeLG** - 19px
+  TextStyle bodyRegular({Color? color}) {
+    return TextStyle(
+      color: color,
+      fontFamily: fontFamiliesBody,
+      package: _package,
+      fontSize: fontSizeLG,
+      fontWeight: FontWeight.w500,
+      height: lineHeightsBodyDefault,
+    );
+  }
+
+  /// **fontSizeLG** - 19px
+  TextStyle bodyBold({Color? color}) {
+    return TextStyle(
+      color: color,
+      fontFamily: fontFamiliesBody,
+      package: _package,
+      fontSize: fontSizeLG,
+      fontWeight: FontWeight.w600,
+      height: lineHeightsBodyDefault,
+    );
+  }
+
+  /// **fontSizeLG** - 19px
+  TextStyle inputLargeRegular({Color? color}) {
+    return TextStyle(
+      color: color,
+      fontFamily: fontFamiliesBody,
+      package: _package,
+      fontSize: fontSizeLG,
+      fontWeight: FontWeight.w500,
+      height: lineHeightsBodyDefault,
+    );
+  }
+
+  /// **fontSizeLG** - 19px
+  TextStyle inputLargeBold({Color? color}) {
+    return TextStyle(
+      color: color,
+      fontFamily: fontFamiliesBody,
+      package: _package,
+      fontSize: fontSizeLG,
+      fontWeight: FontWeight.w600,
+      height: lineHeightsBodyDefault,
+    );
+  }
+
+  /// **fontSizeXL** - 22px
   TextStyle buttonXLargeRegular({Color? color}) {
     return TextStyle(
       color: color,
@@ -242,6 +239,7 @@ class Body {
     );
   }
 
+  /// **fontSizeXL** - 22px
   TextStyle buttonXLargeBold({Color? color}) {
     return TextStyle(
       color: color,
@@ -252,187 +250,36 @@ class Body {
       height: lineHeightsBodyDefault,
     );
   }
+
+  /// **fontSize2XL** - 28px
+  TextStyle leadRegular({Color? color}) {
+    return TextStyle(
+      color: color,
+      fontFamily: fontFamiliesBody,
+      package: _package,
+      fontSize: fontSize2XL,
+      fontWeight: FontWeight.w500,
+      height: lineHeightsBodyDefault,
+    );
+  }
+
+  /// **fontSize2XL** - 28px
+  TextStyle leadBold({Color? color}) {
+    return TextStyle(
+      color: color,
+      fontFamily: fontFamiliesBody,
+      package: _package,
+      fontSize: fontSize2XL,
+      fontWeight: FontWeight.w600,
+      height: lineHeightsBodyDefault,
+    );
+  }
 }
 
 class Headline {
   const Headline();
 
-  TextStyle colossusRegular({Color? color}) {
-    return TextStyle(
-      color: color,
-      fontFamily: fontFamiliesHeadlines,
-      package: _package,
-      fontSize: fontSize10XL,
-      fontWeight: FontWeight.w700,
-      height: lineHeightsHeadlinesXl,
-    );
-  }
-
-  TextStyle colossusBold({Color? color}) {
-    return TextStyle(
-      color: color,
-      fontFamily: fontFamiliesHeadlines,
-      package: _package,
-      fontSize: fontSize10XL,
-      fontWeight: FontWeight.w800,
-      height: lineHeightsHeadlinesXl,
-    );
-  }
-
-  TextStyle uberRegular({Color? color}) {
-    return TextStyle(
-      color: color,
-      fontFamily: fontFamiliesHeadlines,
-      package: _package,
-      fontSize: fontSize9XL,
-      fontWeight: FontWeight.w700,
-      height: lineHeightsHeadlinesXl,
-    );
-  }
-
-  TextStyle uberBold({Color? color}) {
-    return TextStyle(
-      color: color,
-      fontFamily: fontFamiliesHeadlines,
-      package: _package,
-      fontSize: fontSize9XL,
-      fontWeight: FontWeight.w800,
-      height: lineHeightsHeadlinesXl,
-    );
-  }
-
-  TextStyle heroRegular({Color? color}) {
-    return TextStyle(
-      color: color,
-      fontFamily: fontFamiliesHeadlines,
-      package: _package,
-      fontSize: fontSize8XL,
-      fontWeight: FontWeight.w700,
-      height: lineHeightsHeadlinesXl,
-    );
-  }
-
-  TextStyle heroBold({Color? color}) {
-    return TextStyle(
-      color: color,
-      fontFamily: fontFamiliesHeadlines,
-      package: _package,
-      fontSize: fontSize8XL,
-      fontWeight: FontWeight.w800,
-      height: lineHeightsHeadlinesXl,
-    );
-  }
-
-  TextStyle displayRegular({Color? color}) {
-    return TextStyle(
-      color: color,
-      fontFamily: fontFamiliesHeadlines,
-      package: _package,
-      fontSize: fontSize7XL,
-      fontWeight: FontWeight.w700,
-      height: lineHeightsHeadlinesXl,
-    );
-  }
-
-  TextStyle displayBold({Color? color}) {
-    return TextStyle(
-      color: color,
-      fontFamily: fontFamiliesHeadlines,
-      package: _package,
-      fontSize: fontSize7XL,
-      fontWeight: FontWeight.w800,
-      height: lineHeightsHeadlinesXl,
-    );
-  }
-
-  TextStyle headline1Regular({Color? color}) {
-    return TextStyle(
-      color: color,
-      fontFamily: fontFamiliesHeadlines,
-      package: _package,
-      fontSize: fontSize6XL,
-      fontWeight: FontWeight.w700,
-      height: lineHeightsHeadlinesXl,
-    );
-  }
-
-  TextStyle headline1Bold({Color? color}) {
-    return TextStyle(
-      color: color,
-      fontFamily: fontFamiliesHeadlines,
-      package: _package,
-      fontSize: fontSize6XL,
-      fontWeight: FontWeight.w800,
-      height: lineHeightsHeadlinesXl,
-    );
-  }
-
-  TextStyle headline2Regular({Color? color}) {
-    return TextStyle(
-      color: color,
-      fontFamily: fontFamiliesHeadlines,
-      package: _package,
-      fontSize: fontSize5XL,
-      fontWeight: FontWeight.w700,
-      height: lineHeightsHeadlinesXl,
-    );
-  }
-
-  TextStyle headline2Bold({Color? color}) {
-    return TextStyle(
-      color: color,
-      fontFamily: fontFamiliesHeadlines,
-      package: _package,
-      fontSize: fontSize5XL,
-      fontWeight: FontWeight.w800,
-      height: lineHeightsHeadlinesXl,
-    );
-  }
-
-  TextStyle headline3Regular({Color? color}) {
-    return TextStyle(
-      color: color,
-      fontFamily: fontFamiliesHeadlines,
-      package: _package,
-      fontSize: fontSize4XL,
-      fontWeight: FontWeight.w700,
-      height: lineHeightsHeadlinesXl,
-    );
-  }
-
-  TextStyle headline3Bold({Color? color}) {
-    return TextStyle(
-      color: color,
-      fontFamily: fontFamiliesHeadlines,
-      package: _package,
-      fontSize: fontSize4XL,
-      fontWeight: FontWeight.w800,
-      height: lineHeightsHeadlinesXl,
-    );
-  }
-
-  TextStyle headline4Regular({Color? color}) {
-    return TextStyle(
-      color: color,
-      fontFamily: fontFamiliesHeadlines,
-      package: _package,
-      fontSize: fontSize3XL,
-      fontWeight: FontWeight.w700,
-      height: lineHeightsHeadlinesXl,
-    );
-  }
-
-  TextStyle headline4Bold({Color? color}) {
-    return TextStyle(
-      color: color,
-      fontFamily: fontFamiliesHeadlines,
-      package: _package,
-      fontSize: fontSize3XL,
-      fontWeight: FontWeight.w800,
-      height: lineHeightsHeadlinesXl,
-    );
-  }
-
+  /// **fontSizeXL** - ~22px
   TextStyle headline5Regular({Color? color}) {
     return TextStyle(
       color: color,
@@ -445,6 +292,7 @@ class Headline {
     );
   }
 
+  /// **fontSizeXL** - ~22px
   TextStyle headline5Bold({Color? color}) {
     return TextStyle(
       color: color,
@@ -453,6 +301,198 @@ class Headline {
       fontSize: fontSizeXL,
       fontWeight: FontWeight.w800,
       letterSpacing: letterSpacingHeadlines,
+      height: lineHeightsHeadlinesXl,
+    );
+  }
+
+  /// **fontSize3XL** - ~34px
+  TextStyle headline4Regular({Color? color}) {
+    return TextStyle(
+      color: color,
+      fontFamily: fontFamiliesHeadlines,
+      package: _package,
+      fontSize: fontSize3XL,
+      fontWeight: FontWeight.w700,
+      height: lineHeightsHeadlinesXl,
+    );
+  }
+
+  /// **fontSize3XL** - ~34px
+  TextStyle headline4Bold({Color? color}) {
+    return TextStyle(
+      color: color,
+      fontFamily: fontFamiliesHeadlines,
+      package: _package,
+      fontSize: fontSize3XL,
+      fontWeight: FontWeight.w800,
+      height: lineHeightsHeadlinesXl,
+    );
+  }
+
+  /// **fontSize4XL** - ~41px
+  TextStyle headline3Regular({Color? color}) {
+    return TextStyle(
+      color: color,
+      fontFamily: fontFamiliesHeadlines,
+      package: _package,
+      fontSize: fontSize4XL,
+      fontWeight: FontWeight.w700,
+      height: lineHeightsHeadlinesXl,
+    );
+  }
+
+  /// **fontSize4XL** - ~41px
+  TextStyle headline3Bold({Color? color}) {
+    return TextStyle(
+      color: color,
+      fontFamily: fontFamiliesHeadlines,
+      package: _package,
+      fontSize: fontSize4XL,
+      fontWeight: FontWeight.w800,
+      height: lineHeightsHeadlinesXl,
+    );
+  }
+
+  /// **fontSize5XL** - ~49px
+  TextStyle headline2Regular({Color? color}) {
+    return TextStyle(
+      color: color,
+      fontFamily: fontFamiliesHeadlines,
+      package: _package,
+      fontSize: fontSize5XL,
+      fontWeight: FontWeight.w700,
+      height: lineHeightsHeadlinesXl,
+    );
+  }
+
+  /// **fontSize5XL** - ~49px
+  TextStyle headline2Bold({Color? color}) {
+    return TextStyle(
+      color: color,
+      fontFamily: fontFamiliesHeadlines,
+      package: _package,
+      fontSize: fontSize5XL,
+      fontWeight: FontWeight.w800,
+      height: lineHeightsHeadlinesXl,
+    );
+  }
+
+  /// **fontSize6XL** - ~58px
+  TextStyle headline1Regular({Color? color}) {
+    return TextStyle(
+      color: color,
+      fontFamily: fontFamiliesHeadlines,
+      package: _package,
+      fontSize: fontSize6XL,
+      fontWeight: FontWeight.w700,
+      height: lineHeightsHeadlinesXl,
+    );
+  }
+
+  /// **fontSize6XL** - ~58px
+  TextStyle headline1Bold({Color? color}) {
+    return TextStyle(
+      color: color,
+      fontFamily: fontFamiliesHeadlines,
+      package: _package,
+      fontSize: fontSize6XL,
+      fontWeight: FontWeight.w800,
+      height: lineHeightsHeadlinesXl,
+    );
+  }
+
+  /// **fontSize7XL** - ~69px
+  TextStyle displayRegular({Color? color}) {
+    return TextStyle(
+      color: color,
+      fontFamily: fontFamiliesHeadlines,
+      package: _package,
+      fontSize: fontSize7XL,
+      fontWeight: FontWeight.w700,
+      height: lineHeightsHeadlinesXl,
+    );
+  }
+
+  /// **fontSize7XL** - ~69px
+  TextStyle displayBold({Color? color}) {
+    return TextStyle(
+      color: color,
+      fontFamily: fontFamiliesHeadlines,
+      package: _package,
+      fontSize: fontSize7XL,
+      fontWeight: FontWeight.w800,
+      height: lineHeightsHeadlinesXl,
+    );
+  }
+
+  /// **fontSize8XL** - ~82px
+  TextStyle heroRegular({Color? color}) {
+    return TextStyle(
+      color: color,
+      fontFamily: fontFamiliesHeadlines,
+      package: _package,
+      fontSize: fontSize8XL,
+      fontWeight: FontWeight.w700,
+      height: lineHeightsHeadlinesXl,
+    );
+  }
+
+  /// **fontSize8XL** - ~82px
+  TextStyle heroBold({Color? color}) {
+    return TextStyle(
+      color: color,
+      fontFamily: fontFamiliesHeadlines,
+      package: _package,
+      fontSize: fontSize8XL,
+      fontWeight: FontWeight.w800,
+      height: lineHeightsHeadlinesXl,
+    );
+  }
+
+  /// **fontSize9XL** - ~98px
+  TextStyle uberRegular({Color? color}) {
+    return TextStyle(
+      color: color,
+      fontFamily: fontFamiliesHeadlines,
+      package: _package,
+      fontSize: fontSize9XL,
+      fontWeight: FontWeight.w700,
+      height: lineHeightsHeadlinesXl,
+    );
+  }
+
+  /// **fontSize9XL** - ~98px
+  TextStyle uberBold({Color? color}) {
+    return TextStyle(
+      color: color,
+      fontFamily: fontFamiliesHeadlines,
+      package: _package,
+      fontSize: fontSize9XL,
+      fontWeight: FontWeight.w800,
+      height: lineHeightsHeadlinesXl,
+    );
+  }
+
+  /// **fontSize10XL** - ~117px
+  TextStyle colossusRegular({Color? color}) {
+    return TextStyle(
+      color: color,
+      fontFamily: fontFamiliesHeadlines,
+      package: _package,
+      fontSize: fontSize10XL,
+      fontWeight: FontWeight.w700,
+      height: lineHeightsHeadlinesXl,
+    );
+  }
+
+  /// **fontSize10XL** - ~117px
+  TextStyle colossusBold({Color? color}) {
+    return TextStyle(
+      color: color,
+      fontFamily: fontFamiliesHeadlines,
+      package: _package,
+      fontSize: fontSize10XL,
+      fontWeight: FontWeight.w800,
       height: lineHeightsHeadlinesXl,
     );
   }
@@ -475,17 +515,45 @@ const double letterSpacingHeadlines = kIsWeb ? 0.5 : -1;
 /// Font Sizes
 const double fontSizeBase = 16;
 const double fontSizeScale = 1.2;
+
+/// ~ 9px
 const double fontSizeXXS = fontSizeXS / fontSizeScale;
+
+/// ~ 11px
 const double fontSizeXS = fontSizeSM / fontSizeScale;
+
+/// ~ 13px
 const double fontSizeSM = fontSizeBase / fontSizeScale;
+
+/// ~ 19px
 const double fontSizeLG = fontSizeBase * fontSizeScale;
+
+/// ~ 22px
 const double fontSizeXL = fontSizeLG * fontSizeScale;
+
+/// ~ 28px
 const double fontSize2XL = fontSizeXL * fontSizeScale;
+
+/// ~ 34px
 const double fontSize3XL = fontSize2XL * fontSizeScale;
+
+/// ~ 41px
 const double fontSize4XL = fontSize3XL * fontSizeScale;
+
+/// ~ 49px
 const double fontSize5XL = fontSize4XL * fontSizeScale;
+
+/// ~ 58px
 const double fontSize6XL = fontSize5XL * fontSizeScale;
+
+/// ~ 69px
 const double fontSize7XL = fontSize6XL * fontSizeScale;
+
+/// ~ 82px
 const double fontSize8XL = fontSize7XL * fontSizeScale;
+
+/// ~ 98px
 const double fontSize9XL = fontSize8XL * fontSizeScale;
+
+/// ~ 117px
 const double fontSize10XL = fontSize9XL * fontSizeScale;
