@@ -79,6 +79,7 @@ class ArDriveTextField extends StatefulWidget {
     this.suffixIcon,
     this.textStyle,
     this.useErrorMessageOffset = false,
+    this.preffix,
   });
 
   final bool isEnabled;
@@ -106,7 +107,7 @@ class ArDriveTextField extends StatefulWidget {
   final Widget? suffixIcon;
   final TextStyle? textStyle;
   final bool useErrorMessageOffset;
-
+  final Widget? preffix;
   @override
   State<ArDriveTextField> createState() => ArDriveTextFieldState();
 }
@@ -171,6 +172,7 @@ class ArDriveTextFieldState extends State<ArDriveTextField> {
             autofillHints: widget.autofillHints,
             enabled: widget.isEnabled,
             decoration: InputDecoration(
+              prefix: widget.preffix,
               suffix: widget.suffixIcon ??
                   GestureDetector(
                     onTap: () {
