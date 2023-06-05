@@ -80,6 +80,7 @@ class ArDriveTextField extends StatefulWidget {
     this.textStyle,
     this.useErrorMessageOffset = false,
     this.preffix,
+    this.showErrorMessage = true,
   });
 
   final bool isEnabled;
@@ -108,6 +109,7 @@ class ArDriveTextField extends StatefulWidget {
   final TextStyle? textStyle;
   final bool useErrorMessageOffset;
   final Widget? preffix;
+  final bool showErrorMessage;
   @override
   State<ArDriveTextField> createState() => ArDriveTextFieldState();
 }
@@ -206,14 +208,17 @@ class ArDriveTextFieldState extends State<ArDriveTextField> {
               contentPadding: theme.contentPadding,
             ),
           ),
-          if (widget.validator != null && widget.validator is Future<String?>)
+          if (widget.showErrorMessage &&
+              widget.validator != null &&
+              widget.validator is Future<String?>)
             FutureBuilder(
               future: widget.validator?.call(_currentText) as Future,
               builder: (context, snapshot) {
                 return _errorMessageLabel(theme);
               },
             ),
-          if (widget.validator != null &&
+          if (widget.showErrorMessage &&
+              widget.validator != null &&
               widget.validator is FutureOr<String?>? Function(String?))
             _errorMessageLabel(theme),
           if (widget.successMessage != null)
