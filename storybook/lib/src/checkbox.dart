@@ -4,7 +4,7 @@ import 'package:storybook/src/ardrive_app_base.dart';
 import 'package:widgetbook/widgetbook.dart';
 
 WidgetbookCategory checkBox() {
-  return WidgetbookCategory(name: 'Check Box', widgets: [
+  return WidgetbookCategory(name: 'Check Box', children: [
     WidgetbookComponent(name: 'Check Box', useCases: [
       WidgetbookUseCase(
         name: 'Check Box',

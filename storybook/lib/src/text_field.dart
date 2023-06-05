@@ -6,7 +6,7 @@ import 'package:widgetbook/widgetbook.dart';
 WidgetbookCategory textField() {
   return WidgetbookCategory(
     name: 'TextField',
-    widgets: [
+    children: [
       WidgetbookComponent(name: 'TextField', useCases: [
         WidgetbookUseCase(
             name: 'Enabled',

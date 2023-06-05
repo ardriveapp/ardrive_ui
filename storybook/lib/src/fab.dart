@@ -4,7 +4,7 @@ import 'package:storybook/src/ardrive_app_base.dart';
 import 'package:widgetbook/widgetbook.dart';
 
 WidgetbookCategory fab() {
-  return WidgetbookCategory(name: 'FAB', widgets: [
+  return WidgetbookCategory(name: 'FAB', children: [
     WidgetbookComponent(name: 'FAB', useCases: [
       WidgetbookUseCase(
         name: 'Primary',

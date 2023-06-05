@@ -44,6 +44,7 @@ class _ArDriveAppState extends State<ArDriveApp> {
   void initState() {
     super.initState();
 
+    // ignore: deprecated_member_use
     var window = WidgetsBinding.instance.window;
     WidgetsBinding.instance.handlePlatformBrightnessChanged();
 

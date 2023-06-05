@@ -4,7 +4,7 @@ import 'package:storybook/src/ardrive_app_base.dart';
 import 'package:widgetbook/widgetbook.dart';
 
 WidgetbookCategory tabView() {
-  return WidgetbookCategory(name: 'Tab View', widgets: [
+  return WidgetbookCategory(name: 'Tab View', children: [
     WidgetbookComponent(name: 'Tab Bar', useCases: [
       WidgetbookUseCase(
         name: 'Tab Bar',
