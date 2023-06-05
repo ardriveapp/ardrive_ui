@@ -4,7 +4,7 @@ import 'package:storybook/src/ardrive_app_base.dart';
 import 'package:widgetbook/widgetbook.dart';
 
 WidgetbookCategory accordion() {
-  return WidgetbookCategory(name: 'Accordion', widgets: [
+  return WidgetbookCategory(name: 'Accordion', children: [
     WidgetbookComponent(name: 'Accordion ', useCases: [
       WidgetbookUseCase(
           name: 'With content',

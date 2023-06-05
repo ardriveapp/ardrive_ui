@@ -4,7 +4,7 @@ import 'package:storybook/src/ardrive_app_base.dart';
 import 'package:widgetbook/widgetbook.dart';
 
 WidgetbookCategory card() {
-  return WidgetbookCategory(name: 'Card', widgets: [
+  return WidgetbookCategory(name: 'Card', children: [
     WidgetbookComponent(name: 'Card ', useCases: [
       WidgetbookUseCase(
           name: 'With content',

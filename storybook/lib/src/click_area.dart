@@ -5,7 +5,7 @@ import 'package:widgetbook/widgetbook.dart';
 WidgetbookCategory clickArea() {
   return WidgetbookCategory(
     name: 'Click Area',
-    widgets: [
+    children: [
       WidgetbookComponent(
         name: 'Click Area',
         useCases: [

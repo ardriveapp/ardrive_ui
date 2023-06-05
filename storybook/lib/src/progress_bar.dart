@@ -3,7 +3,7 @@ import 'package:storybook/src/ardrive_app_base.dart';
 import 'package:widgetbook/widgetbook.dart';
 
 WidgetbookCategory progressBar() {
-  return WidgetbookCategory(name: 'Progress Bar', widgets: [
+  return WidgetbookCategory(name: 'Progress Bar', children: [
     WidgetbookComponent(name: 'Progress Bar', useCases: [
       WidgetbookUseCase(
         name: 'Progress Bar',

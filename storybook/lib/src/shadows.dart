@@ -4,7 +4,7 @@ import 'package:storybook/src/ardrive_app_base.dart';
 import 'package:widgetbook/widgetbook.dart';
 
 WidgetbookCategory shadows() {
-  return WidgetbookCategory(name: 'Shadows', widgets: [
+  return WidgetbookCategory(name: 'Shadows', children: [
     WidgetbookComponent(name: 'Shadows', useCases: [
       WidgetbookUseCase(
           name: '20%',
