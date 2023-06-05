@@ -224,9 +224,9 @@ class _ArDriveDataTableState<T extends IndexedItem>
 
         selectPage(_recalculateCurrentPage());
       } else {
-        _cachedRows = widget.rows;
-
-        selectPage(_selectedPage);
+        if (_sortedColumn != null) {
+          _sortRows(_sortedColumn!);
+        }
       }
     }
   }
@@ -362,8 +362,6 @@ class _ArDriveDataTableState<T extends IndexedItem>
               alignment: Alignment.centerLeft,
               child: GestureDetector(
                 onTap: () {
-                  final stopwatch = Stopwatch()..start();
-
                   setState(() {
                     if (_sortedColumn == index) {
                       _tableSort = _tableSort == TableSort.asc
@@ -375,28 +373,7 @@ class _ArDriveDataTableState<T extends IndexedItem>
                     }
                   });
 
-                  if (widget.sortRows != null) {
-                    _cachedRows =
-                        widget.sortRows!(_cachedRows, index, _tableSort!);
-                  } else if (widget.sort != null) {
-                    int sort(a, b) {
-                      if (_tableSort == TableSort.asc) {
-                        return widget.sort!.call(index)(a, b);
-                      } else {
-                        return widget.sort!.call(index)(b, a);
-                      }
-                    }
-
-                    _cachedRows.sort(sort);
-                  }
-
-                  selectPage(_selectedPage);
-
-                  stopwatch.stop();
-
-                  debugPrint(
-                    'TABLE SORT - Elapsed time: ${stopwatch.elapsedMilliseconds}ms',
-                  );
+                  _sortRows(index);
                 },
                 child: Row(
                   crossAxisAlignment: CrossAxisAlignment.center,
@@ -882,6 +859,32 @@ class _ArDriveDataTableState<T extends IndexedItem>
 
   void goToPreviousPage() {
     selectPage(_selectedPage - 1);
+  }
+
+  void _sortRows(int index) {
+    final stopwatch = Stopwatch()..start();
+
+    if (widget.sortRows != null) {
+      _cachedRows = widget.sortRows!(_cachedRows, index, _tableSort!);
+    } else if (widget.sort != null) {
+      int sort(a, b) {
+        if (_tableSort == TableSort.asc) {
+          return widget.sort!.call(index)(a, b);
+        } else {
+          return widget.sort!.call(index)(b, a);
+        }
+      }
+
+      _cachedRows.sort(sort);
+    }
+
+    selectPage(_selectedPage);
+
+    stopwatch.stop();
+
+    debugPrint(
+      'TABLE SORT - Elapsed time: ${stopwatch.elapsedMilliseconds}ms',
+    );
   }
 }
 
