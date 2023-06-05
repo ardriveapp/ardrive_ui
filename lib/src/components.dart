@@ -8,6 +8,7 @@ export 'components/click_area.dart';
 export 'components/data_table/data_table.dart';
 export 'components/drop_area.dart';
 export 'components/fab.dart';
+export 'components/feedback_message.dart';
 export 'components/image.dart';
 export 'components/modal.dart';
 export 'components/overlay.dart';
