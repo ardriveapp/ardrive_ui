@@ -513,6 +513,42 @@ Future<void> showAnimatedDialog(
   );
 }
 
+Future<void> showAnimatedDialogWithBuilder(
+  BuildContext context, {
+  bool barrierDismissible = true,
+  required WidgetBuilder builder,
+  Color? barrierColor,
+}) {
+  final lowScreenWarning = MediaQuery.of(context).size.height < 600;
+
+  return showGeneralDialog(
+    context: context,
+    barrierColor: barrierColor ?? const Color(0x80000000),
+    transitionDuration: const Duration(milliseconds: 200),
+    transitionBuilder: (context, a1, a2, widget) {
+      return Transform.scale(
+        scale: a1.value,
+        child: Opacity(
+          opacity: a1.value,
+          child: widget,
+        ),
+      );
+    },
+    barrierDismissible: barrierDismissible,
+    barrierLabel: '',
+    pageBuilder: (context, a1, a2) {
+      return Dialog(
+        insetPadding: lowScreenWarning
+            ? const EdgeInsets.symmetric(horizontal: 0, vertical: 8)
+            : null,
+        elevation: 0,
+        backgroundColor: Colors.transparent,
+        child: builder(context),
+      );
+    },
+  );
+}
+
 Future<void> showLongModal(
   BuildContext context, {
   required String title,
