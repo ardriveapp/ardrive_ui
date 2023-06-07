@@ -9,14 +9,12 @@ class ArDriveModal extends StatelessWidget {
     required this.constraints,
     this.contentPadding = const EdgeInsets.all(16),
     this.action,
-    this.hasCloseButton = false,
   });
 
   final Widget content;
   final BoxConstraints constraints;
   final EdgeInsets contentPadding;
   final ModalAction? action;
-  final bool hasCloseButton;
 
   @override
   Widget build(BuildContext context) {
@@ -25,24 +23,6 @@ class ArDriveModal extends StatelessWidget {
       child: ArDriveCard(
         contentPadding: contentPadding,
         content: content,
-        // content: Column(
-        //   mainAxisSize: MainAxisSize.min,
-        //   children: [
-        //     content,
-        //     if (hasCloseButton)
-        //       Padding(
-        //         padding: const EdgeInsets.only(
-        //           top: 26,
-        //           right: 26,
-        //         ),
-        //         child: ArDriveClickArea(
-        //           child: GestureDetector(
-        //               onTap: () => Navigator.pop(context),
-        //               child: ArDriveIcons.x()),
-        //         ),
-        //       ),
-        //   ],
-        // ),
         boxShadow: BoxShadowCard.shadow80,
       ),
     );
