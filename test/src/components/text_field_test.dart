@@ -35,7 +35,7 @@ void main() {
       (tester) async {
     final textField = ArDriveTextField(
       /// success if more than 10 chars in ther other case error
-      validator: (s) => s != null && s.length > 10 ? null : 'error',
+      asyncValidator: (s) => s != null && s.length > 10 ? null : 'error',
     );
 
     await tester.pumpWidget(
@@ -64,7 +64,7 @@ void main() {
       'Should not show the AnimatedTextFieldLabel when there isnt a error message',
       (tester) async {
     final textField = ArDriveTextField(
-      validator: (s) => 'error', // always show error
+      asyncValidator: (s) => 'error', // always show error
     );
 
     await tester.pumpWidget(
@@ -94,7 +94,7 @@ void main() {
       'Should  show the AnimatedTextFieldLabel when there is a error message and the state is error',
       (tester) async {
     final textField = ArDriveTextField(
-      validator: (s) => 'error label', // always show error\
+      asyncValidator: (s) => 'error label', // always show error\
     );
 
     await tester.pumpWidget(
@@ -130,7 +130,7 @@ void main() {
       'Should not show the AnimatedTextFieldLabel when there isnt a success message and the state is success',
       (tester) async {
     final textField = ArDriveTextField(
-      validator: (s) => null, // always show success
+      asyncValidator: (s) => null, // always show success
     );
 
     await tester.pumpWidget(
@@ -161,7 +161,7 @@ void main() {
       (tester) async {
     final textField = ArDriveTextField(
       successMessage: 'Success message',
-      validator: (s) => null, // always show success
+      asyncValidator: (s) => null, // always show success
     );
 
     await tester.pumpWidget(

@@ -47,7 +47,7 @@ WidgetbookCategory textField() {
                     obscureText: context.knobs.boolean(label: 'Obfuscate text'),
                     label: context.knobs.text(label: 'Label'),
                     hintText: context.knobs.text(label: 'Hint text'),
-                    validator: (s) =>
+                    asyncValidator: (s) =>
                         context.knobs.text(label: 'Error message'),
                   ),
                 ),
@@ -65,7 +65,7 @@ WidgetbookCategory textField() {
                     obscureText: context.knobs.boolean(label: 'Obfuscate text'),
                     label: context.knobs.text(label: 'Label'),
                     hintText: context.knobs.text(label: 'Hint text'),
-                    validator: (s) => null,
+                    asyncValidator: (s) => null,
                     successMessage:
                         context.knobs.text(label: 'Success message'),
                   ),

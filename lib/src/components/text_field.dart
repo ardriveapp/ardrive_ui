@@ -5,12 +5,18 @@ import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
+/// A form widget that manages the validation of child text fields.
 class ArDriveForm extends StatefulWidget {
+  /// The child widget of the form.
   final Widget child;
+
+  /// Creates an instance of [ArDriveForm].
+  ///
+  /// The [child] argument must not be null.
   const ArDriveForm({
-    super.key,
+    Key? key,
     required this.child,
-  });
+  }) : super(key: key);
 
   @override
   State<ArDriveForm> createState() => ArDriveFormState();
@@ -18,30 +24,93 @@ class ArDriveForm extends StatefulWidget {
 
 class ArDriveFormState extends State<ArDriveForm> {
   bool _isValid = true;
+  final List<ArDriveTextFieldState> _textFields = [];
 
-  bool validate() {
+  @override
+  void didChangeDependencies() {
+    WidgetsBinding.instance!.addPostFrameCallback((_) {
+      context.visitChildElements((element) {
+        _findTextFields(element);
+      });
+    });
+
+    super.didChangeDependencies();
+  }
+
+  @override
+  void initState() {
+    super.initState();
+  }
+
+  /// Validates the form asynchronously.
+  ///
+  /// This method triggers the validation of all text fields in the form.
+  /// If any field is invalid, the form is considered invalid.
+  ///
+  /// Returns a [Future] that completes with `true` if the form is valid,
+  /// otherwise completes with `false`.
+  Future<bool> validate() async {
     _isValid = true;
 
-    context.visitChildElements((element) {
-      if (element is! ArDriveTextField) {
-        return _findAndValidateTextField(element);
-      }
-    });
+    await _waitValidations();
 
     return _isValid;
   }
 
-  void _findAndValidateTextField(Element e) {
-    e.visitChildElements((element) {
+  Future<void> _waitValidations() async {
+    context.visitChildElements((element) async {
+      if (element is! ArDriveTextField) {
+        return await _findAndValidateTextFieldAsync(element);
+      }
+    });
+  }
+
+  Future<void> _findAndValidateTextFieldAsync(Element e) async {
+    e.visitChildElements((element) async {
       if (element.widget is! ArDriveTextField) {
-        return _findAndValidateTextField(element);
+        return _findAndValidateTextFieldAsync(element);
       }
 
-      WidgetsBinding.instance.addPostFrameCallback((_) async {
+      WidgetsBinding.instance!.addPostFrameCallback((_) async {
         _isValid = _isValid &&
             await ((element as StatefulElement).state as ArDriveTextFieldState)
-                .validate();
+                .validateAsync();
       });
+    });
+  }
+
+  /// Validates the form synchronously.
+  ///
+  /// This method triggers the synchronous validation of all text fields in the form.
+  /// If any field is invalid, the form is considered invalid.
+  ///
+  /// Returns `true` if the form is valid, otherwise returns `false`.
+  bool validateSync({void Function(bool)? callback}) {
+    _isValid = true;
+
+    _findAndValidateTextFieldSync();
+
+    return _isValid;
+  }
+
+  void _findAndValidateTextFieldSync() {
+    for (var i = 0; i < _textFields.length; i++) {
+      _isValid = _isValid && _textFields[i].validateSync();
+    }
+  }
+
+  void _findTextFields(Element e) {
+    e.visitChildElements((element) {
+      if (element.widget is! ArDriveTextField) {
+        return _findTextFields(element);
+      }
+
+      if (_textFields.contains(
+          ((element as StatefulElement).state as ArDriveTextFieldState))) {
+        return;
+      }
+
+      _textFields.add(((element).state as ArDriveTextFieldState));
     });
   }
 
@@ -55,7 +124,7 @@ class ArDriveTextField extends StatefulWidget {
   const ArDriveTextField({
     super.key,
     this.isEnabled = true,
-    this.validator,
+    this.asyncValidator,
     this.hintText,
     this.onChanged,
     this.obscureText = false,
@@ -81,10 +150,12 @@ class ArDriveTextField extends StatefulWidget {
     this.useErrorMessageOffset = false,
     this.preffix,
     this.showErrorMessage = true,
+    this.validator,
   });
 
   final bool isEnabled;
-  final FutureOr<String?>? Function(String?)? validator;
+  final FutureOr<String?>? Function(String?)? asyncValidator;
+  final String? Function(String?)? validator;
   final Function(String)? onChanged;
   final String? hintText;
   final bool obscureText;
@@ -167,7 +238,14 @@ class ArDriveTextFieldState extends State<ArDriveTextField> {
             style: theme.inputTextStyle,
             autovalidateMode: widget.autovalidateMode,
             onChanged: (text) {
-              validate(text: text);
+              if (widget.asyncValidator != null) {
+                widget.asyncValidator!(text);
+                validateAsync(text: text);
+              } else if (widget.validator != null) {
+                widget.validator!(text);
+                validateSync(text: text);
+              }
+
               widget.onChanged?.call(text);
               _currentText = text;
             },
@@ -209,17 +287,15 @@ class ArDriveTextFieldState extends State<ArDriveTextField> {
             ),
           ),
           if (widget.showErrorMessage &&
-              widget.validator != null &&
-              widget.validator is Future<String?>)
+              widget.asyncValidator != null &&
+              widget.asyncValidator is Future)
             FutureBuilder(
-              future: widget.validator?.call(_currentText) as Future,
+              future: widget.asyncValidator?.call(_currentText) as Future,
               builder: (context, snapshot) {
                 return _errorMessageLabel(theme);
               },
             ),
-          if (widget.showErrorMessage &&
-              widget.validator != null &&
-              widget.validator is FutureOr<String?>? Function(String?))
+          if (widget.showErrorMessage && widget.validator != null)
             _errorMessageLabel(theme),
           if (widget.successMessage != null)
             _successMessage(widget.successMessage!, theme),
@@ -318,14 +394,38 @@ class ArDriveTextFieldState extends State<ArDriveTextField> {
     return theme.disabledTextColor;
   }
 
-  FutureOr<bool> validate({String? text}) async {
+  FutureOr<bool> validateAsync({String? text}) async {
     String? textToValidate = text;
 
     if (textToValidate == null && widget.controller != null) {
       textToValidate = widget.controller?.text;
     }
 
-    final validation = await widget.validator?.call(textToValidate);
+    final validation = await widget.asyncValidator?.call(textToValidate);
+
+    setState(() {
+      if (textToValidate?.isEmpty ?? true) {
+        textFieldState = TextFieldState.focused;
+      } else if (validation != null) {
+        textFieldState = TextFieldState.error;
+      } else if (validation == null) {
+        textFieldState = TextFieldState.success;
+      }
+    });
+
+    _errorMessage = validation;
+
+    return validation == null;
+  }
+
+  bool validateSync({String? text}) {
+    String? textToValidate = text;
+
+    if (textToValidate == null && widget.controller != null) {
+      textToValidate = widget.controller?.text;
+    }
+
+    final validation = widget.validator?.call(textToValidate);
 
     setState(() {
       if (textToValidate?.isEmpty ?? true) {
