@@ -18,6 +18,7 @@ class ArDriveDropdown extends StatefulWidget {
       target: Alignment.bottomLeft,
       offset: Offset(0, 4),
     ),
+    this.dividerThickness,
     this.calculateVerticalAlignment,
   });
 
@@ -26,6 +27,7 @@ class ArDriveDropdown extends StatefulWidget {
   final List<ArDriveDropdownItem> items;
   final Widget child;
   final EdgeInsets? contentPadding;
+  final double? dividerThickness;
   final Anchor anchor;
 
   // retruns the alignment based if the current widget y coordinate is greater than half the screen height
@@ -127,7 +129,7 @@ class _ArDriveDropdownState extends State<ArDriveDropdown> {
                         if (index != widget.items.length - 1)
                           Divider(
                             height: 0,
-                            thickness: 1,
+                            thickness: widget.dividerThickness ?? 1,
                             color: ArDriveTheme.of(context)
                                 .themeData
                                 .colors
@@ -153,19 +155,6 @@ class _ArDriveDropdownState extends State<ArDriveDropdown> {
     );
   }
 }
-
-// GestureDetector(
-//           behavior: HitTestBehavior.translucent,
-//           onTap: () {
-//             setState(() {
-//               _visible = true;
-//             });
-//           },
-//           child: IgnorePointer(
-//             ignoring: _visible,
-//             child: widget.child,
-//           ),
-//         ),
 
 class _ArDriveDropdownContent extends StatefulWidget {
   @override
@@ -336,15 +325,23 @@ class _ArDriveDropdownItemState extends State<ArDriveDropdownItem> {
     final theme = ArDriveTheme.of(context).themeData.dropdownTheme;
 
     return MouseRegion(
-      cursor: SystemMouseCursors.click,
+      cursor: widget.onClick != null
+          ? SystemMouseCursors.click
+          : SystemMouseCursors.basic,
       onHover: (event) {
-        setState(() {
-          hovering = true;
-        });
+        if (widget.onClick != null) {
+          setState(() {
+            hovering = true;
+          });
+        }
       },
-      onExit: (event) => setState(() {
-        hovering = false;
-      }),
+      onExit: (event) {
+        if (widget.onClick != null) {
+          setState(() {
+            hovering = false;
+          });
+        }
+      },
       child: Container(
         color: hovering ? theme.hoverColor : theme.backgroundColor,
         // alignment: Alignment.center,
