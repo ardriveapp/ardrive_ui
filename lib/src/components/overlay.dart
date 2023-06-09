@@ -145,6 +145,7 @@ class _ArDriveDropdownState extends State<ArDriveDropdown> {
         ),
       ),
       child: GestureDetector(
+        behavior: HitTestBehavior.translucent,
         onTap: () {
           setState(() {
             visible = !visible;
@@ -254,8 +255,6 @@ class _ArDriveOverlayState extends State<ArDriveOverlay> {
     } else {
       _visible = false;
     }
-
-    // widget.onVisibleChange?.call(_visible);
   }
 
   late bool _visible;
