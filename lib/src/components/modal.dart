@@ -97,12 +97,16 @@ class ArDriveIconModal extends StatelessWidget {
                   style: ArDriveButtonStyle.secondary,
                   backgroundColor:
                       ArDriveTheme.of(context).themeData.colors.themeFgDefault,
-                  fontStyle: ArDriveTypography.body.buttonNormalRegular(
-                    color: ArDriveTheme.of(context)
-                        .themeData
-                        .colors
-                        .themeFgDefault,
-                  ),
+                  fontStyle: ArDriveTypography.body
+                      .buttonNormalBold(
+                        color: ArDriveTheme.of(context)
+                            .themeData
+                            .colors
+                            .themeFgDefault,
+                      )
+                      .copyWith(
+                        fontWeight: FontWeight.w700,
+                      ),
                   text: actions!.first.title,
                   onPressed: actions!.first.action,
                 ),
@@ -115,12 +119,16 @@ class ArDriveIconModal extends StatelessWidget {
                           .themeData
                           .colors
                           .themeFgDefault,
-                      fontStyle: ArDriveTypography.body.buttonNormalRegular(
-                        color: ArDriveTheme.of(context)
-                            .themeData
-                            .colors
-                            .themeAccentSubtle,
-                      ),
+                      fontStyle: ArDriveTypography.body
+                          .buttonNormalBold(
+                            color: ArDriveTheme.of(context)
+                                .themeData
+                                .colors
+                                .themeAccentSubtle,
+                          )
+                          .copyWith(
+                            fontWeight: FontWeight.w700,
+                          ),
                       text: actions![1].title,
                       onPressed: actions![1].action,
                     ),
@@ -390,9 +398,14 @@ class ArDriveStandardModal extends StatelessWidget {
             style: ArDriveButtonStyle.secondary,
             backgroundColor:
                 ArDriveTheme.of(context).themeData.colors.themeFgDefault,
-            fontStyle: ArDriveTypography.body.buttonNormalRegular(
-              color: ArDriveTheme.of(context).themeData.colors.themeFgDefault,
-            ),
+            fontStyle: ArDriveTypography.body
+                .buttonNormalBold(
+                  color:
+                      ArDriveTheme.of(context).themeData.colors.themeFgDefault,
+                )
+                .copyWith(
+                  fontWeight: FontWeight.w700,
+                ),
             text: actions.first.title,
             onPressed: actions.first.action,
           ),
@@ -406,14 +419,21 @@ class ArDriveStandardModal extends StatelessWidget {
               maxHeight: buttonActionHeight,
               backgroundColor:
                   ArDriveTheme.of(context).themeData.colors.themeFgDefault,
-              fontStyle: ArDriveTypography.body.buttonNormalRegular(
-                color: actions.length > 2
-                    ? ArDriveTheme.of(context).themeData.colors.themeFgDefault
-                    : ArDriveTheme.of(context)
-                        .themeData
-                        .colors
-                        .themeAccentSubtle,
-              ),
+              fontStyle: ArDriveTypography.body
+                  .buttonNormalRegular(
+                    color: actions.length > 2
+                        ? ArDriveTheme.of(context)
+                            .themeData
+                            .colors
+                            .themeFgDefault
+                        : ArDriveTheme.of(context)
+                            .themeData
+                            .colors
+                            .themeAccentSubtle,
+                  )
+                  .copyWith(
+                    fontWeight: FontWeight.w700,
+                  ),
               isDisabled: !actions[1].isEnable,
               text: actions[1].title,
               onPressed: actions[1].action,
