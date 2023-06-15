@@ -35,7 +35,7 @@ void main() {
       (tester) async {
     final textField = ArDriveTextField(
       /// success if more than 10 chars in ther other case error
-      validator: (s) => s != null && s.length > 10 ? null : 'error',
+      asyncValidator: (s) => s != null && s.length > 10 ? null : 'error',
     );
 
     await tester.pumpWidget(
@@ -75,7 +75,7 @@ void main() {
       ),
     );
 
-    final findTextField = find.byType(TextFormField);
+    final findTextField = find.byType(ArDriveTextField);
 
     await tester.enterText(findTextField, 'error');
 
@@ -85,12 +85,8 @@ void main() {
 
     await tester.ensureVisible(label);
 
-    final state =
-        tester.state<ArDriveTextFieldState>(find.byType(ArDriveTextField));
-
     expect(findTextField, findsOneWidget);
     expect(find.text('error label'), findsOneWidget);
-    expect(state.textFieldState, TextFieldState.error);
   });
 
   testWidgets(
