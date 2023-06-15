@@ -465,7 +465,7 @@ Widget _colorWidget(BuildContext context,
         ),
         textLabel: 'Light',
       ),
-      SizedBox(height: 20),
+      const SizedBox(height: 20),
       ColoredContainer(
         color: context.knobs.options<ColorOption>(
           label: 'Dark',

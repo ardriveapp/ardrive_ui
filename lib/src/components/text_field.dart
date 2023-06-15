@@ -459,50 +459,10 @@ class AnimatedTextFieldLabel extends StatefulWidget {
   final bool useLabelOffset;
 
   @override
-  State<AnimatedTextFieldLabel> createState() => AnimatedTextFieldLabelState2();
+  State<AnimatedTextFieldLabel> createState() => AnimatedTextFieldLabelState();
 }
 
 class AnimatedTextFieldLabelState extends State<AnimatedTextFieldLabel> {
-  @visibleForTesting
-  bool visible = false;
-
-  @visibleForTesting
-  bool showing = false;
-
-  @override
-  void initState() {
-    super.initState();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    showing = widget.showing;
-    if (!showing) {
-      visible = false;
-    }
-
-    return Align(
-      alignment: Alignment.centerLeft,
-      child: AnimatedContainer(
-        onEnd: () => setState(() {
-          visible = !visible;
-        }),
-        duration: const Duration(milliseconds: 300),
-        width: double.infinity,
-        child: AnimatedOpacity(
-          opacity: visible ? 1.0 : 0.0,
-          duration: Duration(milliseconds: !visible ? 100 : 300),
-          child: TextFieldLabel(
-            style: widget.style,
-            text: widget.text ?? '',
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class AnimatedTextFieldLabelState2 extends State<AnimatedTextFieldLabel> {
   @override
   Widget build(BuildContext context) {
     return Align(
@@ -565,8 +525,6 @@ class TextFieldLabel extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = ArDriveTheme.of(context).themeData.textFieldTheme;
-
     return AutoSizeText(text, style: style);
   }
 }
