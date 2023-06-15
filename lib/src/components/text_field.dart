@@ -28,7 +28,7 @@ class ArDriveFormState extends State<ArDriveForm> {
 
   @override
   void didChangeDependencies() {
-    WidgetsBinding.instance!.addPostFrameCallback((_) {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
       context.visitChildElements((element) {
         _findTextFields(element);
       });
@@ -71,7 +71,7 @@ class ArDriveFormState extends State<ArDriveForm> {
         return _findAndValidateTextFieldAsync(element);
       }
 
-      WidgetsBinding.instance!.addPostFrameCallback((_) async {
+      WidgetsBinding.instance.addPostFrameCallback((_) async {
         _isValid = _isValid &&
             await ((element as StatefulElement).state as ArDriveTextFieldState)
                 .validateAsync();
