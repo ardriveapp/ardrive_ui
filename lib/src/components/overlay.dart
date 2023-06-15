@@ -145,6 +145,7 @@ class _ArDriveDropdownState extends State<ArDriveDropdown> {
         ),
       ),
       child: GestureDetector(
+        behavior: HitTestBehavior.translucent,
         onTap: () {
           setState(() {
             visible = !visible;
@@ -216,6 +217,7 @@ class ArDriveOverlay extends StatefulWidget {
     required this.anchor,
     this.visible,
     this.onVisibleChange,
+    this.closeOnBarrierTap = true,
   });
 
   final Widget child;
@@ -224,6 +226,7 @@ class ArDriveOverlay extends StatefulWidget {
   final Anchor anchor;
   final bool? visible;
   final Function(bool)? onVisibleChange;
+  final bool closeOnBarrierTap;
   @override
   State<ArDriveOverlay> createState() => _ArDriveOverlayState();
 }
@@ -252,28 +255,35 @@ class _ArDriveOverlayState extends State<ArDriveOverlay> {
     } else {
       _visible = false;
     }
-
-    // widget.onVisibleChange?.call(_visible);
   }
 
   late bool _visible;
 
   @override
   Widget build(BuildContext context) {
-    return Barrier(
-      onClose: () {
-        setState(() {
-          _visible = !_visible;
-          widget.onVisibleChange?.call(_visible);
-        });
-      },
-      visible: _visible,
-      child: PortalTarget(
-        anchor: widget.anchor,
-        portalFollower: widget.content,
+    if (widget.closeOnBarrierTap) {
+      return Barrier(
+        onClose: () {
+          setState(() {
+            _visible = !_visible;
+            widget.onVisibleChange?.call(_visible);
+          });
+        },
         visible: _visible,
-        child: widget.child,
-      ),
+        child: PortalTarget(
+          anchor: widget.anchor,
+          portalFollower: widget.content,
+          visible: _visible,
+          child: widget.child,
+        ),
+      );
+    }
+
+    return PortalTarget(
+      anchor: widget.anchor,
+      portalFollower: widget.content,
+      visible: _visible,
+      child: widget.child,
     );
   }
 }

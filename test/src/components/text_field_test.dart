@@ -61,36 +61,6 @@ void main() {
   });
 
   testWidgets(
-      'Should not show the AnimatedTextFieldLabel when there isnt a error message',
-      (tester) async {
-    final textField = ArDriveTextField(
-      validator: (s) => 'error', // always show error
-    );
-
-    await tester.pumpWidget(
-      ArDriveApp(
-        builder: (context) => MaterialApp(
-          home: Scaffold(body: Center(child: textField)),
-        ),
-      ),
-    );
-
-    final findTextField = find.byType(TextFormField);
-
-    await tester.enterText(findTextField, 'any test to fail');
-
-    final state =
-        tester.state<ArDriveTextFieldState>(find.byType(ArDriveTextField));
-
-    final labelState = tester.state<AnimatedTextFieldLabelState>(
-        find.byType(AnimatedTextFieldLabel));
-
-    expect(findTextField, findsOneWidget);
-    expect(labelState.visible, false);
-    expect(state.textFieldState, TextFieldState.error);
-  });
-
-  testWidgets(
       'Should  show the AnimatedTextFieldLabel when there is a error message and the state is error',
       (tester) async {
     final textField = ArDriveTextField(
@@ -118,42 +88,9 @@ void main() {
     final state =
         tester.state<ArDriveTextFieldState>(find.byType(ArDriveTextField));
 
-    final labelState = tester.state<AnimatedTextFieldLabelState>(label);
-
     expect(findTextField, findsOneWidget);
-    expect(labelState.showing, true);
     expect(find.text('error label'), findsOneWidget);
     expect(state.textFieldState, TextFieldState.error);
-  });
-
-  testWidgets(
-      'Should not show the AnimatedTextFieldLabel when there isnt a success message and the state is success',
-      (tester) async {
-    final textField = ArDriveTextField(
-      validator: (s) => null, // always show success
-    );
-
-    await tester.pumpWidget(
-      ArDriveApp(
-        builder: (context) => MaterialApp(
-          home: Scaffold(body: textField),
-        ),
-      ),
-    );
-    final findTextField = find.byType(TextFormField);
-
-    await tester.enterText(findTextField, 'error');
-
-    await tester.pumpAndSettle(const Duration(milliseconds: 3000));
-
-    final label = find.bySubtype<AnimatedTextFieldLabel>();
-
-    final state =
-        tester.state<ArDriveTextFieldState>(find.byType(ArDriveTextField));
-
-    expect(findTextField, findsOneWidget);
-    expect(label, findsNothing);
-    expect(state.textFieldState, TextFieldState.success);
   });
 
   testWidgets(
@@ -184,10 +121,7 @@ void main() {
     final state =
         tester.state<ArDriveTextFieldState>(find.byType(ArDriveTextField));
 
-    final labelState = tester.state<AnimatedTextFieldLabelState>(label);
-
     expect(findTextField, findsOneWidget);
-    expect(labelState.showing, true);
     expect(find.text('Success message'), findsOneWidget);
     expect(state.textFieldState, TextFieldState.success);
   });

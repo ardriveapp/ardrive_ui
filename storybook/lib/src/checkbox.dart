@@ -40,24 +40,27 @@ class _CheckBoxExampleState extends State<CheckBoxExample> {
         context.knobs.boolean(label: 'IsEnabled', initialValue: true);
     final isIndeterminate =
         context.knobs.boolean(label: 'isIndeterminate', initialValue: false);
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        ArDriveCheckBox(
-          title:
-              context.knobs.text(label: 'Title', initialValue: 'Select File'),
-          checked: _value,
-          isDisabled: !isEnabled,
-          isIndeterminate: isIndeterminate,
-          key: ValueKey('$isEnabled$_value$isIndeterminate'),
-          onChange: (value) {
-            setState(() {
-              _value = value;
-            });
-          },
-        ),
-        Text('Check box is checked: ${_value.toString()}')
-      ],
+    return SizedBox(
+      height: 300,
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          ArDriveCheckBox(
+            title:
+                context.knobs.text(label: 'Title', initialValue: 'Select File'),
+            checked: _value,
+            isDisabled: !isEnabled,
+            isIndeterminate: isIndeterminate,
+            key: ValueKey('$isEnabled$_value$isIndeterminate'),
+            onChange: (value) {
+              setState(() {
+                _value = value;
+              });
+            },
+          ),
+          Text('Check box is checked: ${_value.toString()}')
+        ],
+      ),
     );
   }
 }

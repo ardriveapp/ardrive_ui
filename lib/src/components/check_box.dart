@@ -9,6 +9,7 @@ class ArDriveCheckBox extends StatefulWidget {
     this.isDisabled = false,
     this.isIndeterminate = false,
     this.title,
+    this.titleStyle,
     this.onChange,
   });
 
@@ -16,6 +17,7 @@ class ArDriveCheckBox extends StatefulWidget {
   final bool isDisabled;
   final bool isIndeterminate;
   final String? title;
+  final TextStyle? titleStyle;
   final Function(bool value)? onChange;
 
   @override
@@ -76,58 +78,54 @@ class ArDriveCheckBoxState extends State<ArDriveCheckBox> {
         }
         widget.onChange?.call(checked);
       },
-      child: SizedBox(
-        height: 24,
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            state == CheckBoxState.indeterminate
-                ? ArDriveIcon(
-                    icon: ArDriveIconsData.minus_rectangle,
-                    size: 22,
-                    color: ArDriveTheme.of(context)
-                        .themeData
-                        .colors
-                        .themeFgDefault,
-                  )
-                : AnimatedContainer(
-                    height: 18.5,
-                    width: 16.5,
-                    margin: const EdgeInsets.fromLTRB(3.25, 3.5, 5, 4),
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(checkboxBorderRadius),
-                      border: Border.all(
-                        color: _boxColor(),
-                        width: 2,
-                      ),
-                      color: _backgroundColor(),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          state == CheckBoxState.indeterminate
+              ? ArDriveIcon(
+                  icon: ArDriveIconsData.minus_rectangle,
+                  size: 22,
+                  color:
+                      ArDriveTheme.of(context).themeData.colors.themeFgDefault,
+                )
+              : AnimatedContainer(
+                  height: 18.5,
+                  width: 18.5,
+                  margin: const EdgeInsets.fromLTRB(3.25, 3.5, 5, 4),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(checkboxBorderRadius),
+                    border: Border.all(
+                      color: _boxColor(),
+                      width: 2,
                     ),
-                    duration: const Duration(milliseconds: 300),
-                    child: checked
-                        ? ArDriveIcon(
-                            icon: ArDriveIconsData.checkmark,
-                            size: 12,
-                            color: _checkColor(),
-                          )
-                        : null,
+                    color: _backgroundColor(),
                   ),
-            if (widget.title != null) ...[
-              const SizedBox(
-                width: 8,
-              ),
-              Padding(
-                padding: const EdgeInsets.only(bottom: 4.0),
-                child: Text(
-                  widget.title!,
-                  style: ArDriveTypography.body.bodyRegular(
-                    color: _textColor(),
-                  ),
+                  duration: const Duration(milliseconds: 300),
+                  child: checked
+                      ? ArDriveIcon(
+                          icon: ArDriveIconsData.checkmark,
+                          size: 12,
+                          color: _checkColor(),
+                        )
+                      : null,
                 ),
-              )
-            ]
-          ],
-        ),
+          if (widget.title != null) ...[
+            const SizedBox(
+              width: 8,
+            ),
+            Padding(
+              padding: const EdgeInsets.only(bottom: 4.0),
+              child: Text(
+                widget.title!,
+                style: widget.titleStyle ??
+                    ArDriveTypography.body.bodyRegular(
+                      color: _textColor(),
+                    ),
+              ),
+            )
+          ]
+        ],
       ),
     );
   }
