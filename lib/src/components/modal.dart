@@ -513,7 +513,7 @@ Future<void> showAnimatedDialog(
   );
 }
 
-Future<void> showAnimatedDialogWithBuilder(
+Future<T?> showAnimatedDialogWithBuilder<T>(
   BuildContext context, {
   bool barrierDismissible = true,
   required WidgetBuilder builder,
@@ -521,7 +521,7 @@ Future<void> showAnimatedDialogWithBuilder(
 }) {
   final lowScreenWarning = MediaQuery.of(context).size.height < 600;
 
-  return showGeneralDialog(
+  return showGeneralDialog<T>(
     context: context,
     barrierColor: barrierColor ?? const Color(0x80000000),
     transitionDuration: const Duration(milliseconds: 200),
