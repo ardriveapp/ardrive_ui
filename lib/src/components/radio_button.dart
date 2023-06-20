@@ -9,12 +9,14 @@ class RadioButtonOptions {
     this.isEnabled = true,
     required this.text,
     this.textStyle,
+    this.content,
   });
 
   bool value;
   bool isEnabled;
   String text;
   final TextStyle? textStyle;
+  final Widget? content;
 }
 
 class ArDriveRadioButtonGroup extends StatefulWidget {
@@ -50,6 +52,8 @@ class _ArDriveRadioButtonGroupState extends State<ArDriveRadioButtonGroup> {
           isEnabled: widget.options[i].isEnabled,
           value: widget.options[i].value,
           text: widget.options[i].text,
+          content: widget.options[i].content,
+          textStyle: widget.options[i].textStyle,
         ),
       ),
     );
@@ -71,6 +75,7 @@ class _ArDriveRadioButtonGroupState extends State<ArDriveRadioButtonGroup> {
               return widget.builder(
                 i,
                 ArDriveRadioButton(
+                  content: _options[i].value.content,
                   size: widget.size,
                   textStyle: _options[i].value.textStyle,
                   isEnabled: _options[i].value.isEnabled,
@@ -126,6 +131,7 @@ class ArDriveRadioButton extends StatefulWidget {
     this.isFromAGroup = false,
     this.textStyle,
     this.size = 24,
+    this.content,
   });
 
   final bool value;
@@ -135,6 +141,7 @@ class ArDriveRadioButton extends StatefulWidget {
   final bool isFromAGroup;
   final TextStyle? textStyle;
   final double size;
+  final Widget? content;
 
   @override
   State<ArDriveRadioButton> createState() => ArDriveRadioButtonState();
@@ -235,16 +242,18 @@ class ArDriveRadioButtonState extends State<ArDriveRadioButton> {
             const SizedBox(
               width: 8,
             ),
-            Flexible(
-              child: Padding(
-                padding: const EdgeInsets.symmetric(vertical: 4.0),
-                child: Text(
-                  widget.text,
-                  style:
-                      widget.textStyle ?? ArDriveTypography.body.bodyRegular(),
+            if (widget.content != null) Flexible(child: widget.content!),
+            if (widget.content == null)
+              Flexible(
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 4.0),
+                  child: Text(
+                    widget.text,
+                    style: widget.textStyle ??
+                        ArDriveTypography.body.bodyRegular(),
+                  ),
                 ),
-              ),
-            )
+              )
           ],
         ),
       ),
