@@ -104,6 +104,8 @@ class _ArDriveRadioButtonGroupState extends State<ArDriveRadioButtonGroup> {
                       isEnabled: _options[i].value.isEnabled,
                       value: value,
                       text: _options[i].value.text,
+                      content: _options[i].value.content,
+                      textStyle: _options[i].value.textStyle,
                     );
 
                     widget.onChanged?.call(i, value);
