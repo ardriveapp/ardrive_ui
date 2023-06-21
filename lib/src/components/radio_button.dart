@@ -96,6 +96,8 @@ class _ArDriveRadioButtonGroupState extends State<ArDriveRadioButtonGroup> {
                           isEnabled: _options[j].value.isEnabled,
                           value: false,
                           text: _options[j].value.text,
+                          content: _options[j].value.content,
+                          textStyle: _options[j].value.textStyle,
                         );
                       }
                     }
