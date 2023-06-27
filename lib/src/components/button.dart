@@ -71,7 +71,6 @@ class _ArDriveButtonState extends State<ArDriveButton> {
                   widget.icon!,
                   const SizedBox(width: 8),
                 ],
-                if (widget.customContent != null) widget.customContent!,
                 widget.customContent ??
                     Text(
                       widget.text,
