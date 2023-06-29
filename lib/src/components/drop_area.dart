@@ -144,63 +144,65 @@ class _ArDriveDropAreaSingleInputState
             },
             child: Consumer<ArDriveDropAreaSingleInputController>(
               builder: (context, controller, state) {
-                return GestureDetector(
-                    onTap: () =>
-                        {widget.controller.handleButtonCallback.call()},
-                    child: Container(
-                      color: controller.backgroundColor,
-                      // height: widget.height,
-                      width: widget.width,
-                      child: Padding(
-                        padding: const EdgeInsets.all(16),
-                        child: controller.hasError
-                            ? _errorView()
-                            : Row(
-                                mainAxisSize: MainAxisSize.min,
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Padding(
-                                    padding: EdgeInsets.only(right: 12),
-                                    child: controller.file != null
-                                        ? ArDriveIcons.checkCirle(
-                                            size: dropAreaIconSize,
-                                            color: ArDriveTheme.of(context)
-                                                .themeData
-                                                .colors
-                                                .themeFgMuted,
-                                          )
-                                        : ArDriveIcons.upload(
-                                            size: dropAreaIconSize,
-                                            color: ArDriveTheme.of(context)
-                                                .themeData
-                                                .colors
-                                                .themeFgMuted,
+                return MouseRegion(
+                    cursor: SystemMouseCursors.click,
+                    child: GestureDetector(
+                        onTap: () =>
+                            {widget.controller.handleButtonCallback.call()},
+                        child: Container(
+                          color: controller.backgroundColor,
+                          // height: widget.height,
+                          width: widget.width,
+                          child: Padding(
+                            padding: const EdgeInsets.all(16),
+                            child: controller.hasError
+                                ? _errorView()
+                                : Row(
+                                    mainAxisSize: MainAxisSize.min,
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Padding(
+                                        padding: EdgeInsets.only(right: 12),
+                                        child: controller.file != null
+                                            ? ArDriveIcons.checkCirle(
+                                                size: dropAreaIconSize,
+                                                color: ArDriveTheme.of(context)
+                                                    .themeData
+                                                    .colors
+                                                    .themeFgMuted,
+                                              )
+                                            : ArDriveIcons.upload(
+                                                size: dropAreaIconSize,
+                                                color: ArDriveTheme.of(context)
+                                                    .themeData
+                                                    .colors
+                                                    .themeFgMuted,
+                                              ),
+                                      ),
+                                      if (controller.file != null)
+                                        Padding(
+                                          padding: dropAreaItemContentPadding,
+                                          child: Text(
+                                            controller.file!.name,
+                                            style: ArDriveTypography.body
+                                                .smallBold700(),
                                           ),
-                                  ),
-                                  if (controller.file != null)
-                                    Padding(
-                                      padding: dropAreaItemContentPadding,
-                                      child: Text(
-                                        controller.file!.name,
+                                        ),
+                                      // const SizedBox(height: 8),
+                                      // if (widget.platformSupportsDragAndDrop)
+                                      Text(
+                                        widget.dragAndDropDescription,
                                         style: ArDriveTypography.body
                                             .smallBold700(),
                                       ),
-                                    ),
-                                  // const SizedBox(height: 8),
-                                  // if (widget.platformSupportsDragAndDrop)
-                                  Text(
-                                    widget.dragAndDropDescription,
-                                    style:
-                                        ArDriveTypography.body.smallBold700(),
+                                      // const SizedBox(height: 20),
+                                      // if (controller.file == null ||
+                                      //     widget.keepButtonVisible)
+                                      //   _button(),
+                                    ],
                                   ),
-                                  // const SizedBox(height: 20),
-                                  // if (controller.file == null ||
-                                  //     widget.keepButtonVisible)
-                                  //   _button(),
-                                ],
-                              ),
-                      ),
-                    ));
+                          ),
+                        )));
               },
             ),
           );
