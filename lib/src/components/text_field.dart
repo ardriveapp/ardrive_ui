@@ -120,6 +120,30 @@ class ArDriveFormState extends State<ArDriveForm> {
   }
 }
 
+class ArDriveMultlineObscureTextController extends TextEditingController {
+  bool _isObscured = true;
+  ArDriveMultlineObscureTextController({String? text}) : super(text: text);
+
+  @override
+  TextSpan buildTextSpan(
+      {required BuildContext context,
+      TextStyle? style,
+      required bool withComposing}) {
+    return _isObscured
+        ? TextSpan(
+            style: style,
+            text: text.replaceAll(RegExp(r'.'), '*'),
+          )
+        : super.buildTextSpan(
+            context: context, style: style, withComposing: withComposing);
+  }
+
+  bool get isObscured => _isObscured;
+  set isObscured(bool newValue) {
+    _isObscured = newValue;
+  }
+}
+
 class ArDriveTextField extends StatefulWidget {
   const ArDriveTextField({
     super.key,
@@ -151,6 +175,8 @@ class ArDriveTextField extends StatefulWidget {
     this.preffix,
     this.showErrorMessage = true,
     this.validator,
+    this.minLines = 1,
+    this.maxLines = 1,
   });
 
   final bool isEnabled;
@@ -181,6 +207,9 @@ class ArDriveTextField extends StatefulWidget {
   final bool useErrorMessageOffset;
   final Widget? preffix;
   final bool showErrorMessage;
+  final int? minLines;
+  final int? maxLines;
+
   @override
   State<ArDriveTextField> createState() => ArDriveTextFieldState();
 }
@@ -191,11 +220,16 @@ enum TextFieldState { unfocused, focused, disabled, error, success }
 class ArDriveTextFieldState extends State<ArDriveTextField> {
   @visibleForTesting
   late TextFieldState textFieldState;
+  ArDriveMultlineObscureTextController? _multilineObscureTextController;
 
   @override
   void initState() {
     textFieldState = TextFieldState.unfocused;
     _isObscureText = widget.obscureText;
+    if (widget.maxLines != null && widget.maxLines! > 1) {
+      _multilineObscureTextController = ArDriveMultlineObscureTextController(
+          text: widget.controller == null ? '' : widget.controller!.text);
+    }
     super.initState();
   }
 
@@ -207,6 +241,11 @@ class ArDriveTextFieldState extends State<ArDriveTextField> {
   @override
   Widget build(BuildContext context) {
     final theme = ArDriveTheme.of(context).themeData.textFieldTheme;
+    final controller = _multilineObscureTextController ?? widget.controller;
+    final obscureText =
+        _multilineObscureTextController == null ? _isObscureText : false;
+
+    _multilineObscureTextController?.isObscured = _isObscureText;
 
     return Align(
       alignment: Alignment.center,
@@ -222,7 +261,7 @@ class ArDriveTextFieldState extends State<ArDriveTextField> {
               ),
             ),
           TextFormField(
-            controller: widget.controller,
+            controller: controller,
             autocorrect: widget.autocorrect,
             autofocus: widget.autofocus,
             initialValue: widget.initialValue,
@@ -234,9 +273,11 @@ class ArDriveTextFieldState extends State<ArDriveTextField> {
             focusNode: widget.focusNode,
             key: widget.key,
             textInputAction: widget.textInputAction,
-            obscureText: _isObscureText,
-            style: theme.inputTextStyle,
+            obscureText: obscureText,
+            style: widget.textStyle ?? theme.inputTextStyle,
             autovalidateMode: widget.autovalidateMode,
+            minLines: widget.minLines,
+            maxLines: widget.maxLines,
             onChanged: (text) {
               if (widget.asyncValidator != null) {
                 widget.asyncValidator!(text);
