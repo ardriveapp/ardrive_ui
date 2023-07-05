@@ -9,14 +9,12 @@ class ArDriveModal extends StatelessWidget {
     required this.constraints,
     this.contentPadding = const EdgeInsets.all(16),
     this.action,
-    this.hasCloseButton = false,
   });
 
   final Widget content;
   final BoxConstraints constraints;
   final EdgeInsets contentPadding;
   final ModalAction? action;
-  final bool hasCloseButton;
 
   @override
   Widget build(BuildContext context) {
@@ -490,6 +488,42 @@ Future<void> showAnimatedDialog(
         elevation: 0,
         backgroundColor: Colors.transparent,
         child: content,
+      );
+    },
+  );
+}
+
+Future<void> showAnimatedDialogWithBuilder(
+  BuildContext context, {
+  bool barrierDismissible = true,
+  required WidgetBuilder builder,
+  Color? barrierColor,
+}) {
+  final lowScreenWarning = MediaQuery.of(context).size.height < 600;
+
+  return showGeneralDialog(
+    context: context,
+    barrierColor: barrierColor ?? const Color(0x80000000),
+    transitionDuration: const Duration(milliseconds: 200),
+    transitionBuilder: (context, a1, a2, widget) {
+      return Transform.scale(
+        scale: a1.value,
+        child: Opacity(
+          opacity: a1.value,
+          child: widget,
+        ),
+      );
+    },
+    barrierDismissible: barrierDismissible,
+    barrierLabel: '',
+    pageBuilder: (context, a1, a2) {
+      return Dialog(
+        insetPadding: lowScreenWarning
+            ? const EdgeInsets.symmetric(horizontal: 0, vertical: 8)
+            : null,
+        elevation: 0,
+        backgroundColor: Colors.transparent,
+        child: builder(context),
       );
     },
   );
