@@ -20,6 +20,8 @@ class ArDriveDropdown extends StatefulWidget {
     ),
     this.dividerThickness,
     this.calculateVerticalAlignment,
+    this.maxHeight,
+    this.showScrollbars = false,
   });
 
   final double height;
@@ -29,6 +31,8 @@ class ArDriveDropdown extends StatefulWidget {
   final EdgeInsets? contentPadding;
   final double? dividerThickness;
   final Anchor anchor;
+  final double? maxHeight;
+  final bool showScrollbars;
 
   // retruns the alignment based if the current widget y coordinate is greater than half the screen height
   final Alignment Function(bool)? calculateVerticalAlignment;
@@ -40,12 +44,17 @@ class ArDriveDropdown extends StatefulWidget {
 class _ArDriveDropdownState extends State<ArDriveDropdown> {
   bool visible = false;
   late Anchor _anchor;
+  ScrollController? _scrollController;
 
   double dropdownHeight = 0;
 
   @override
   void initState() {
     _anchor = widget.anchor;
+
+    if (widget.showScrollbars) {
+      _scrollController = ScrollController();
+    }
 
     super.initState();
   }
@@ -81,7 +90,7 @@ class _ArDriveDropdownState extends State<ArDriveDropdown> {
 
   @override
   Widget build(BuildContext context) {
-    dropdownHeight = widget.items.length * widget.height;
+    dropdownHeight = widget.maxHeight ?? widget.items.length * widget.height;
 
     return ArDriveOverlay(
       onVisibleChange: (value) {
@@ -94,7 +103,8 @@ class _ArDriveDropdownState extends State<ArDriveDropdown> {
       content: _ArDriveDropdownContent(
         height: dropdownHeight,
         child: ArDriveScrollBar(
-          isVisible: false,
+          controller: _scrollController,
+          isVisible: widget.showScrollbars,
           child: ArDriveCard(
             border: Border.all(
               color: ArDriveTheme.of(context)
@@ -109,6 +119,7 @@ class _ArDriveDropdownState extends State<ArDriveDropdown> {
             content: SizedBox(
               width: widget.width,
               child: SingleChildScrollView(
+                controller: _scrollController,
                 child: Column(
                   children: List.generate(widget.items.length, (index) {
                     return Column(
@@ -145,6 +156,7 @@ class _ArDriveDropdownState extends State<ArDriveDropdown> {
         ),
       ),
       child: GestureDetector(
+        behavior: HitTestBehavior.translucent,
         onTap: () {
           setState(() {
             visible = !visible;
@@ -254,8 +266,6 @@ class _ArDriveOverlayState extends State<ArDriveOverlay> {
     } else {
       _visible = false;
     }
-
-    // widget.onVisibleChange?.call(_visible);
   }
 
   late bool _visible;

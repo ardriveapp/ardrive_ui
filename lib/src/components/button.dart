@@ -71,18 +71,17 @@ class _ArDriveButtonState extends State<ArDriveButton> {
                   widget.icon!,
                   const SizedBox(width: 8),
                 ],
-                if (widget.customContent != null) widget.customContent!,
-                if (widget.customContent == null)
-                  Text(
-                    widget.text,
-                    style: widget.fontStyle ??
-                        ArDriveTypography.headline.headline5Bold(
-                          color: ArDriveTheme.of(context)
-                              .themeData
-                              .colors
-                              .themeFgOnAccent,
-                        ),
-                  ),
+                widget.customContent ??
+                    Text(
+                      widget.text,
+                      style: widget.fontStyle ??
+                          ArDriveTypography.headline.headline5Bold(
+                            color: ArDriveTheme.of(context)
+                                .themeData
+                                .colors
+                                .themeFgOnAccent,
+                          ),
+                    ),
                 if (widget.icon != null &&
                     widget.iconAlignment == IconButtonAlignment.right) ...[
                   const SizedBox(width: 8),
