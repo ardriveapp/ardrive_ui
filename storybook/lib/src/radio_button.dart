@@ -69,6 +69,7 @@ class _RadioGroupExampleState extends State<RadioGroupExample> {
                 Alignment.center
               ],
             ),
+            builder: (i, button) => button,
             onChanged: (i, value) {
               if (value) {
                 option = 'Selected option: ${options[i].text}';
