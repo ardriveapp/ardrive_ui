@@ -12,7 +12,7 @@ const double buttonDefaultWidth = 368;
 const double buttonActionHeight = 32;
 
 /// Border constants
-const double buttonBorderRadius = 6;
+const double buttonBorderRadius = 3;
 const double buttonBorderWidth = 1;
 const double cardDefaultBorderRadius = 8;
 
