@@ -122,7 +122,13 @@ class ArDriveFormState extends State<ArDriveForm> {
 
 class ArDriveMultlineObscureTextController extends TextEditingController {
   bool _isObscured = true;
+  bool _showLastCharacter = false;
+  Timer? _timer;
+
   ArDriveMultlineObscureTextController({String? text}) : super(text: text);
+
+  // use same default obscuring character as EditableText
+  final obscuringCharacter = '\u2022';
 
   @override
   TextSpan buildTextSpan(
@@ -132,15 +138,44 @@ class ArDriveMultlineObscureTextController extends TextEditingController {
     return _isObscured
         ? TextSpan(
             style: style,
-            text: text.replaceAll(RegExp(r'.'), '*'),
-          )
+            text: _showLastCharacter
+                ? text
+                    .replaceAll(RegExp(r'.'), obscuringCharacter)
+                    .replaceRange(
+                        text.length - 1, text.length, text[text.length - 1])
+                : text.replaceAll(RegExp(r'.'), obscuringCharacter))
         : super.buildTextSpan(
             context: context, style: style, withComposing: withComposing);
+  }
+
+  @override
+  set value(TextEditingValue newValue) {
+    var oldText = super.text;
+    var newText = newValue.text;
+
+    if (_isObscured && newText.length == oldText.length + 1) {
+      _showLastCharacter = true;
+      _timer?.cancel();
+      _timer = Timer(const Duration(seconds: 1), () {
+        _showLastCharacter = false;
+        _timer = null;
+        notifyListeners();
+      });
+    }
+    super.value = newValue;
   }
 
   bool get isObscured => _isObscured;
   set isObscured(bool newValue) {
     _isObscured = newValue;
+    _showLastCharacter = false;
+    _timer?.cancel();
+  }
+
+  @override
+  void dispose() {
+    _timer?.cancel();
+    super.dispose();
   }
 }
 
