@@ -393,4 +393,11 @@ class ArDriveIcons {
         size: size,
         color: color,
       );
+
+  // keypad
+  static ArDriveIcon keypad({double? size, Color? color}) => ArDriveIcon(
+        icon: ArDriveIconsData.keypad,
+        size: size,
+        color: color,
+      );
 }
