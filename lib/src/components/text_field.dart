@@ -255,15 +255,13 @@ enum TextFieldState { unfocused, focused, disabled, error, success }
 class ArDriveTextFieldState extends State<ArDriveTextField> {
   @visibleForTesting
   late TextFieldState textFieldState;
-  ArDriveMultlineObscureTextController? _multilineObscureTextController;
 
   @override
   void initState() {
     textFieldState = TextFieldState.unfocused;
     _isObscureText = widget.obscureText;
     if (widget.maxLines != null && widget.maxLines! > 1) {
-      _multilineObscureTextController = ArDriveMultlineObscureTextController(
-          text: widget.controller == null ? '' : widget.controller!.text);
+      assert(widget.controller is ArDriveMultlineObscureTextController);
     }
     super.initState();
   }
@@ -276,11 +274,14 @@ class ArDriveTextFieldState extends State<ArDriveTextField> {
   @override
   Widget build(BuildContext context) {
     final theme = ArDriveTheme.of(context).themeData.textFieldTheme;
-    final controller = _multilineObscureTextController ?? widget.controller;
-    final obscureText =
-        _multilineObscureTextController == null ? _isObscureText : false;
+    final controller = widget.controller;
+    final isMultline = (controller is ArDriveMultlineObscureTextController);
+    final obscureText = isMultline ? false : _isObscureText;
 
-    _multilineObscureTextController?.isObscured = _isObscureText;
+    if (isMultline) {
+      (controller as ArDriveMultlineObscureTextController).isObscured =
+          _isObscureText;
+    }
 
     return Align(
       alignment: Alignment.center,

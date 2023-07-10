@@ -105,7 +105,8 @@ WidgetbookCategory textField() {
                           const SizedBox(
                             height: 16,
                           ),
-                          const ArDriveTextField(
+                          ArDriveTextField(
+                            controller: ArDriveMultlineObscureTextController(),
                             obscureText: true,
                             showObfuscationToggle: true,
                             hintText: 'Seed Phrase',
