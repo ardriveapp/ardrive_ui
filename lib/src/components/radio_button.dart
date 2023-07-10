@@ -8,11 +8,15 @@ class RadioButtonOptions {
     this.value = false,
     this.isEnabled = true,
     required this.text,
+    this.textStyle,
+    this.content,
   });
 
   bool value;
   bool isEnabled;
   String text;
+  final TextStyle? textStyle;
+  final Widget? content;
 }
 
 class ArDriveRadioButtonGroup extends StatefulWidget {
@@ -21,11 +25,15 @@ class ArDriveRadioButtonGroup extends StatefulWidget {
     required this.options,
     this.onChanged,
     this.alignment = Alignment.centerLeft,
+    required this.builder,
+    this.size = 24,
   });
 
   final List<RadioButtonOptions> options;
   final Function(int, bool)? onChanged;
   final Alignment alignment;
+  final Function(int index, ArDriveRadioButton radioButton) builder;
+  final double size;
 
   @override
   State<ArDriveRadioButtonGroup> createState() =>
@@ -38,14 +46,17 @@ class _ArDriveRadioButtonGroupState extends State<ArDriveRadioButtonGroup> {
   @override
   void initState() {
     _options = List.generate(
-        widget.options.length,
-        (i) => ValueNotifier(
-              RadioButtonOptions(
-                isEnabled: widget.options[i].isEnabled,
-                value: widget.options[i].value,
-                text: widget.options[i].text,
-              ),
-            ));
+      widget.options.length,
+      (i) => ValueNotifier(
+        RadioButtonOptions(
+          isEnabled: widget.options[i].isEnabled,
+          value: widget.options[i].value,
+          text: widget.options[i].text,
+          content: widget.options[i].content,
+          textStyle: widget.options[i].textStyle,
+        ),
+      ),
+    );
 
     /// Can't have more than 1 checked at the time
     assert(_options.where((element) => element.value.value).length < 2);
@@ -61,28 +72,47 @@ class _ArDriveRadioButtonGroupState extends State<ArDriveRadioButtonGroup> {
           alignment: widget.alignment,
           child: ValueListenableBuilder(
             builder: (context, t, w) {
-              return ArDriveRadioButton(
-                isEnabled: _options[i].value.isEnabled,
-                isFromAGroup: true,
-                value: _options[i].value.value,
-                text: _options[i].value.text,
-                onChange: (value) async {
-                  if (!value) {
-                    return;
-                  }
-
-                  for (int j = 0; j < _options.length; j++) {
-                    if (j == i) {
-                      continue;
+              return widget.builder(
+                i,
+                ArDriveRadioButton(
+                  content: _options[i].value.content,
+                  size: widget.size,
+                  textStyle: _options[i].value.textStyle,
+                  isEnabled: _options[i].value.isEnabled,
+                  isFromAGroup: true,
+                  value: _options[i].value.value,
+                  text: _options[i].value.text,
+                  onChange: (value) async {
+                    if (!value) {
+                      return;
                     }
-                    if (_options[j].value.value) {
-                      _options[j].value.value = false;
-                    }
-                  }
-                  _options[i].value.value = value;
 
-                  widget.onChanged?.call(i, value);
-                },
+                    for (int j = 0; j < _options.length; j++) {
+                      if (j == i) {
+                        continue;
+                      }
+                      if (_options[j].value.value) {
+                        _options[j].value = RadioButtonOptions(
+                          isEnabled: _options[j].value.isEnabled,
+                          value: false,
+                          text: _options[j].value.text,
+                          content: _options[j].value.content,
+                          textStyle: _options[j].value.textStyle,
+                        );
+                      }
+                    }
+
+                    _options[i].value = RadioButtonOptions(
+                      isEnabled: _options[i].value.isEnabled,
+                      value: value,
+                      text: _options[i].value.text,
+                      content: _options[i].value.content,
+                      textStyle: _options[i].value.textStyle,
+                    );
+
+                    widget.onChanged?.call(i, value);
+                  },
+                ),
               );
             },
             valueListenable: _options[i],
@@ -103,6 +133,9 @@ class ArDriveRadioButton extends StatefulWidget {
     required this.text,
     this.onChange,
     this.isFromAGroup = false,
+    this.textStyle,
+    this.size = 24,
+    this.content,
   });
 
   final bool value;
@@ -110,6 +143,9 @@ class ArDriveRadioButton extends StatefulWidget {
   final String text;
   final Function(bool)? onChange;
   final bool isFromAGroup;
+  final TextStyle? textStyle;
+  final double size;
+  final Widget? content;
 
   @override
   State<ArDriveRadioButton> createState() => ArDriveRadioButtonState();
@@ -179,46 +215,49 @@ class ArDriveRadioButtonState extends State<ArDriveRadioButton> {
           mainAxisSize: MainAxisSize.min,
           children: [
             Padding(
-              padding: const EdgeInsets.symmetric(vertical: 4.0),
+              padding: const EdgeInsets.only(top: 4),
               child: AnimatedContainer(
-                  duration: const Duration(milliseconds: 200),
-                  height: 24,
-                  width: 24,
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    border: Border.all(
+                duration: const Duration(milliseconds: 200),
+                height: widget.size,
+                width: widget.size,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  border: Border.all(
+                    color: _color(),
+                    width: 2,
+                  ),
+                ),
+                child: Center(
+                  child: AnimatedContainer(
+                    duration: const Duration(milliseconds: 200),
+                    height: state == RadioButtonState.checked ||
+                            (state == RadioButtonState.disabled && widget.value)
+                        ? 10 / 24 * widget.size
+                        : 0,
+                    width: 10 / 24 * widget.size,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
                       color: _color(),
-                      width: 2,
                     ),
                   ),
-                  child: Center(
-                    child: AnimatedContainer(
-                      duration: const Duration(milliseconds: 200),
-                      height: state == RadioButtonState.checked ||
-                              (state == RadioButtonState.disabled &&
-                                  widget.value)
-                          ? 10
-                          : 0,
-                      width: 10,
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        color: _color(),
-                      ),
-                    ),
-                  )),
+                ),
+              ),
             ),
             const SizedBox(
               width: 8,
             ),
-            Flexible(
-              child: Padding(
-                padding: const EdgeInsets.symmetric(vertical: 4.0),
-                child: Text(
-                  widget.text,
-                  style: ArDriveTypography.body.bodyRegular(),
+            if (widget.content != null) Flexible(child: widget.content!),
+            if (widget.content == null)
+              Flexible(
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 4.0),
+                  child: Text(
+                    widget.text,
+                    style: widget.textStyle ??
+                        ArDriveTypography.body.bodyRegular(),
+                  ),
                 ),
-              ),
-            )
+              )
           ],
         ),
       ),
