@@ -1,7 +1,7 @@
 import 'package:ardrive_ui/ardrive_ui.dart';
 import 'package:flutter/material.dart';
 
-enum ArrowSide { left, right, bottomLeft } // Added bottomLeft
+enum ArrowSide { left, right, bottomLeft }
 
 class FeedbackMessage extends StatelessWidget {
   const FeedbackMessage({
