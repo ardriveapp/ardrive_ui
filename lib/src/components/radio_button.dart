@@ -267,7 +267,7 @@ class ArDriveRadioButtonState extends State<ArDriveRadioButton> {
   Color _color() {
     switch (state) {
       case RadioButtonState.unchecked:
-        return ArDriveTheme.of(context).themeData.colors.themeAccentDefault;
+        return ArDriveTheme.of(context).themeData.colors.themeFgDefault;
       case RadioButtonState.hover:
         return ArDriveTheme.of(context).themeData.colors.themeFgDefault;
       case RadioButtonState.checked:
