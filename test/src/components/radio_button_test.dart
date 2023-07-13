@@ -90,6 +90,7 @@ void main() {
 
       final radioButtonGroup = ArDriveRadioButtonGroup(
         options: options,
+        builder: (i, button) => button,
       );
 
       await tester.pumpWidget(
@@ -112,6 +113,7 @@ void main() {
 
       final radioButtonGroup = ArDriveRadioButtonGroup(
         options: options,
+        builder: (i, button) => button,
       );
 
       await tester.pumpWidget(
