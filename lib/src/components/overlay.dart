@@ -22,6 +22,7 @@ class ArDriveDropdown extends StatefulWidget {
     this.calculateVerticalAlignment,
     this.maxHeight,
     this.showScrollbars = false,
+    this.onClick,
   });
 
   final double height;
@@ -33,6 +34,7 @@ class ArDriveDropdown extends StatefulWidget {
   final Anchor anchor;
   final double? maxHeight;
   final bool showScrollbars;
+  final Function? onClick;
 
   // retruns the alignment based if the current widget y coordinate is greater than half the screen height
   final Alignment Function(bool)? calculateVerticalAlignment;
@@ -158,6 +160,7 @@ class _ArDriveDropdownState extends State<ArDriveDropdown> {
       child: GestureDetector(
         behavior: HitTestBehavior.translucent,
         onTap: () {
+          widget.onClick?.call();
           setState(() {
             visible = !visible;
           });

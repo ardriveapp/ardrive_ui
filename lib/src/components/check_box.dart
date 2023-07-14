@@ -114,14 +114,16 @@ class ArDriveCheckBoxState extends State<ArDriveCheckBox> {
             const SizedBox(
               width: 8,
             ),
-            Padding(
-              padding: const EdgeInsets.only(bottom: 4.0),
-              child: Text(
-                widget.title!,
-                style: widget.titleStyle ??
-                    ArDriveTypography.body.bodyRegular(
-                      color: _textColor(),
-                    ),
+            Flexible(
+              child: Padding(
+                padding: const EdgeInsets.only(bottom: 4.0),
+                child: Text(
+                  widget.title!,
+                  style: widget.titleStyle ??
+                      ArDriveTypography.body.bodyRegular(
+                        color: _textColor(),
+                      ),
+                ),
               ),
             )
           ]

@@ -1,7 +1,7 @@
 import 'package:ardrive_ui/ardrive_ui.dart';
 import 'package:flutter/material.dart';
 
-enum ArrowSide { left, right }
+enum ArrowSide { left, right, bottomLeft }
 
 class FeedbackMessage extends StatelessWidget {
   const FeedbackMessage({
@@ -34,10 +34,11 @@ class FeedbackMessage extends StatelessWidget {
       child: Container(
         width: width,
         height: height,
-        padding: const EdgeInsets.fromLTRB(24, 8, 16, 8),
+        padding: _getPadding(),
         alignment: Alignment.center,
         child: Text(
           text,
+          textAlign: TextAlign.center,
           style: textStyle ??
               ArDriveTypography.body.buttonNormalBold(
                 color: ArDriveColors.dark().themeErrorDefault,
@@ -45,6 +46,13 @@ class FeedbackMessage extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  EdgeInsets _getPadding() {
+    if (arrowSide == ArrowSide.bottomLeft) {
+      return const EdgeInsets.fromLTRB(8, 0, 8, 10);
+    }
+    return const EdgeInsets.fromLTRB(24, 8, 16, 8);
   }
 }
 
@@ -63,32 +71,24 @@ class _TextBoxWithTrianglePainter extends CustomPainter {
   void paint(Canvas canvas, Size size) {
     const radius = Radius.circular(4);
     final rrect = RRect.fromRectAndRadius(
-      arrowSide == ArrowSide.left
+      arrowSide == ArrowSide.bottomLeft
           ? Rect.fromPoints(
               const Offset(0, 0),
-              Offset(size.width - size.height / 4, size.height),
+              Offset(size.width, size.height - 10),
             )
-          : Rect.fromPoints(
-              Offset(size.height / 4, 0),
-              Offset(size.width, size.height),
-            ),
+          : arrowSide == ArrowSide.left
+              ? Rect.fromPoints(
+                  const Offset(0, 0),
+                  Offset(size.width - size.height / 4, size.height),
+                )
+              : Rect.fromPoints(
+                  Offset(size.height / 4, 0),
+                  Offset(size.width, size.height),
+                ),
       radius,
     );
 
-    // Border path
-    final borderPath = Path()
-      ..addRRect(rrect)
-      ..moveTo(
-          arrowSide == ArrowSide.left
-              ? size.width - size.height / 4
-              : size.height / 4,
-          size.height / 4)
-      ..lineTo(arrowSide == ArrowSide.left ? size.width : 0, size.height / 2)
-      ..lineTo(
-          arrowSide == ArrowSide.left
-              ? size.width - size.height / 4
-              : size.height / 4,
-          3 * size.height / 4);
+    final borderPath = Path();
 
     final borderPaint = Paint()
       ..color = borderColor ?? const Color(0xff2E1C1F)
@@ -101,16 +101,31 @@ class _TextBoxWithTrianglePainter extends CustomPainter {
     final fillPath = Path()
       ..addRRect(rrect)
       ..moveTo(
-          arrowSide == ArrowSide.left
-              ? size.width - size.height / 4
-              : size.height / 4,
-          size.height / 4)
-      ..lineTo(arrowSide == ArrowSide.left ? size.width : 0, size.height / 2)
+        arrowSide == ArrowSide.bottomLeft
+            ? 20
+            : arrowSide == ArrowSide.left
+                ? size.width - size.height / 4
+                : size.height / 4,
+        arrowSide == ArrowSide.bottomLeft ? size.height - 10 : size.height / 4,
+      )
       ..lineTo(
-          arrowSide == ArrowSide.left
-              ? size.width - size.height / 4
-              : size.height / 4,
-          3 * size.height / 4);
+        arrowSide == ArrowSide.bottomLeft
+            ? 30
+            : arrowSide == ArrowSide.left
+                ? size.width
+                : 0,
+        arrowSide == ArrowSide.bottomLeft ? size.height : size.height / 2,
+      )
+      ..lineTo(
+        arrowSide == ArrowSide.bottomLeft
+            ? 40
+            : arrowSide == ArrowSide.left
+                ? size.width - size.height / 4
+                : size.height / 4,
+        arrowSide == ArrowSide.bottomLeft
+            ? size.height - 10
+            : 3 * size.height / 4,
+      );
 
     final fillPaint = Paint()
       ..color = backgroundColor ?? const Color(0xff2E1C1F)
