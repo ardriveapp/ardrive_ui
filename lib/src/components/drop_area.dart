@@ -162,7 +162,8 @@ class _ArDriveDropAreaSingleInputState
                                     mainAxisAlignment: MainAxisAlignment.center,
                                     children: [
                                       Padding(
-                                        padding: EdgeInsets.only(right: 12),
+                                        padding:
+                                            const EdgeInsets.only(right: 12),
                                         child: controller.file != null
                                             ? ArDriveIcons.checkCirle(
                                                 size: dropAreaIconSize,

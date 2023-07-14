@@ -279,8 +279,7 @@ class ArDriveTextFieldState extends State<ArDriveTextField> {
     final obscureText = isMultline ? false : _isObscureText;
 
     if (isMultline) {
-      (controller as ArDriveMultlineObscureTextController).isObscured =
-          _isObscureText;
+      (controller).isObscured = _isObscureText;
     }
 
     return Align(
