@@ -102,6 +102,17 @@ WidgetbookCategory textField() {
                             showObfuscationToggle: true,
                             hintText: 'Enter Password',
                           ),
+                          const SizedBox(
+                            height: 16,
+                          ),
+                          ArDriveTextField(
+                            controller: ArDriveMultlineObscureTextController(),
+                            obscureText: true,
+                            showObfuscationToggle: true,
+                            hintText: 'Seed Phrase',
+                            minLines: 3,
+                            maxLines: 3,
+                          ),
                         ]),
                   ),
                 ),

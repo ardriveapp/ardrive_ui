@@ -808,13 +808,13 @@ packages:
     source: hosted
     version: "3.0.0-beta.14"
   widgetbook_core:
-    dependency: transitive
+    dependency: "direct overridden"
     description:
       name: widgetbook_core
-      sha256: f251af4c0514202234856f297c36fcc6478a5a2fa5c6bb7b23514ea35b08d3be
+      sha256: "32f9ce38fbf7fb90f3ff24767899a8cd4e3b70bbc30fe8246c61adb5f6ad7a37"
       url: "https://pub.dev"
     source: hosted
-    version: "3.0.0-rc.1"
+    version: "3.0.0-beta.8"
   widgetbook_models:
     dependency: transitive
     description:
