@@ -144,4 +144,6 @@ class ArDriveIconsData {
       IconData(0xe83b, fontFamily: _kFontFam, fontPackage: _kFontPkg);
   static const IconData zip =
       IconData(0xe83c, fontFamily: _kFontFam, fontPackage: _kFontPkg);
+  static const IconData keypad =
+      IconData(0xe83d, fontFamily: _kFontFam, fontPackage: _kFontPkg);
 }

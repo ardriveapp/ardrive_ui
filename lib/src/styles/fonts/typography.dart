@@ -132,6 +132,18 @@ class Body {
   }
 
   /// **fontSizeBase** - 16px
+  TextStyle smallBold700({Color? color}) {
+    return TextStyle(
+      color: color,
+      fontFamily: fontFamiliesBody,
+      package: _package,
+      fontSize: fontSizeBase,
+      fontWeight: FontWeight.w700,
+      height: lineHeightsBodyDefault,
+    );
+  }
+
+  /// **fontSizeBase** - 16px
   TextStyle inputNormalRegular({Color? color}) {
     return TextStyle(
       color: color,

@@ -17,7 +17,7 @@ const double buttonBorderWidth = 1;
 const double cardDefaultBorderRadius = 8;
 
 /// DropArea constants
-const double dropAreaIconSize = 56;
+const double dropAreaIconSize = 24;
 const EdgeInsets dropAreaItemContentPadding =
     EdgeInsets.only(top: 8.0, bottom: 20);
 
