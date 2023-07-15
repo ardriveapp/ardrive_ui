@@ -120,6 +120,65 @@ class ArDriveFormState extends State<ArDriveForm> {
   }
 }
 
+class ArDriveMultlineObscureTextController extends TextEditingController {
+  bool _isObscured = true;
+  bool _showLastCharacter = false;
+  Timer? _timer;
+
+  ArDriveMultlineObscureTextController({String? text}) : super(text: text);
+
+  // use same default obscuring character as EditableText
+  final obscuringCharacter = '\u2022';
+
+  @override
+  TextSpan buildTextSpan(
+      {required BuildContext context,
+      TextStyle? style,
+      required bool withComposing}) {
+    return _isObscured
+        ? TextSpan(
+            style: style,
+            text: _showLastCharacter
+                ? text
+                    .replaceAll(RegExp(r'.'), obscuringCharacter)
+                    .replaceRange(
+                        text.length - 1, text.length, text[text.length - 1])
+                : text.replaceAll(RegExp(r'.'), obscuringCharacter))
+        : super.buildTextSpan(
+            context: context, style: style, withComposing: withComposing);
+  }
+
+  @override
+  set value(TextEditingValue newValue) {
+    var oldText = super.text;
+    var newText = newValue.text;
+
+    if (_isObscured && newText.length == oldText.length + 1) {
+      _showLastCharacter = true;
+      _timer?.cancel();
+      _timer = Timer(const Duration(seconds: 1), () {
+        _showLastCharacter = false;
+        _timer = null;
+        notifyListeners();
+      });
+    }
+    super.value = newValue;
+  }
+
+  bool get isObscured => _isObscured;
+  set isObscured(bool newValue) {
+    _isObscured = newValue;
+    _showLastCharacter = false;
+    _timer?.cancel();
+  }
+
+  @override
+  void dispose() {
+    _timer?.cancel();
+    super.dispose();
+  }
+}
+
 class ArDriveTextField extends StatefulWidget {
   const ArDriveTextField({
     super.key,
@@ -151,6 +210,8 @@ class ArDriveTextField extends StatefulWidget {
     this.preffix,
     this.showErrorMessage = true,
     this.validator,
+    this.minLines = 1,
+    this.maxLines = 1,
   });
 
   final bool isEnabled;
@@ -181,6 +242,9 @@ class ArDriveTextField extends StatefulWidget {
   final bool useErrorMessageOffset;
   final Widget? preffix;
   final bool showErrorMessage;
+  final int? minLines;
+  final int? maxLines;
+
   @override
   State<ArDriveTextField> createState() => ArDriveTextFieldState();
 }
@@ -196,6 +260,9 @@ class ArDriveTextFieldState extends State<ArDriveTextField> {
   void initState() {
     textFieldState = TextFieldState.unfocused;
     _isObscureText = widget.obscureText;
+    if (widget.maxLines != null && widget.maxLines! > 1) {
+      assert(widget.controller is ArDriveMultlineObscureTextController);
+    }
     super.initState();
   }
 
@@ -207,6 +274,13 @@ class ArDriveTextFieldState extends State<ArDriveTextField> {
   @override
   Widget build(BuildContext context) {
     final theme = ArDriveTheme.of(context).themeData.textFieldTheme;
+    final controller = widget.controller;
+    final isMultline = (controller is ArDriveMultlineObscureTextController);
+    final obscureText = isMultline ? false : _isObscureText;
+
+    if (isMultline) {
+      (controller).isObscured = _isObscureText;
+    }
 
     return Align(
       alignment: Alignment.center,
@@ -222,7 +296,7 @@ class ArDriveTextFieldState extends State<ArDriveTextField> {
               ),
             ),
           TextFormField(
-            controller: widget.controller,
+            controller: controller,
             autocorrect: widget.autocorrect,
             autofocus: widget.autofocus,
             initialValue: widget.initialValue,
@@ -234,9 +308,11 @@ class ArDriveTextFieldState extends State<ArDriveTextField> {
             focusNode: widget.focusNode,
             key: widget.key,
             textInputAction: widget.textInputAction,
-            obscureText: _isObscureText,
-            style: theme.inputTextStyle,
+            obscureText: obscureText,
+            style: widget.textStyle ?? theme.inputTextStyle,
             autovalidateMode: widget.autovalidateMode,
+            minLines: widget.minLines,
+            maxLines: widget.maxLines,
             onChanged: (text) {
               if (widget.asyncValidator != null) {
                 widget.asyncValidator!(text);
