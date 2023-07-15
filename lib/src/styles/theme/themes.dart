@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:ardrive_ui/ardrive_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_portal/flutter_portal.dart';
@@ -44,12 +46,13 @@ class _ArDriveAppState extends State<ArDriveApp> {
   void initState() {
     super.initState();
 
-    var window = WidgetsBinding.instance.window;
+    var platformDispatcher = PlatformDispatcher.instance;
+
     WidgetsBinding.instance.handlePlatformBrightnessChanged();
 
-    window.onPlatformBrightnessChanged = () {
+    platformDispatcher.onPlatformBrightnessChanged = () {
       // This callback is called every time the brightness changes.
-      var brightness = window.platformBrightness;
+      var brightness = platformDispatcher.platformBrightness;
 
       if (brightness == Brightness.dark) {
         setState(() {
