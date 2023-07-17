@@ -67,6 +67,7 @@ class _ArDriveRadioButtonGroupState extends State<ArDriveRadioButtonGroup> {
   @override
   Widget build(BuildContext context) {
     return ListView.builder(
+      padding: EdgeInsets.zero,
       itemBuilder: (context, i) {
         return Align(
           alignment: widget.alignment,
@@ -267,11 +268,10 @@ class ArDriveRadioButtonState extends State<ArDriveRadioButton> {
   Color _color() {
     switch (state) {
       case RadioButtonState.unchecked:
-        return ArDriveTheme.of(context).themeData.colors.themeAccentDefault;
       case RadioButtonState.hover:
-        return ArDriveTheme.of(context).themeData.colors.themeFgDefault;
       case RadioButtonState.checked:
         return ArDriveTheme.of(context).themeData.colors.themeFgDefault;
+
       case RadioButtonState.disabled:
         return ArDriveTheme.of(context).themeData.colors.themeFgDisabled;
     }
