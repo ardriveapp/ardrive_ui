@@ -147,11 +147,11 @@ class _ArDriveDropAreaSingleInputState
                 return MouseRegion(
                     cursor: SystemMouseCursors.click,
                     child: GestureDetector(
+                        behavior: HitTestBehavior.translucent,
                         onTap: () =>
                             {widget.controller.handleButtonCallback.call()},
                         child: Container(
                           color: controller.backgroundColor,
-                          // height: widget.height,
                           width: widget.width,
                           child: Padding(
                             padding: const EdgeInsets.all(16),
