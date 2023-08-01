@@ -400,4 +400,11 @@ class ArDriveIcons {
         size: size,
         color: color,
       );
+
+  // pin
+  static ArDriveIcon pin({double? size, Color? color}) => ArDriveIcon(
+        icon: ArDriveIconsData.pin_icon,
+        size: size,
+        color: color,
+      );
 }
