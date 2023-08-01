@@ -13,7 +13,7 @@ dependencies:
   ardrive_io:
     git:
       url: https://github.com/ar-io/ardrive_io.git
-      ref: v1.3.0
+    ref: v1.3.0
   auto_size_text: ^3.0.0
   desktop_drop: ^0.4.0
   dotted_border: ^2.0.0+3
@@ -25,6 +25,9 @@ dependencies:
   flutter_svg_image: 1.0.0
   provider: ^6.0.5
   equatable: ^2.0.5
+
+dependency_overrides:
+  flutter_downloader: 1.10.4
 
 dev_dependencies:
   flutter_test:
