@@ -14,7 +14,6 @@
 ///
 ///
 import 'package:flutter/widgets.dart';
-// ignore_for_file: constant_identifier_names
 
 class ArDriveIconsData {
   ArDriveIconsData._();
@@ -146,4 +145,6 @@ class ArDriveIconsData {
       IconData(0xe83c, fontFamily: _kFontFam, fontPackage: _kFontPkg);
   static const IconData keypad =
       IconData(0xe83d, fontFamily: _kFontFam, fontPackage: _kFontPkg);
+  static const IconData pin_icon =
+      IconData(0xe83e, fontFamily: _kFontFam, fontPackage: _kFontPkg);
 }
