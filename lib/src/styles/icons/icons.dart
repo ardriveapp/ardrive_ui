@@ -46,14 +46,14 @@ class ArDriveIcons {
 
   static ArDriveIcon iconNewFolder1({double? size, Color? color}) =>
       ArDriveIcon(
-        icon: ArDriveIconsData.icon_new_folder1,
+        icon: ArDriveIconsData.icon_new_folder,
         size: size,
         color: color,
       );
 
   static ArDriveIcon iconUploadFolder1({double? size, Color? color}) =>
       ArDriveIcon(
-        icon: ArDriveIconsData.icon_upload_folder1,
+        icon: ArDriveIconsData.icon_upload_folder,
         size: size,
         color: color,
       );
@@ -397,6 +397,13 @@ class ArDriveIcons {
   // keypad
   static ArDriveIcon keypad({double? size, Color? color}) => ArDriveIcon(
         icon: ArDriveIconsData.keypad,
+        size: size,
+        color: color,
+      );
+
+  // pin
+  static ArDriveIcon pin({double? size, Color? color}) => ArDriveIcon(
+        icon: ArDriveIconsData.pin,
         size: size,
         color: color,
       );
