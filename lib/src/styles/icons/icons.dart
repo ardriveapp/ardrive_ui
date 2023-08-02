@@ -402,8 +402,14 @@ class ArDriveIcons {
       );
 
   // pin
-  static ArDriveIcon pin({double? size, Color? color}) => ArDriveIcon(
-        icon: ArDriveIconsData.pin_icon,
+  static ArDriveIcon pinNoCircle({double? size, Color? color}) => ArDriveIcon(
+        icon: ArDriveIconsData.pin_no_circle,
+        size: size,
+        color: color,
+      );
+
+  static ArDriveIcon pinWithCircle({double? size, Color? color}) => ArDriveIcon(
+        icon: ArDriveIconsData.pin_circle,
         size: size,
         color: color,
       );

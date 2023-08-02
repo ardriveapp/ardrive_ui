@@ -147,6 +147,8 @@ class ArDriveIconsData {
       IconData(0xe83c, fontFamily: _kFontFam, fontPackage: _kFontPkg);
   static const IconData keypad =
       IconData(0xe83d, fontFamily: _kFontFam, fontPackage: _kFontPkg);
-  static const IconData pin_icon =
-      IconData(0xe83e, fontFamily: _kFontFam, fontPackage: _kFontPkg);
+  static const IconData pin_circle =
+      IconData(0xe844, fontFamily: _kFontFam, fontPackage: _kFontPkg);
+  static const IconData pin_no_circle =
+      IconData(0xe845, fontFamily: _kFontFam, fontPackage: _kFontPkg);
 }
