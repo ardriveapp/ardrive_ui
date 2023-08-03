@@ -145,7 +145,7 @@ class ArDriveThemeData {
           errorBorderColor: this.colors.themeErrorOnEmphasis,
           inputDisabledBorderColor: this.colors.themeInputBorderDisabled,
           defaultBorderColor: this.colors.themeBorderDefault,
-          labelColor: this.colors.themeAccentDefault,
+          labelColor: this.colors.themeFgDefault,
           inputBackgroundColor: this.colors.themeInputBackground,
           inputTextColor: this.colors.themeInputText,
           inputTextStyle: ArDriveTypography.body.inputLargeRegular(
