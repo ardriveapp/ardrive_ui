@@ -46,14 +46,14 @@ class ArDriveIcons {
 
   static ArDriveIcon iconNewFolder1({double? size, Color? color}) =>
       ArDriveIcon(
-        icon: ArDriveIconsData.icon_new_folder1,
+        icon: ArDriveIconsData.icon_new_folder1_1,
         size: size,
         color: color,
       );
 
   static ArDriveIcon iconUploadFolder1({double? size, Color? color}) =>
       ArDriveIcon(
-        icon: ArDriveIconsData.icon_upload_folder1,
+        icon: ArDriveIconsData.icon_upload_folder1_1,
         size: size,
         color: color,
       );
@@ -408,8 +408,16 @@ class ArDriveIcons {
         color: color,
       );
 
+  // pin with circle
   static ArDriveIcon pinWithCircle({double? size, Color? color}) => ArDriveIcon(
         icon: ArDriveIconsData.pin_circle,
+        size: size,
+        color: color,
+      );
+
+  // arrow-download
+  static ArDriveIcon arrowDownload({double? size, Color? color}) => ArDriveIcon(
+        icon: ArDriveIconsData.arrow_download,
         size: size,
         color: color,
       );
