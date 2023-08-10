@@ -13,8 +13,9 @@
 ///
 ///
 ///
-import 'package:flutter/widgets.dart';
 // ignore_for_file: constant_identifier_names
+
+import 'package:flutter/widgets.dart';
 
 class ArDriveIconsData {
   ArDriveIconsData._();
@@ -146,4 +147,8 @@ class ArDriveIconsData {
       IconData(0xe83c, fontFamily: _kFontFam, fontPackage: _kFontPkg);
   static const IconData keypad =
       IconData(0xe83d, fontFamily: _kFontFam, fontPackage: _kFontPkg);
+  static const IconData pin_circle =
+      IconData(0xe844, fontFamily: _kFontFam, fontPackage: _kFontPkg);
+  static const IconData pin_no_circle =
+      IconData(0xe845, fontFamily: _kFontFam, fontPackage: _kFontPkg);
 }
