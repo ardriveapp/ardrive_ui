@@ -25,10 +25,6 @@ class ArDriveIconsData {
 
   static const IconData icon_add_drive =
       IconData(0xe800, fontFamily: _kFontFam, fontPackage: _kFontPkg);
-  static const IconData icon_new_folder1_2 =
-      IconData(0xe801, fontFamily: _kFontFam, fontPackage: _kFontPkg);
-  static const IconData icon_upload_folder1_2 =
-      IconData(0xe802, fontFamily: _kFontFam, fontPackage: _kFontPkg);
   static const IconData icon_upload_files =
       IconData(0xe803, fontFamily: _kFontFam, fontPackage: _kFontPkg);
   static const IconData icon_create_snapshot =
@@ -101,9 +97,9 @@ class ArDriveIconsData {
       IconData(0xe825, fontFamily: _kFontFam, fontPackage: _kFontPkg);
   static const IconData hdd =
       IconData(0xe826, fontFamily: _kFontFam, fontPackage: _kFontPkg);
-  static const IconData icon_new_folder1_1 =
+  static const IconData icon_new_folder1 =
       IconData(0xe827, fontFamily: _kFontFam, fontPackage: _kFontPkg);
-  static const IconData icon_upload_folder1_1 =
+  static const IconData icon_upload_folder1 =
       IconData(0xe828, fontFamily: _kFontFam, fontPackage: _kFontPkg);
   static const IconData image =
       IconData(0xe829, fontFamily: _kFontFam, fontPackage: _kFontPkg);

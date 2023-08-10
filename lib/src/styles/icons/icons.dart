@@ -46,14 +46,14 @@ class ArDriveIcons {
 
   static ArDriveIcon iconNewFolder1({double? size, Color? color}) =>
       ArDriveIcon(
-        icon: ArDriveIconsData.icon_new_folder1_1,
+        icon: ArDriveIconsData.icon_new_folder1,
         size: size,
         color: color,
       );
 
   static ArDriveIcon iconUploadFolder1({double? size, Color? color}) =>
       ArDriveIcon(
-        icon: ArDriveIconsData.icon_upload_folder1_1,
+        icon: ArDriveIconsData.icon_upload_folder1,
         size: size,
         color: color,
       );
