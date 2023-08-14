@@ -408,8 +408,16 @@ class ArDriveIcons {
         color: color,
       );
 
+  // pin with circle
   static ArDriveIcon pinWithCircle({double? size, Color? color}) => ArDriveIcon(
         icon: ArDriveIconsData.pin_circle,
+        size: size,
+        color: color,
+      );
+
+  // arrow-download
+  static ArDriveIcon arrowDownload({double? size, Color? color}) => ArDriveIcon(
+        icon: ArDriveIconsData.arrow_download,
         size: size,
         color: color,
       );
