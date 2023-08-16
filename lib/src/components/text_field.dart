@@ -212,6 +212,7 @@ class ArDriveTextField extends StatefulWidget {
     this.validator,
     this.minLines = 1,
     this.maxLines = 1,
+    this.errorMessage,
   });
 
   final bool isEnabled;
@@ -244,6 +245,7 @@ class ArDriveTextField extends StatefulWidget {
   final bool showErrorMessage;
   final int? minLines;
   final int? maxLines;
+  final String? errorMessage;
 
   @override
   State<ArDriveTextField> createState() => ArDriveTextFieldState();
@@ -371,7 +373,8 @@ class ArDriveTextFieldState extends State<ArDriveTextField> {
                 return _errorMessageLabel(theme);
               },
             ),
-          if (widget.showErrorMessage && widget.validator != null)
+          if (widget.showErrorMessage &&
+              (widget.validator != null || widget.errorMessage != null))
             _errorMessageLabel(theme),
           if (widget.successMessage != null)
             _successMessage(widget.successMessage!, theme),
@@ -381,9 +384,10 @@ class ArDriveTextFieldState extends State<ArDriveTextField> {
   }
 
   Widget _errorMessageLabel(ArDriveTextFieldTheme theme) {
+    final err = widget.errorMessage ?? _errorMessage;
     return AnimatedTextFieldLabel(
-      text: _errorMessage,
-      showing: _errorMessage != null,
+      text: err,
+      showing: err != null,
       style: ArDriveTypography.body.bodyBold(
         color: theme.errorColor,
       ),
