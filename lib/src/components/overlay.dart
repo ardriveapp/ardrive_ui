@@ -23,6 +23,7 @@ class ArDriveDropdown extends StatefulWidget {
     this.maxHeight,
     this.showScrollbars = false,
     this.onClick,
+    this.isNested = false,
   });
 
   final double height;
@@ -35,9 +36,10 @@ class ArDriveDropdown extends StatefulWidget {
   final double? maxHeight;
   final bool showScrollbars;
   final Function? onClick;
+  final bool isNested;
 
   // retruns the alignment based if the current widget y coordinate is greater than half the screen height
-  final Alignment Function(bool)? calculateVerticalAlignment;
+  final Alignment Function(bool isAboveHalfScreen)? calculateVerticalAlignment;
 
   @override
   State<ArDriveDropdown> createState() => _ArDriveDropdownState();
@@ -76,8 +78,9 @@ class _ArDriveDropdownState extends State<ArDriveDropdown> {
 
           Alignment alignment;
 
+          final isAboveHalfScreen = y > screenHeight / 2;
           alignment =
-              widget.calculateVerticalAlignment!.call(y > screenHeight / 2);
+              widget.calculateVerticalAlignment!.call(isAboveHalfScreen);
 
           _anchor = Aligned(
             follower: alignment,
@@ -86,6 +89,12 @@ class _ArDriveDropdownState extends State<ArDriveDropdown> {
         }
       });
     }
+    // else if (mounted && widget.nestedPortal) {
+    //   _anchor = const Aligned(
+    //     follower: Alignment.topLeft,
+    //     target: Alignment.bottomRight,
+    //   );
+    // }
 
     super.didChangeDependencies();
   }
@@ -94,7 +103,39 @@ class _ArDriveDropdownState extends State<ArDriveDropdown> {
   Widget build(BuildContext context) {
     dropdownHeight = widget.maxHeight ?? widget.items.length * widget.height;
 
-    return ArDriveOverlay(
+    final overlayContent = _ArDriveDropdownContent(
+      height: dropdownHeight,
+      child: ArDriveScrollBar(
+        controller: _scrollController,
+        isVisible: widget.showScrollbars,
+        child: ArDriveCard(
+          border: Border.all(
+            color: ArDriveTheme.of(context)
+                .themeData
+                .dropdownTheme
+                .backgroundColor,
+            width: 1,
+          ),
+          boxShadow: BoxShadowCard.shadow80,
+          elevation: 5,
+          contentPadding: widget.contentPadding ?? EdgeInsets.zero,
+          content: SizedBox(
+            width: widget.width,
+            child: SingleChildScrollView(
+              controller: _scrollController,
+              child: Column(
+                children: List.generate(
+                  widget.items.length,
+                  (index) => _buildItem(index),
+                ),
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+
+    final overlayWidget = ArDriveOverlay(
       onVisibleChange: (value) {
         setState(() {
           visible = value;
@@ -102,61 +143,7 @@ class _ArDriveDropdownState extends State<ArDriveDropdown> {
       },
       visible: visible,
       anchor: _anchor,
-      content: _ArDriveDropdownContent(
-        height: dropdownHeight,
-        child: ArDriveScrollBar(
-          controller: _scrollController,
-          isVisible: widget.showScrollbars,
-          child: ArDriveCard(
-            border: Border.all(
-              color: ArDriveTheme.of(context)
-                  .themeData
-                  .dropdownTheme
-                  .backgroundColor,
-              width: 1,
-            ),
-            boxShadow: BoxShadowCard.shadow80,
-            elevation: 5,
-            contentPadding: widget.contentPadding ?? EdgeInsets.zero,
-            content: SizedBox(
-              width: widget.width,
-              child: SingleChildScrollView(
-                controller: _scrollController,
-                child: Column(
-                  children: List.generate(widget.items.length, (index) {
-                    return Column(
-                      children: [
-                        GestureDetector(
-                          onTap: () {
-                            widget.items[index].onClick?.call();
-                            setState(() {
-                              visible = false;
-                            });
-                          },
-                          child: SizedBox(
-                            width: widget.width,
-                            height: widget.height,
-                            child: widget.items[index],
-                          ),
-                        ),
-                        if (index != widget.items.length - 1)
-                          Divider(
-                            height: 0,
-                            thickness: widget.dividerThickness ?? 1,
-                            color: ArDriveTheme.of(context)
-                                .themeData
-                                .colors
-                                .themeBorderDefault,
-                          ),
-                      ],
-                    );
-                  }),
-                ),
-              ),
-            ),
-          ),
-        ),
-      ),
+      content: overlayContent,
       child: GestureDetector(
         behavior: HitTestBehavior.translucent,
         onTap: () {
@@ -166,6 +153,78 @@ class _ArDriveDropdownState extends State<ArDriveDropdown> {
           });
         },
         child: IgnorePointer(ignoring: visible, child: widget.child),
+      ),
+    );
+
+    // if (widget.nestedPortal) {
+    //   return Stack(
+    //     children: [overlayWidget],
+    //     // clipBehavior: Clip.none,
+    //     fit: StackFit.expand,
+    //   );
+    // } else {
+    return overlayWidget;
+    // }
+  }
+
+  Widget _buildItem(int index) {
+    final item = widget.items[index];
+    final isLast = index == widget.items.length - 1;
+    final hasChildren = item.children.isNotEmpty;
+
+    print('Item hasChildren: $hasChildren');
+
+    final itemContent =
+        hasChildren ? _buildNestedItem(index) : _buildSimpleItem(index);
+
+    return Column(
+      children: [
+        itemContent,
+        if (!isLast)
+          Divider(
+            height: 0,
+            thickness: widget.dividerThickness ?? 1,
+            color: ArDriveTheme.of(context).themeData.colors.themeBorderDefault,
+          ),
+      ],
+    );
+  }
+
+  Widget _buildNestedItem(int index) {
+    final item = widget.items[index];
+    return ArDriveDropdown(
+      width: widget.width * 2,
+      // anchor: _anchor, // FIXME: usew the correct anchor
+      anchor: const Aligned(
+        follower: Alignment.topCenter,
+        target: Alignment.topCenter,
+      ),
+      items: item.children,
+      isNested: true,
+      // calculateVerticalAlignment: (isAboveHalfScreen) {
+      //   if (isAboveHalfScreen) {
+      //     return Alignment.bottomRight;
+      //   } else {
+      //     return Alignment.topRight;
+      //   }
+      // },
+      child: item,
+    );
+  }
+
+  Widget _buildSimpleItem(int index) {
+    final item = widget.items[index];
+    return GestureDetector(
+      onTap: () {
+        item.onClick?.call();
+        setState(() {
+          visible = false;
+        });
+      },
+      child: SizedBox(
+        width: widget.width,
+        height: widget.height,
+        child: item,
       ),
     );
   }
@@ -333,10 +392,12 @@ class ArDriveDropdownItem extends StatefulWidget {
     super.key,
     required this.content,
     this.onClick,
+    this.children = const [],
   });
 
   final Widget content;
   final Function()? onClick;
+  final List<ArDriveDropdownItem> children;
 
   @override
   State<ArDriveDropdownItem> createState() => _ArDriveDropdownItemState();
@@ -349,18 +410,18 @@ class _ArDriveDropdownItemState extends State<ArDriveDropdownItem> {
     final theme = ArDriveTheme.of(context).themeData.dropdownTheme;
 
     return MouseRegion(
-      cursor: widget.onClick != null
+      cursor: widget.onClick != null || widget.children.isNotEmpty
           ? SystemMouseCursors.click
           : SystemMouseCursors.basic,
       onHover: (event) {
-        if (widget.onClick != null) {
+        if (widget.onClick != null || widget.children.isNotEmpty) {
           setState(() {
             hovering = true;
           });
         }
       },
       onExit: (event) {
-        if (widget.onClick != null) {
+        if (widget.onClick != null || widget.children.isNotEmpty) {
           setState(() {
             hovering = false;
           });
