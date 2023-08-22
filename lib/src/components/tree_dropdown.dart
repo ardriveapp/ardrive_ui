@@ -46,7 +46,7 @@ class _ArDriveTreeDropdownState extends State<ArDriveTreeDropdown> {
 
   TreeDropdownNode? visibleNode;
 
-  double dropdownHeight = 0;
+  // double dropdownHeight = 0;
 
   @override
   void initState() {
@@ -93,6 +93,8 @@ class _ArDriveTreeDropdownState extends State<ArDriveTreeDropdown> {
   Widget build(BuildContext context) {
     final isVisible = visibleNode != null;
 
+    final parentKey = GlobalKey();
+
     return Barrier(
       onClose: () {
         print('Barrier closed!');
@@ -102,6 +104,7 @@ class _ArDriveTreeDropdownState extends State<ArDriveTreeDropdown> {
       child: Column(
         children: [
           GestureDetector(
+            key: parentKey,
             behavior: HitTestBehavior.translucent,
             onTap: () {
               widget.onClick?.call();
@@ -112,15 +115,23 @@ class _ArDriveTreeDropdownState extends State<ArDriveTreeDropdown> {
               child: widget.child,
             ),
           ),
-          if (isVisible)
-            SizedBox(
-              height: 0,
-              child: Stack(
-                fit: StackFit.passthrough,
-                clipBehavior: Clip.none,
-                children: _buildNodesTree(widget.rootNode),
-              ),
+          // if (isVisible)
+          SizedBox(
+            height: 0,
+            child: Stack(
+              key: const Key('el-stack'),
+              clipBehavior: Clip.none,
+              children: [
+                Container(
+                  color: Colors.red,
+                ),
+                ..._buildNodesTree(
+                  widget.rootNode,
+                  parentKey: parentKey,
+                ),
+              ],
             ),
+          ),
         ],
       ),
     );
@@ -142,11 +153,10 @@ class _ArDriveTreeDropdownState extends State<ArDriveTreeDropdown> {
       final dropdDownOption = ArDriveDropdownItem(
         key: optionKey,
         onClick: () {
-          print('Clicked on $node');
           final isClickable =
               !node.isDisabled && (node.onClick != null || nodeHasChildren);
           if (isClickable) {
-            print('It\'s not disabled');
+            print('Clicked on $node');
             node.onClick?.call();
             if (nodeHasChildren) {
               setVisible(node);
@@ -169,7 +179,7 @@ class _ArDriveTreeDropdownState extends State<ArDriveTreeDropdown> {
         (visibleNode != null && root.findChildById(visibleNode!.id) != null);
 
     if (isVisible) {
-      dropdownHeight = dropDownItems.length * widget.height;
+      // dropdownHeight = dropDownItems.length * widget.height;
       print('Hello! I\'m visible - $root');
     }
 
@@ -179,6 +189,7 @@ class _ArDriveTreeDropdownState extends State<ArDriveTreeDropdown> {
       anchor: _anchor,
       portalFollower: _contentForNode(dropDownItems),
       calculateVerticalAlignment: widget.calculateVerticalAlignment,
+      parentKey: parentKey,
     );
 
     return [
@@ -189,6 +200,8 @@ class _ArDriveTreeDropdownState extends State<ArDriveTreeDropdown> {
 
   _ArDriveDropdownContent _contentForNode(
       List<ArDriveDropdownItem> dropdownItems) {
+    final dropdownHeight =
+        widget.maxHeight ?? dropdownItems.length * widget.height;
     return _ArDriveDropdownContent(
       height: dropdownHeight,
       child: ArDriveScrollBar(
@@ -252,15 +265,13 @@ class PositionedPortalTarget extends StatefulWidget {
 
 class _PositionedPortalTargetState extends State<PositionedPortalTarget> {
   late Anchor _anchor;
-  // late Offset _offset;
-  late Rect _rect;
+  late Offset _parentPosition;
   late Size _size;
 
   @override
   void initState() {
     _anchor = widget.anchor;
-    // _offset = Offset.zero;
-    _rect = Rect.zero;
+    _parentPosition = Offset.zero;
     _size = Size.zero;
     super.initState();
   }
@@ -269,33 +280,37 @@ class _PositionedPortalTargetState extends State<PositionedPortalTarget> {
   void didChangeDependencies() {
     if (mounted) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
-        final renderBox = context.findRenderObject() as RenderBox?;
+        // final renderBox = context.findRenderObject() as RenderBox?;
 
-        final position = renderBox?.localToGlobal(Offset.zero);
+        // final position = renderBox?.localToGlobal(Offset.zero);
 
-        if (position != null && widget.calculateVerticalAlignment != null) {
-          final y = position.dy;
+        // if (position != null && widget.calculateVerticalAlignment != null) {
+        //   final y = position.dy;
 
-          final screenHeight = MediaQuery.of(context).size.height;
+        //   final screenHeight = MediaQuery.of(context).size.height;
 
-          Alignment alignment;
+        //   Alignment alignment;
 
-          final isAboveHalfScreen = y > screenHeight / 2;
-          alignment =
-              widget.calculateVerticalAlignment!.call(isAboveHalfScreen);
+        //   final isAboveHalfScreen = y > screenHeight / 2;
+        //   alignment =
+        //       widget.calculateVerticalAlignment!.call(isAboveHalfScreen);
 
-          _anchor = Aligned(
-            follower: alignment,
-            target: Alignment.bottomLeft,
-          );
-        }
+        //   _anchor = Aligned(
+        //     follower: alignment,
+        //     target: Alignment.bottomLeft,
+        //   );
+        // }
 
         // TODO: make use of the parentKey to determine size and position
         final parentRenderBox =
             widget.parentKey?.currentContext?.findRenderObject() as RenderBox?;
 
-        _rect = parentRenderBox?.paintBounds ?? Rect.zero;
+        _parentPosition =
+            parentRenderBox?.localToGlobal(Offset.zero) ?? Offset.zero;
         _size = parentRenderBox?.size ?? Size.zero;
+
+        print(
+            'Parent ($parentRenderBox) render box: $_parentPosition, size: $_size');
       });
     }
 
@@ -304,12 +319,9 @@ class _PositionedPortalTargetState extends State<PositionedPortalTarget> {
 
   @override
   Widget build(BuildContext context) {
-    // final Widget child;
-
-    // Use size and position of parent option
-
-    return Positioned.fromRect(
-      rect: _rect,
+    return Positioned(
+      left: _parentPosition.dx,
+      right: _parentPosition.dy,
       child: PortalTarget(
         visible: widget.visible,
         anchor: _anchor,
