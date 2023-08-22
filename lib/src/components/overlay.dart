@@ -1,9 +1,12 @@
 import 'package:ardrive_ui/ardrive_ui.dart';
+import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_portal/flutter_portal.dart';
 
 export 'package:flutter_portal/flutter_portal.dart'
     show Anchor, Aligned, Filled;
+
+part './tree_dropdown.dart';
 
 class ArDriveDropdown extends StatefulWidget {
   const ArDriveDropdown({
@@ -409,28 +412,33 @@ class _ArDriveDropdownItemState extends State<ArDriveDropdownItem> {
   Widget build(BuildContext context) {
     final theme = ArDriveTheme.of(context).themeData.dropdownTheme;
 
-    return MouseRegion(
-      cursor: widget.onClick != null || widget.children.isNotEmpty
-          ? SystemMouseCursors.click
-          : SystemMouseCursors.basic,
-      onHover: (event) {
-        if (widget.onClick != null || widget.children.isNotEmpty) {
-          setState(() {
-            hovering = true;
-          });
-        }
+    return GestureDetector(
+      onTap: () {
+        widget.onClick?.call();
       },
-      onExit: (event) {
-        if (widget.onClick != null || widget.children.isNotEmpty) {
-          setState(() {
-            hovering = false;
-          });
-        }
-      },
-      child: Container(
-        color: hovering ? theme.hoverColor : theme.backgroundColor,
-        // alignment: Alignment.center,
-        child: widget.content,
+      child: MouseRegion(
+        cursor: widget.onClick != null || widget.children.isNotEmpty
+            ? SystemMouseCursors.click
+            : SystemMouseCursors.basic,
+        onHover: (event) {
+          if (widget.onClick != null || widget.children.isNotEmpty) {
+            setState(() {
+              hovering = true;
+            });
+          }
+        },
+        onExit: (event) {
+          if (widget.onClick != null || widget.children.isNotEmpty) {
+            setState(() {
+              hovering = false;
+            });
+          }
+        },
+        child: Container(
+          color: hovering ? theme.hoverColor : theme.backgroundColor,
+          // alignment: Alignment.center,
+          child: widget.content,
+        ),
       ),
     );
   }
