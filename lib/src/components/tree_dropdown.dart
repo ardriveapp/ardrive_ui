@@ -1,4 +1,10 @@
-part of './overlay.dart';
+import 'package:ardrive_ui/ardrive_ui.dart';
+import 'package:equatable/equatable.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_portal/flutter_portal.dart';
+
+export 'package:flutter_portal/flutter_portal.dart'
+    show Anchor, Aligned, Filled;
 
 class ArDriveTreeDropdown extends StatefulWidget {
   const ArDriveTreeDropdown({
@@ -39,10 +45,7 @@ class ArDriveTreeDropdown extends StatefulWidget {
 class _ArDriveTreeDropdownState extends State<ArDriveTreeDropdown> {
   late Anchor _anchor;
   ScrollController? _scrollController;
-
   TreeDropdownNode? visibleNode;
-
-  // double dropdownHeight = 0;
 
   @override
   void initState() {
@@ -93,7 +96,6 @@ class _ArDriveTreeDropdownState extends State<ArDriveTreeDropdown> {
 
     return Barrier(
       onClose: () {
-        print('Barrier closed!');
         setVisible(null);
       },
       visible: isVisible,
@@ -114,7 +116,6 @@ class _ArDriveTreeDropdownState extends State<ArDriveTreeDropdown> {
           SizedBox(
             height: 0,
             child: Stack(
-              key: const Key('el-stack'),
               clipBehavior: Clip.none,
               children: [
                 ..._buildNodesTree(
@@ -134,28 +135,23 @@ class _ArDriveTreeDropdownState extends State<ArDriveTreeDropdown> {
     GlobalKey? parentKey,
   }) {
     final children = root.children;
-    final dropDownItems = <ArDriveDropdownItem>[];
+    final dropDownItems = <ArDriveTreeDropdownItem>[];
     final dropdownSubOptions = <Widget>[];
 
     final isVisible = visibleNode == root ||
         (visibleNode != null && root.findChildById(visibleNode!.id) != null);
-
-    if (isVisible) {
-      print('Hello! I\'m visible - $root');
-    }
 
     for (var i = 0; i < children.length; i++) {
       final node = children[i];
       final nodeHasChildren = node.children.isNotEmpty;
 
       final optionKey = GlobalKey();
-      final dropdDownOption = ArDriveDropdownItem(
+      final dropdDownOption = ArDriveTreeDropdownItem(
         key: optionKey,
         onClick: () {
           final isClickable =
               !node.isDisabled && (node.onClick != null || nodeHasChildren);
           if (isClickable) {
-            print('Clicked on $node');
             node.onClick?.call();
             if (nodeHasChildren) {
               setVisible(node);
@@ -189,11 +185,11 @@ class _ArDriveTreeDropdownState extends State<ArDriveTreeDropdown> {
     ];
   }
 
-  _ArDriveDropdownContent _contentForNode(
-      List<ArDriveDropdownItem> dropdownItems) {
+  _ArDriveTreeDropdownContent _contentForNode(
+      List<ArDriveTreeDropdownItem> dropdownItems) {
     final dropdownHeight =
         widget.maxHeight ?? dropdownItems.length * widget.height;
-    return _ArDriveDropdownContent(
+    return _ArDriveTreeDropdownContent(
       height: dropdownHeight,
       child: ArDriveScrollBar(
         controller: _scrollController,
@@ -227,7 +223,6 @@ class _ArDriveTreeDropdownState extends State<ArDriveTreeDropdown> {
   }
 
   void setVisible(TreeDropdownNode? node) {
-    print('Now visible: $node');
     setState(() {
       visibleNode = node;
     });
@@ -271,60 +266,17 @@ class _PositionedPortalTargetState extends State<PositionedPortalTarget> {
   void didChangeDependencies() {
     if (mounted) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
-        // final renderBox = context.findRenderObject() as RenderBox?;
-
-        // final position = renderBox?.localToGlobal(Offset.zero);
-
-        // if (position != null && widget.calculateVerticalAlignment != null) {
-        //   final y = position.dy;
-
-        //   final screenHeight = MediaQuery.of(context).size.height;
-
-        //   Alignment alignment;
-
-        //   final isAboveHalfScreen = y > screenHeight / 2;
-        //   alignment =
-        //       widget.calculateVerticalAlignment!.call(isAboveHalfScreen);
-
-        //   _anchor = Aligned(
-        //     follower: alignment,
-        //     target: Alignment.bottomLeft,
-        //   );
-        // }
-
-        // TODO: make use of the parentKey to determine size and position
         final parentRenderBox =
             widget.parentKey?.currentContext?.findRenderObject() as RenderBox?;
+        final contextRenderBox = context.findRenderObject() as RenderBox?;
+
+        final globalParentPosition =
+            parentRenderBox?.localToGlobal(Offset.zero) ?? Offset.zero;
+        _parentPosition =
+            contextRenderBox?.globalToLocal(globalParentPosition) ??
+                Offset.zero;
 
         _size = parentRenderBox?.size ?? Size.zero;
-
-        // TODO: cleanup
-        _parentPosition =
-            parentRenderBox?.localToGlobal(Offset.zero) ?? Offset.zero;
-        _parentPosition = (context.findRenderObject() as RenderBox?)
-                ?.globalToLocal(_parentPosition) ??
-            Offset.zero;
-        // _parentPosition = Offset(
-        //   _parentPosition.dx,
-        //   _parentPosition.dy,
-        // ); // this one is bad
-
-        // _parentPosition = widget.parentKey?.currentContext?.size?.topLeft(
-        //       Offset.zero,
-        //     ) ??
-        //     Offset.zero; // This one looks almost good
-
-        // final parentOffset = parentRenderBox?.localToGlobal(Offset.zero) ??
-        //     Offset.zero; // not so bad but not what I want
-        // _parentPosition =
-        //     parentRenderBox?.globalToLocal(parentOffset) ?? Offset.zero;
-
-        // _parentPosition =
-        //     (context.findRenderObject() as RenderBox?)?.semanticBounds ??
-        //         Rect.zero;
-
-        print(
-            'Parent ($parentRenderBox) render box: $_parentPosition, size: $_size');
       });
     }
 
@@ -447,5 +399,111 @@ class TreeDropdownNode extends Equatable {
   String toString() {
     return 'TreeDropdownNode(id: $id, parent: $parent,'
         ' childrens: ${children.length}, content: $content)';
+  }
+}
+
+class ArDriveTreeDropdownItem extends StatefulWidget {
+  const ArDriveTreeDropdownItem({
+    super.key,
+    required this.content,
+    this.onClick,
+    this.children = const [],
+  });
+
+  final Widget content;
+  final Function()? onClick;
+  final List<ArDriveTreeDropdownItem> children;
+
+  @override
+  State<ArDriveTreeDropdownItem> createState() =>
+      _ArDriveTreeDropdownItemState();
+}
+
+class _ArDriveTreeDropdownItemState extends State<ArDriveTreeDropdownItem> {
+  bool hovering = false;
+  @override
+  Widget build(BuildContext context) {
+    final theme = ArDriveTheme.of(context).themeData.dropdownTheme;
+
+    return GestureDetector(
+      onTap: () {
+        widget.onClick?.call();
+      },
+      child: MouseRegion(
+        cursor: widget.onClick != null || widget.children.isNotEmpty
+            ? SystemMouseCursors.click
+            : SystemMouseCursors.basic,
+        onHover: (event) {
+          if (widget.onClick != null || widget.children.isNotEmpty) {
+            setState(() {
+              hovering = true;
+            });
+          }
+        },
+        onExit: (event) {
+          if (widget.onClick != null || widget.children.isNotEmpty) {
+            setState(() {
+              hovering = false;
+            });
+          }
+        },
+        child: Container(
+          color: hovering ? theme.hoverColor : theme.backgroundColor,
+          child: widget.content,
+        ),
+      ),
+    );
+  }
+}
+
+class _ArDriveTreeDropdownContent extends StatefulWidget {
+  @override
+  _ArDriveTreeDropdownContentState createState() =>
+      _ArDriveTreeDropdownContentState();
+
+  const _ArDriveTreeDropdownContent({
+    required this.child,
+    this.height = 200,
+  });
+
+  final Widget child;
+  final double height;
+}
+
+class _ArDriveTreeDropdownContentState
+    extends State<_ArDriveTreeDropdownContent> with TickerProviderStateMixin {
+  late AnimationController _animationController;
+  late Animation<double> _animation;
+  double _height = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    _animationController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 200),
+    );
+    _animation = Tween<double>(begin: 0, end: widget.height)
+        .animate(_animationController)
+      ..addListener(() {
+        setState(() {
+          _height = _animation.value;
+        });
+      });
+    _animationController.forward();
+  }
+
+  @override
+  void dispose() {
+    _animationController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      height: _height,
+      child: widget.child,
+    );
   }
 }
