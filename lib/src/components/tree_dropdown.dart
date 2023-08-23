@@ -110,13 +110,14 @@ class _ArDriveTreeDropdownState extends State<ArDriveTreeDropdown> {
     for (var i = 0; i < children.length; i++) {
       final node = children[i];
       final nodeHasChildren = node.children.isNotEmpty;
+      final isClickable =
+          !node.isDisabled && (node.onClick != null || nodeHasChildren);
 
       final optionKey = GlobalKey();
       final dropdDownOption = ArDriveTreeDropdownItem(
         key: optionKey,
+        isDisabled: node.isDisabled,
         onClick: () {
-          final isClickable =
-              !node.isDisabled && (node.onClick != null || nodeHasChildren);
           if (isClickable) {
             node.onClick?.call();
             if (nodeHasChildren) {
@@ -307,11 +308,13 @@ class ArDriveTreeDropdownItem extends StatefulWidget {
     required this.content,
     this.onClick,
     this.children = const [],
+    required this.isDisabled,
   });
 
   final Widget content;
   final Function()? onClick;
   final List<ArDriveTreeDropdownItem> children;
+  final bool isDisabled;
 
   @override
   State<ArDriveTreeDropdownItem> createState() =>
@@ -323,24 +326,25 @@ class _ArDriveTreeDropdownItemState extends State<ArDriveTreeDropdownItem> {
   @override
   Widget build(BuildContext context) {
     final theme = ArDriveTheme.of(context).themeData.dropdownTheme;
+    final isClickable = !widget.isDisabled &&
+        (widget.onClick != null || widget.children.isNotEmpty);
 
     return GestureDetector(
       onTap: () {
         widget.onClick?.call();
       },
       child: MouseRegion(
-        cursor: widget.onClick != null || widget.children.isNotEmpty
-            ? SystemMouseCursors.click
-            : SystemMouseCursors.basic,
+        cursor:
+            isClickable ? SystemMouseCursors.click : SystemMouseCursors.basic,
         onHover: (event) {
-          if (widget.onClick != null || widget.children.isNotEmpty) {
+          if (isClickable) {
             setState(() {
               hovering = true;
             });
           }
         },
         onExit: (event) {
-          if (widget.onClick != null || widget.children.isNotEmpty) {
+          if (isClickable) {
             setState(() {
               hovering = false;
             });
