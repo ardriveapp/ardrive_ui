@@ -12,6 +12,7 @@ export 'components/feedback_message.dart';
 export 'components/image.dart';
 export 'components/modal.dart';
 export 'components/overlay.dart';
+export 'components/tree_dropdown.dart';
 export 'components/pagination_dots.dart';
 export 'components/progress_bar.dart';
 export 'components/radio_button.dart';
