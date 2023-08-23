@@ -264,68 +264,19 @@ class _PositionedPortalTargetState extends State<PositionedPortalTarget> {
 }
 
 class TreeDropdownNode extends Equatable {
-  final TreeDropdownNode? parent;
   final List<TreeDropdownNode> children;
   final String id;
   final Widget content;
   final VoidCallback? onClick;
   final bool isDisabled;
 
-  String get path => '${parent?.path ?? ''}/$id';
-
   const TreeDropdownNode({
     required this.id,
-    required this.parent,
     this.children = const [],
     required this.content,
     this.onClick,
     this.isDisabled = false,
   });
-
-  TreeDropdownNode? findNode(String path) {
-    if (path == this.path) {
-      return this;
-    }
-
-    for (final child in children) {
-      final node = child.findNode(path);
-      if (node != null) {
-        return node;
-      }
-    }
-
-    return null;
-  }
-
-  TreeDropdownNode? findParent(String path) {
-    if (path == this.path) {
-      return parent;
-    }
-
-    for (final child in children) {
-      final node = child.findParent(path);
-      if (node != null) {
-        return node;
-      }
-    }
-
-    return null;
-  }
-
-  TreeDropdownNode? findChild(String path) {
-    if (path == this.path) {
-      return this;
-    }
-
-    for (final child in children) {
-      final node = child.findChild(path);
-      if (node != null) {
-        return node;
-      }
-    }
-
-    return null;
-  }
 
   TreeDropdownNode? findChildById(String id) {
     for (final child in children) {
@@ -337,31 +288,16 @@ class TreeDropdownNode extends Equatable {
     return null;
   }
 
-  TreeDropdownNode? findParentById(String id) {
-    if (this.id == id) {
-      return parent;
-    }
-
-    for (final child in children) {
-      final node = child.findParentById(id);
-      if (node != null) {
-        return node;
-      }
-    }
-
-    return null;
-  }
-
   @override
-  List<Object?> get props => [id, parent, children, content];
+  List<Object?> get props => [id, children, content];
 
   @override
   bool get stringify => true;
 
   @override
   String toString() {
-    return 'TreeDropdownNode(id: $id, parent: $parent,'
-        ' childrens: ${children.length}, content: $content)';
+    return 'TreeDropdownNode(id: $id, childrens: ${children.length},'
+        ' content: $content)';
   }
 }
 
