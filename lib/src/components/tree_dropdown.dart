@@ -16,7 +16,6 @@ class ArDriveTreeDropdown extends StatefulWidget {
     this.width = 200,
     required this.anchor,
     this.dividerThickness,
-    this.calculateVerticalAlignment,
     this.maxHeight,
     this.showScrollbars = false,
     this.onClick,
@@ -34,9 +33,6 @@ class ArDriveTreeDropdown extends StatefulWidget {
   final bool showScrollbars;
   final Function? onClick;
   final bool isNested;
-
-  // retruns the alignment based if the current widget y coordinate is greater than half the screen height
-  final Alignment Function(bool isAboveHalfScreen)? calculateVerticalAlignment;
 
   @override
   State<ArDriveTreeDropdown> createState() => _ArDriveTreeDropdownState();
@@ -56,36 +52,6 @@ class _ArDriveTreeDropdownState extends State<ArDriveTreeDropdown> {
     }
 
     super.initState();
-  }
-
-  @override
-  void didChangeDependencies() {
-    if (mounted) {
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        final renderBox = context.findRenderObject() as RenderBox?;
-
-        final position = renderBox?.localToGlobal(Offset.zero);
-
-        if (position != null && widget.calculateVerticalAlignment != null) {
-          final y = position.dy;
-
-          final screenHeight = MediaQuery.of(context).size.height;
-
-          Alignment alignment;
-
-          final isAboveHalfScreen = y > screenHeight / 2;
-          alignment =
-              widget.calculateVerticalAlignment!.call(isAboveHalfScreen);
-
-          _anchor = Aligned(
-            follower: alignment,
-            target: Alignment.bottomLeft,
-          );
-        }
-      });
-    }
-
-    super.didChangeDependencies();
   }
 
   @override
@@ -175,7 +141,6 @@ class _ArDriveTreeDropdownState extends State<ArDriveTreeDropdown> {
       visible: isVisible,
       anchor: _anchor,
       portalFollower: _contentForNode(dropDownItems),
-      calculateVerticalAlignment: widget.calculateVerticalAlignment,
       parentKey: parentKey,
     );
 
@@ -233,7 +198,6 @@ class PositionedPortalTarget extends StatefulWidget {
   final bool visible;
   final Anchor anchor;
   final Widget portalFollower;
-  final Alignment Function(bool isAboveHalfScreen)? calculateVerticalAlignment;
   final GlobalKey? parentKey;
 
   const PositionedPortalTarget({
@@ -241,7 +205,6 @@ class PositionedPortalTarget extends StatefulWidget {
     required this.visible,
     required this.anchor,
     required this.portalFollower,
-    this.calculateVerticalAlignment,
     this.parentKey,
   });
 
