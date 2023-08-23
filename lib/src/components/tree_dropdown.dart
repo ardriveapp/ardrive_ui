@@ -8,11 +8,7 @@ class ArDriveTreeDropdown extends StatefulWidget {
     this.contentPadding,
     this.height = 48,
     this.width = 200,
-    this.anchor = const Aligned(
-      follower: Alignment.topLeft,
-      target: Alignment.bottomLeft,
-      offset: Offset(0, 4),
-    ),
+    required this.anchor,
     this.dividerThickness,
     this.calculateVerticalAlignment,
     this.maxHeight,
@@ -115,16 +111,12 @@ class _ArDriveTreeDropdownState extends State<ArDriveTreeDropdown> {
               child: widget.child,
             ),
           ),
-          // if (isVisible)
           SizedBox(
             height: 0,
             child: Stack(
               key: const Key('el-stack'),
               clipBehavior: Clip.none,
               children: [
-                Container(
-                  color: Colors.red,
-                ),
                 ..._buildNodesTree(
                   widget.rootNode,
                   parentKey: parentKey,
@@ -144,6 +136,13 @@ class _ArDriveTreeDropdownState extends State<ArDriveTreeDropdown> {
     final children = root.children;
     final dropDownItems = <ArDriveDropdownItem>[];
     final dropdownSubOptions = <Widget>[];
+
+    final isVisible = visibleNode == root ||
+        (visibleNode != null && root.findChildById(visibleNode!.id) != null);
+
+    if (isVisible) {
+      print('Hello! I\'m visible - $root');
+    }
 
     for (var i = 0; i < children.length; i++) {
       final node = children[i];
@@ -170,17 +169,9 @@ class _ArDriveTreeDropdownState extends State<ArDriveTreeDropdown> {
       dropDownItems.add(dropdDownOption);
 
       // Recursively build the tree children
-      if (nodeHasChildren) {
+      if (nodeHasChildren && isVisible) {
         dropdownSubOptions.addAll(_buildNodesTree(node, parentKey: optionKey));
       }
-    }
-
-    final isVisible = visibleNode == root ||
-        (visibleNode != null && root.findChildById(visibleNode!.id) != null);
-
-    if (isVisible) {
-      // dropdownHeight = dropDownItems.length * widget.height;
-      print('Hello! I\'m visible - $root');
     }
 
     final PositionedPortalTarget positionedPortalTarget =
@@ -305,9 +296,32 @@ class _PositionedPortalTargetState extends State<PositionedPortalTarget> {
         final parentRenderBox =
             widget.parentKey?.currentContext?.findRenderObject() as RenderBox?;
 
+        _size = parentRenderBox?.size ?? Size.zero;
+
+        // TODO: cleanup
         _parentPosition =
             parentRenderBox?.localToGlobal(Offset.zero) ?? Offset.zero;
-        _size = parentRenderBox?.size ?? Size.zero;
+        _parentPosition = (context.findRenderObject() as RenderBox?)
+                ?.globalToLocal(_parentPosition) ??
+            Offset.zero;
+        // _parentPosition = Offset(
+        //   _parentPosition.dx,
+        //   _parentPosition.dy,
+        // ); // this one is bad
+
+        // _parentPosition = widget.parentKey?.currentContext?.size?.topLeft(
+        //       Offset.zero,
+        //     ) ??
+        //     Offset.zero; // This one looks almost good
+
+        // final parentOffset = parentRenderBox?.localToGlobal(Offset.zero) ??
+        //     Offset.zero; // not so bad but not what I want
+        // _parentPosition =
+        //     parentRenderBox?.globalToLocal(parentOffset) ?? Offset.zero;
+
+        // _parentPosition =
+        //     (context.findRenderObject() as RenderBox?)?.semanticBounds ??
+        //         Rect.zero;
 
         print(
             'Parent ($parentRenderBox) render box: $_parentPosition, size: $_size');
@@ -321,7 +335,7 @@ class _PositionedPortalTargetState extends State<PositionedPortalTarget> {
   Widget build(BuildContext context) {
     return Positioned(
       left: _parentPosition.dx,
-      right: _parentPosition.dy,
+      top: _parentPosition.dy,
       child: PortalTarget(
         visible: widget.visible,
         anchor: _anchor,
