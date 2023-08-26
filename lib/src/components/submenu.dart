@@ -6,8 +6,14 @@ class ArDriveSubmenuItem {
   final List<ArDriveSubmenuItem>? children;
   final Function? onClick;
   final MenuController menuController = MenuController();
+  final bool isDisabled;
 
-  ArDriveSubmenuItem({required this.widget, this.children, this.onClick});
+  ArDriveSubmenuItem({
+    required this.widget,
+    this.children,
+    this.onClick,
+    this.isDisabled = false,
+  });
 }
 
 class ArDriveSubmenu extends StatefulWidget {
@@ -50,9 +56,12 @@ class _ArDriveSubmenuState extends State<ArDriveSubmenu> {
     for (final element in menuChildren) {
       if (element.children == null) {
         children.add(ArDriveMenuWidget(
+          isDisabled: element.isDisabled,
           onClick: () {
-            element.onClick?.call();
-            topMenuController.close();
+            if (!element.isDisabled) {
+              element.onClick?.call();
+              topMenuController.close();
+            }
           },
           parentMenuController: topMenuController,
           menuController: element.menuController,
@@ -69,18 +78,24 @@ class _ArDriveSubmenuState extends State<ArDriveSubmenu> {
   Widget _buildMenuItem(
       ArDriveSubmenuItem item, MenuController menuController) {
     return ArDriveMenuWidget(
+      isDisabled: item.isDisabled,
       onClick: () {
-        item.onClick?.call();
-        menuController.close();
+        if (!item.isDisabled) {
+          item.onClick?.call();
+          menuController.close();
+        }
       },
       parentMenuController: menuController,
       menuController: item.menuController,
       menuChildren: item.children!.map((e) {
         if (e.children == null) {
           return ArDriveMenuWidget(
+            isDisabled: e.isDisabled,
             onClick: () {
-              e.onClick?.call();
-              topMenuController.close();
+              if (!e.isDisabled) {
+                e.onClick?.call();
+                topMenuController.close();
+              }
             },
             parentMenuController: item.menuController,
             menuController: e.menuController,
@@ -104,6 +119,7 @@ class ArDriveMenuWidget extends StatefulWidget {
     required this.menuController,
     this.onClick,
     this.alignmentOffset = Offset.zero,
+    this.isDisabled = false,
   });
 
   final Widget child;
@@ -112,6 +128,7 @@ class ArDriveMenuWidget extends StatefulWidget {
   final MenuController menuController;
   final Function? onClick;
   final Offset alignmentOffset;
+  final bool isDisabled;
 
   @override
   State<ArDriveMenuWidget> createState() => _ArDriveMenuWidgetState();
@@ -126,19 +143,21 @@ class _ArDriveMenuWidgetState extends State<ArDriveMenuWidget> {
       menuChildren: widget.menuChildren,
       child: GestureDetector(
         onTap: () {
-          widget.onClick?.call();
-          if (widget.menuChildren.isEmpty &&
-              widget.parentMenuController != null) {
-            widget.parentMenuController!.close();
-            return;
-          }
+          if (!widget.isDisabled) {
+            widget.onClick?.call();
+            if (widget.menuChildren.isEmpty &&
+                widget.parentMenuController != null) {
+              widget.parentMenuController!.close();
+              return;
+            }
 
-          if (widget.menuController.isOpen) {
-            widget.menuController.close();
-            return;
-          }
+            if (widget.menuController.isOpen) {
+              widget.menuController.close();
+              return;
+            }
 
-          widget.menuController.open();
+            widget.menuController.open();
+          }
         },
         child: ArDriveClickArea(child: widget.child),
       ),
