@@ -159,7 +159,10 @@ class _ArDriveMenuWidgetState extends State<ArDriveMenuWidget> {
             widget.menuController.open();
           }
         },
-        child: ArDriveClickArea(child: widget.child),
+        child: ArDriveClickArea(
+          showCursor: !widget.isDisabled,
+          child: widget.child,
+        ),
       ),
     );
   }
