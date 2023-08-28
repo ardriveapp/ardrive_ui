@@ -378,11 +378,14 @@ class _ArDriveDataTableState<T extends IndexedItem>
                 child: Row(
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    Padding(
-                      padding: const EdgeInsets.only(right: 4),
-                      child: Text(
-                        widget.columns[index].title,
-                        style: ArDriveTypography.body.buttonNormalBold(),
+                    Flexible(
+                      child: Padding(
+                        padding: const EdgeInsets.only(right: 4),
+                        child: Text(
+                          widget.columns[index].title,
+                          style: ArDriveTypography.body.buttonNormalBold(),
+                          overflow: TextOverflow.ellipsis,
+                        ),
                       ),
                     ),
                     if (_sortedColumn == index)
