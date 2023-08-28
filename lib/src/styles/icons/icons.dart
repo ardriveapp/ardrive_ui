@@ -421,4 +421,10 @@ class ArDriveIcons {
         size: size,
         color: color,
       );
+
+  static ArDriveIcon cloudSync({double? size, Color? color}) => ArDriveIcon(
+        icon: Icons.cloud_sync,
+        size: size,
+        color: color,
+      );
 }
