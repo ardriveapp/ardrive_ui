@@ -447,14 +447,21 @@ class ArDriveStandardModal extends StatelessWidget {
               maxHeight: buttonActionHeight,
               backgroundColor:
                   ArDriveTheme.of(context).themeData.colors.themeFgDefault,
-              fontStyle: ArDriveTypography.body.buttonNormalRegular(
-                color: actions.length > 2
-                    ? ArDriveTheme.of(context).themeData.colors.themeFgDefault
-                    : ArDriveTheme.of(context)
-                        .themeData
-                        .colors
-                        .themeAccentSubtle,
-              ),
+              fontStyle: ArDriveTypography.body
+                  .buttonNormalRegular(
+                    color: actions.length > 2
+                        ? ArDriveTheme.of(context)
+                            .themeData
+                            .colors
+                            .themeFgDefault
+                        : ArDriveTheme.of(context)
+                            .themeData
+                            .colors
+                            .themeAccentSubtle,
+                  )
+                  .copyWith(
+                    fontWeight: FontWeight.w700,
+                  ),
               isDisabled: !actions[2].isEnable,
               text: actions[2].title,
               onPressed: actions[2].action,
