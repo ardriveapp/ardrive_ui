@@ -46,17 +46,12 @@ class ArDriveDropdown extends StatefulWidget {
 class _ArDriveDropdownState extends State<ArDriveDropdown> {
   bool visible = false;
   late Anchor _anchor;
-  ScrollController? _scrollController;
 
   double dropdownHeight = 0;
 
   @override
   void initState() {
     _anchor = widget.anchor;
-
-    if (widget.showScrollbars) {
-      _scrollController = ScrollController();
-    }
 
     super.initState();
   }
