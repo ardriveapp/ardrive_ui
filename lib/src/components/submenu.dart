@@ -43,6 +43,13 @@ class _ArDriveSubmenuState extends State<ArDriveSubmenu> {
   @override
   Widget build(BuildContext context) {
     return ArDriveMenuWidget(
+      onClick: () {
+        if (topMenuController.isOpen) {
+          topMenuController.close();
+        } else {
+          topMenuController.open();
+        }
+      },
       menuController: topMenuController,
       menuChildren: _buildMenu(widget.menuChildren),
       alignmentOffset: widget.alignmentOffset,
@@ -55,19 +62,19 @@ class _ArDriveSubmenuState extends State<ArDriveSubmenu> {
 
     for (final element in menuChildren) {
       if (element.children == null) {
-        children.add(ArDriveMenuWidget(
-          isDisabled: element.isDisabled,
-          onClick: () {
-            if (!element.isDisabled) {
+        children.add(
+          ArDriveMenuWidget(
+            isDisabled: element.isDisabled,
+            onClick: () {
               element.onClick?.call();
               topMenuController.close();
-            }
-          },
-          parentMenuController: topMenuController,
-          menuController: element.menuController,
-          menuChildren: const [],
-          child: element.widget,
-        ));
+            },
+            parentMenuController: topMenuController,
+            menuController: element.menuController,
+            menuChildren: const [],
+            child: element.widget,
+          ),
+        );
         continue;
       }
       children.add(_buildMenuItem(element, element.menuController));
@@ -76,34 +83,37 @@ class _ArDriveSubmenuState extends State<ArDriveSubmenu> {
   }
 
   Widget _buildMenuItem(
-      ArDriveSubmenuItem item, MenuController menuController) {
+      ArDriveSubmenuItem item, MenuController parentMenuController) {
     return ArDriveMenuWidget(
       isDisabled: item.isDisabled,
       onClick: () {
-        if (!item.isDisabled) {
+        if (item.children == null || item.children!.isEmpty) {
           item.onClick?.call();
-          menuController.close();
+        } else {
+          if (item.menuController.isOpen) {
+            item.menuController.close();
+          } else {
+            item.menuController.open();
+          }
         }
       },
-      parentMenuController: menuController,
+      parentMenuController: parentMenuController,
       menuController: item.menuController,
-      menuChildren: item.children!.map((e) {
-        if (e.children == null) {
+      menuChildren: item.children!.map((subMenuLeaf) {
+        if (subMenuLeaf.children == null) {
           return ArDriveMenuWidget(
-            isDisabled: e.isDisabled,
+            isDisabled: subMenuLeaf.isDisabled,
             onClick: () {
-              if (!e.isDisabled) {
-                e.onClick?.call();
-                topMenuController.close();
-              }
+              subMenuLeaf.onClick?.call();
+              topMenuController.close();
             },
             parentMenuController: item.menuController,
-            menuController: e.menuController,
+            menuController: subMenuLeaf.menuController,
             menuChildren: const [],
-            child: e.widget,
+            child: subMenuLeaf.widget,
           );
         }
-        return _buildMenuItem(e, e.menuController);
+        return _buildMenuItem(subMenuLeaf, subMenuLeaf.menuController);
       }).toList(),
       child: ArDriveClickArea(child: item.widget),
     );
@@ -145,18 +155,6 @@ class _ArDriveMenuWidgetState extends State<ArDriveMenuWidget> {
         onTap: () {
           if (!widget.isDisabled) {
             widget.onClick?.call();
-            if (widget.menuChildren.isEmpty &&
-                widget.parentMenuController != null) {
-              widget.parentMenuController!.close();
-              return;
-            }
-
-            if (widget.menuController.isOpen) {
-              widget.menuController.close();
-              return;
-            }
-
-            widget.menuController.open();
           }
         },
         child: ArDriveClickArea(
