@@ -27,7 +27,9 @@ WidgetbookCategory modals() {
                         ? 'None'
                         : option.length == 1
                             ? 'One'
-                            : 'Two',
+                            : option.length == 2
+                                ? 'Two'
+                                : 'Three',
                     options: [
                       [],
                       [
@@ -50,6 +52,26 @@ WidgetbookCategory modals() {
                             print('action 2');
                           },
                           title: 'Action 2',
+                        ),
+                      ],
+                      [
+                        ModalAction(
+                          action: () {
+                            print('action 1');
+                          },
+                          title: 'Action 1',
+                        ),
+                        ModalAction(
+                          action: () {
+                            print('action 2');
+                          },
+                          title: 'Action 2',
+                        ),
+                        ModalAction(
+                          action: () {
+                            print('action 3');
+                          },
+                          title: 'Action 3',
                         ),
                       ]
                     ]),
@@ -87,15 +109,16 @@ WidgetbookCategory modals() {
                 content: context.knobs.text(
                     label: 'content', initialValue: 'You created a new drive.'),
                 leading: context.knobs.options(
-                    label: 'leading',
-                    labelBuilder: (value) => value == null ? 'null' : 'Icon',
-                    options: [
-                      null,
-                      const ArDriveIcon(
-                        icon: ArDriveIconsData.triangle,
-                        color: Colors.red,
-                      ),
-                    ]),
+                  label: 'leading',
+                  labelBuilder: (value) => value == null ? 'null' : 'Icon',
+                  options: [
+                    null,
+                    const ArDriveIcon(
+                      icon: ArDriveIconsData.triangle,
+                      color: Colors.red,
+                    ),
+                  ],
+                ),
               );
               return Scaffold(
                 body: Center(

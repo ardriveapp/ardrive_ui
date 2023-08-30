@@ -46,17 +46,12 @@ class ArDriveDropdown extends StatefulWidget {
 class _ArDriveDropdownState extends State<ArDriveDropdown> {
   bool visible = false;
   late Anchor _anchor;
-  ScrollController? _scrollController;
 
   double dropdownHeight = 0;
 
   @override
   void initState() {
     _anchor = widget.anchor;
-
-    if (widget.showScrollbars) {
-      _scrollController = ScrollController();
-    }
 
     super.initState();
   }
@@ -104,53 +99,63 @@ class _ArDriveDropdownState extends State<ArDriveDropdown> {
       anchor: _anchor,
       content: _ArDriveDropdownContent(
         height: dropdownHeight,
-        child: ArDriveScrollBar(
-          controller: _scrollController,
-          isVisible: widget.showScrollbars,
-          child: ArDriveCard(
-            border: Border.all(
+        child: ArDriveCard(
+          border: Border.all(
+            color: ArDriveTheme.of(context)
+                .themeData
+                .dropdownTheme
+                .backgroundColor,
+            width: 1,
+          ),
+          boxShadow: BoxShadowCard.shadow80,
+          elevation: 5,
+          contentPadding: widget.contentPadding ?? EdgeInsets.zero,
+          content: SingleChildScrollView(
+            child: Container(
               color: ArDriveTheme.of(context)
                   .themeData
                   .dropdownTheme
                   .backgroundColor,
-              width: 1,
-            ),
-            boxShadow: BoxShadowCard.shadow80,
-            elevation: 5,
-            contentPadding: widget.contentPadding ?? EdgeInsets.zero,
-            content: SizedBox(
-              width: widget.width,
-              child: SingleChildScrollView(
-                controller: _scrollController,
+              child: IntrinsicWidth(
                 child: Column(
-                  children: List.generate(widget.items.length, (index) {
-                    return Column(
-                      children: [
-                        GestureDetector(
+                  mainAxisSize: MainAxisSize.min,
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    Column(
+                      children: List.generate(widget.items.length, (index) {
+                        return GestureDetector(
                           onTap: () {
                             widget.items[index].onClick?.call();
                             setState(() {
-                              visible = false;
+                              visible = !visible;
                             });
                           },
-                          child: SizedBox(
-                            width: widget.width,
-                            height: widget.height,
-                            child: widget.items[index],
+                          child: ArDriveHoverWidget(
+                            child: Row(
+                              mainAxisSize: MainAxisSize.max,
+                              children: [
+                                Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    widget.items[index],
+                                    if (index != widget.items.length - 1)
+                                      Divider(
+                                        height: 0,
+                                        thickness: widget.dividerThickness ?? 1,
+                                        color: ArDriveTheme.of(context)
+                                            .themeData
+                                            .colors
+                                            .themeBorderDefault,
+                                      ),
+                                  ],
+                                ),
+                              ],
+                            ),
                           ),
-                        ),
-                        if (index != widget.items.length - 1)
-                          Divider(
-                            height: 0,
-                            thickness: widget.dividerThickness ?? 1,
-                            color: ArDriveTheme.of(context)
-                                .themeData
-                                .colors
-                                .themeBorderDefault,
-                          ),
-                      ],
-                    );
-                  }),
+                        );
+                      }),
+                    ),
+                  ],
                 ),
               ),
             ),
@@ -188,7 +193,6 @@ class _ArDriveDropdownContentState extends State<_ArDriveDropdownContent>
     with TickerProviderStateMixin {
   late AnimationController _animationController;
   late Animation<double> _animation;
-  double _height = 0;
 
   @override
   void initState() {
@@ -198,12 +202,7 @@ class _ArDriveDropdownContentState extends State<_ArDriveDropdownContent>
       duration: const Duration(milliseconds: 200),
     );
     _animation = Tween<double>(begin: 0, end: widget.height)
-        .animate(_animationController)
-      ..addListener(() {
-        setState(() {
-          _height = _animation.value;
-        });
-      });
+        .animate(_animationController);
     _animationController.forward();
   }
 
@@ -215,9 +214,26 @@ class _ArDriveDropdownContentState extends State<_ArDriveDropdownContent>
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
-      height: _height,
-      child: widget.child,
+    return LayoutBuilder(
+      builder: (BuildContext context, BoxConstraints constraints) {
+        return ArDriveScrollBar(
+          isVisible: false,
+          child: SingleChildScrollView(
+            child: AnimatedBuilder(
+              animation: _animation,
+              builder: (context, child) {
+                double maxHeight = constraints.maxHeight;
+                double currentHeight = _animation.value.clamp(0.0, maxHeight);
+                return SizedBox(
+                  height: currentHeight,
+                  child: child,
+                );
+              },
+              child: widget.child,
+            ),
+          ),
+        );
+      },
     );
   }
 }
@@ -346,21 +362,44 @@ class _ArDriveDropdownItemState extends State<ArDriveDropdownItem> {
   bool hovering = false;
   @override
   Widget build(BuildContext context) {
+    return widget.content;
+  }
+}
+
+class ArDriveHoverWidget extends StatefulWidget {
+  const ArDriveHoverWidget({
+    super.key,
+    required this.child,
+    this.showMouseCursor = true,
+  });
+
+  final Widget child;
+  final bool showMouseCursor;
+
+  @override
+  State<ArDriveHoverWidget> createState() => _ArDriveHoverWidgetState();
+}
+
+class _ArDriveHoverWidgetState extends State<ArDriveHoverWidget> {
+  bool hovering = false;
+
+  @override
+  Widget build(BuildContext context) {
     final theme = ArDriveTheme.of(context).themeData.dropdownTheme;
 
     return MouseRegion(
-      cursor: widget.onClick != null
+      cursor: widget.showMouseCursor
           ? SystemMouseCursors.click
           : SystemMouseCursors.basic,
       onHover: (event) {
-        if (widget.onClick != null) {
+        if (widget.showMouseCursor) {
           setState(() {
             hovering = true;
           });
         }
       },
       onExit: (event) {
-        if (widget.onClick != null) {
+        if (widget.showMouseCursor) {
           setState(() {
             hovering = false;
           });
@@ -368,8 +407,7 @@ class _ArDriveDropdownItemState extends State<ArDriveDropdownItem> {
       },
       child: Container(
         color: hovering ? theme.hoverColor : theme.backgroundColor,
-        // alignment: Alignment.center,
-        child: widget.content,
+        child: widget.child,
       ),
     );
   }
