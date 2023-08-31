@@ -406,7 +406,7 @@ class _ArDriveHoverWidgetState extends State<ArDriveHoverWidget> {
         }
       },
       child: Container(
-        color: hovering ? theme.hoverColor : theme.backgroundColor,
+        color: hovering ? theme.hoverColor : null,
         child: widget.child,
       ),
     );
