@@ -89,6 +89,8 @@ class _ArDriveDropdownState extends State<ArDriveDropdown> {
   Widget build(BuildContext context) {
     dropdownHeight = widget.maxHeight ?? widget.items.length * widget.height;
 
+    final dropdownTheme = ArDriveTheme.of(context).themeData.dropdownTheme;
+
     return ArDriveOverlay(
       onVisibleChange: (value) {
         setState(() {
@@ -131,6 +133,8 @@ class _ArDriveDropdownState extends State<ArDriveDropdown> {
                             });
                           },
                           child: ArDriveHoverWidget(
+                            hoverColor: dropdownTheme.hoverColor,
+                            defaultColor: dropdownTheme.backgroundColor,
                             child: Row(
                               mainAxisSize: MainAxisSize.max,
                               children: [
@@ -371,10 +375,14 @@ class ArDriveHoverWidget extends StatefulWidget {
     super.key,
     required this.child,
     this.showMouseCursor = true,
+    required this.hoverColor,
+    required this.defaultColor,
   });
 
   final Widget child;
   final bool showMouseCursor;
+  final Color? hoverColor;
+  final Color? defaultColor;
 
   @override
   State<ArDriveHoverWidget> createState() => _ArDriveHoverWidgetState();
@@ -385,8 +393,6 @@ class _ArDriveHoverWidgetState extends State<ArDriveHoverWidget> {
 
   @override
   Widget build(BuildContext context) {
-    final theme = ArDriveTheme.of(context).themeData.dropdownTheme;
-
     return MouseRegion(
       cursor: widget.showMouseCursor
           ? SystemMouseCursors.click
@@ -406,7 +412,7 @@ class _ArDriveHoverWidgetState extends State<ArDriveHoverWidget> {
         }
       },
       child: Container(
-        color: hovering ? theme.hoverColor : theme.backgroundColor,
+        color: hovering ? widget.hoverColor : widget.defaultColor,
         child: widget.child,
       ),
     );
