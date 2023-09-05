@@ -310,7 +310,7 @@ class ArDriveStandardModal extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     late double maxWidth;
-    final deviceWidth = MediaQuery.of(context).size.width;
+    final deviceWidth = 600.0;
 
     if (deviceWidth < modalStandardMaxWidthSize) {
       maxWidth = deviceWidth;
@@ -490,7 +490,8 @@ Future<void> showAnimatedDialog(
   required Widget content,
   Color? barrierColor,
 }) {
-  final lowScreenWarning = MediaQuery.of(context).size.height < 600;
+  final lowScreenWarning = false;
+  // MediaQuery.of(context).size.height < 600;
 
   return showGeneralDialog(
     context: context,
