@@ -37,6 +37,7 @@ class ArDriveDataTable<T extends IndexedItem> extends StatefulWidget {
     this.onChangeMultiSelecting,
     this.forceDisableMultiSelect = false,
     this.lockMultiSelect = false,
+    this.onRowDoubleTap,
   });
 
   final List<TableColumn> columns;
@@ -53,6 +54,7 @@ class ArDriveDataTable<T extends IndexedItem> extends StatefulWidget {
   final String rowsPerPageText;
   final Function(List<MultiSelectBox<T>> selectedRows)? onSelectedRows;
   final Function(T row)? onRowTap;
+  final Function(T row)? onRowDoubleTap;
   final Function(bool onChangeMultiSelecting)? onChangeMultiSelecting;
   final bool forceDisableMultiSelect;
   final bool lockMultiSelect;
@@ -743,6 +745,9 @@ class _ArDriveDataTableState<T extends IndexedItem>
     final multiselect = getMultiSelectBox();
 
     return GestureDetector(
+      onDoubleTap: () {
+        widget.onRowDoubleTap?.call(row);
+      },
       onTap: () {
         if (_isMultiSelecting) {
           _onChangeItemCheck(
