@@ -557,6 +557,7 @@ class _ArDriveDataTableState<T extends IndexedItem>
   }) {
     setState(
       () {
+        final wasMultiSelecting = _isMultiSelecting;
         if (row != null && index != null) {
           _selectMultiSelectItem(row, index, value);
         }
@@ -565,12 +566,11 @@ class _ArDriveDataTableState<T extends IndexedItem>
             !value &&
             getMultiSelectBox().selectedItems.isEmpty) {
           _isMultiSelectingWithLongPress = false;
+        }
 
-          if (widget.onChangeMultiSelecting != null) {
-            widget.onChangeMultiSelecting!(_isMultiSelecting);
-          }
-
-          return;
+        if (wasMultiSelecting != _isMultiSelecting &&
+            widget.onChangeMultiSelecting != null) {
+          widget.onChangeMultiSelecting!(_isMultiSelecting);
         }
       },
     );
