@@ -14,7 +14,6 @@
 ///
 ///
 import 'package:flutter/widgets.dart';
-// ignore_for_file: constant_identifier_names
 
 class ArDriveIconsData {
   ArDriveIconsData._();
@@ -24,9 +23,9 @@ class ArDriveIconsData {
 
   static const IconData icon_add_drive =
       IconData(0xe800, fontFamily: _kFontFam, fontPackage: _kFontPkg);
-  static const IconData icon_new_folder1 =
+  static const IconData icon_new_folder1_2 =
       IconData(0xe801, fontFamily: _kFontFam, fontPackage: _kFontPkg);
-  static const IconData icon_upload_folder1 =
+  static const IconData icon_upload_folder1_2 =
       IconData(0xe802, fontFamily: _kFontFam, fontPackage: _kFontPkg);
   static const IconData icon_upload_files =
       IconData(0xe803, fontFamily: _kFontFam, fontPackage: _kFontPkg);
@@ -100,9 +99,9 @@ class ArDriveIconsData {
       IconData(0xe825, fontFamily: _kFontFam, fontPackage: _kFontPkg);
   static const IconData hdd =
       IconData(0xe826, fontFamily: _kFontFam, fontPackage: _kFontPkg);
-  static const IconData icon_new_folder =
+  static const IconData icon_new_folder1 =
       IconData(0xe827, fontFamily: _kFontFam, fontPackage: _kFontPkg);
-  static const IconData icon_upload_folder =
+  static const IconData icon_upload_folder1 =
       IconData(0xe828, fontFamily: _kFontFam, fontPackage: _kFontPkg);
   static const IconData image =
       IconData(0xe829, fontFamily: _kFontFam, fontPackage: _kFontPkg);
@@ -144,4 +143,14 @@ class ArDriveIconsData {
       IconData(0xe83b, fontFamily: _kFontFam, fontPackage: _kFontPkg);
   static const IconData zip =
       IconData(0xe83c, fontFamily: _kFontFam, fontPackage: _kFontPkg);
+  static const IconData keypad =
+      IconData(0xe83d, fontFamily: _kFontFam, fontPackage: _kFontPkg);
+  static const IconData detach =
+      IconData(0xe841, fontFamily: _kFontFam, fontPackage: _kFontPkg);
+  static const IconData pin_circle =
+      IconData(0xe844, fontFamily: _kFontFam, fontPackage: _kFontPkg);
+  static const IconData pin_no_circle =
+      IconData(0xe845, fontFamily: _kFontFam, fontPackage: _kFontPkg);
+  static const IconData arrow_download =
+      IconData(0xe880, fontFamily: _kFontFam, fontPackage: _kFontPkg);
 }
