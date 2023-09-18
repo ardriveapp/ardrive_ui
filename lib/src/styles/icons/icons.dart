@@ -427,4 +427,10 @@ class ArDriveIcons {
         size: size,
         color: color,
       );
+
+  static ArDriveIcon detach({double? size, Color? color}) => ArDriveIcon(
+        icon: ArDriveIconsData.detach,
+        size: size,
+        color: color,
+      );
 }
