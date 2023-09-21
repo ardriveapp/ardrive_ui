@@ -389,8 +389,9 @@ class ArDriveStandardModal extends StatelessWidget {
   }
 
   Widget _buildActions(List<ModalAction> actions, BuildContext context) {
-    return Row(
-      mainAxisSize: MainAxisSize.min,
+    return Wrap(
+      alignment: WrapAlignment.end,
+      runSpacing: 8,
       children: [
         if (actions.isNotEmpty)
           ArDriveButton(
