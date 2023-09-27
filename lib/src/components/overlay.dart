@@ -12,7 +12,6 @@ class ArDriveDropdown extends StatefulWidget {
     required this.child,
     this.contentPadding,
     this.height = 48,
-    this.width = 200,
     this.anchor = const Aligned(
       follower: Alignment.topLeft,
       target: Alignment.bottomLeft,
@@ -26,7 +25,6 @@ class ArDriveDropdown extends StatefulWidget {
   });
 
   final double height;
-  final double width;
   final List<ArDriveDropdownItem> items;
   final Widget child;
   final EdgeInsets? contentPadding;

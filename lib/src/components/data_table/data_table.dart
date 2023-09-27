@@ -931,7 +931,6 @@ class _PaginationSelectState extends State<PaginationSelect> {
   @override
   Widget build(BuildContext context) {
     return ArDriveDropdown(
-      width: 100,
       anchor: const Aligned(
         follower: Alignment.bottomLeft,
         target: Alignment.bottomRight,
