@@ -21,6 +21,10 @@ dependencies:
 
 dependency_overrides:
   widgetbook_core: 3.0.0-beta.8
+  file_picker:
+    git:
+      url: https://github.com/ar-io/flutter_file_picker
+      ref: a4902ec620ba28c484bf84a0cea4669f3d3698fe
 
 dev_dependencies:
   flutter_test:
