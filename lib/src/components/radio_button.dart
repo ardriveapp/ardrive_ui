@@ -41,10 +41,23 @@ class ArDriveRadioButtonGroup extends StatefulWidget {
 }
 
 class _ArDriveRadioButtonGroupState extends State<ArDriveRadioButtonGroup> {
-  late final List<ValueNotifier<RadioButtonOptions>> _options;
+  List<ValueNotifier<RadioButtonOptions>>? _options;
+
+  List<ValueNotifier<RadioButtonOptions>> get options => _options!;
 
   @override
   void initState() {
+    _refreshOptions();
+    super.initState();
+  }
+
+  @override
+  didUpdateWidget(covariant ArDriveRadioButtonGroup oldWidget) {
+    _refreshOptions();
+    super.didUpdateWidget(oldWidget);
+  }
+
+  _refreshOptions() {
     _options = List.generate(
       widget.options.length,
       (i) => ValueNotifier(
@@ -59,9 +72,7 @@ class _ArDriveRadioButtonGroupState extends State<ArDriveRadioButtonGroup> {
     );
 
     /// Can't have more than 1 checked at the time
-    assert(_options.where((element) => element.value.value).length < 2);
-
-    super.initState();
+    assert(options.where((element) => element.value.value).length < 2);
   }
 
   @override
@@ -76,39 +87,39 @@ class _ArDriveRadioButtonGroupState extends State<ArDriveRadioButtonGroup> {
               return widget.builder(
                 i,
                 ArDriveRadioButton(
-                  content: _options[i].value.content,
+                  content: options[i].value.content,
                   size: widget.size,
-                  textStyle: _options[i].value.textStyle,
-                  isEnabled: _options[i].value.isEnabled,
+                  textStyle: options[i].value.textStyle,
+                  isEnabled: options[i].value.isEnabled,
                   isFromAGroup: true,
-                  value: _options[i].value.value,
-                  text: _options[i].value.text,
+                  value: options[i].value.value,
+                  text: options[i].value.text,
                   onChange: (value) async {
                     if (!value) {
                       return;
                     }
 
-                    for (int j = 0; j < _options.length; j++) {
+                    for (int j = 0; j < options.length; j++) {
                       if (j == i) {
                         continue;
                       }
-                      if (_options[j].value.value) {
-                        _options[j].value = RadioButtonOptions(
-                          isEnabled: _options[j].value.isEnabled,
+                      if (options[j].value.value) {
+                        options[j].value = RadioButtonOptions(
+                          isEnabled: options[j].value.isEnabled,
                           value: false,
-                          text: _options[j].value.text,
-                          content: _options[j].value.content,
-                          textStyle: _options[j].value.textStyle,
+                          text: options[j].value.text,
+                          content: options[j].value.content,
+                          textStyle: options[j].value.textStyle,
                         );
                       }
                     }
 
-                    _options[i].value = RadioButtonOptions(
-                      isEnabled: _options[i].value.isEnabled,
+                    options[i].value = RadioButtonOptions(
+                      isEnabled: options[i].value.isEnabled,
                       value: value,
-                      text: _options[i].value.text,
-                      content: _options[i].value.content,
-                      textStyle: _options[i].value.textStyle,
+                      text: options[i].value.text,
+                      content: options[i].value.content,
+                      textStyle: options[i].value.textStyle,
                     );
 
                     widget.onChanged?.call(i, value);
@@ -116,11 +127,11 @@ class _ArDriveRadioButtonGroupState extends State<ArDriveRadioButtonGroup> {
                 ),
               );
             },
-            valueListenable: _options[i],
+            valueListenable: options[i],
           ),
         );
       },
-      itemCount: _options.length,
+      itemCount: options.length,
       shrinkWrap: true,
     );
   }

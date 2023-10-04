@@ -1,7 +1,7 @@
 name: ardrive_ui
 description: UI Design Library for the ArDrive Design System
 
-version: 1.11.0
+version: 1.12.0
 
 publish_to: "none"
 
@@ -28,6 +28,10 @@ dependencies:
 
 dependency_overrides:
   flutter_downloader: 1.10.4
+  file_picker:
+    git:
+      url: https://github.com/ar-io/flutter_file_picker
+      ref: a4902ec620ba28c484bf84a0cea4669f3d3698fe
 
 dev_dependencies:
   flutter_test:
