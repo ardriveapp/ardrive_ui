@@ -1,6 +1,7 @@
 export 'package:flutter_svg_image/flutter_svg_image.dart';
 
 export 'components/accordion.dart';
+export 'components/submenu.dart';
 export 'components/button.dart';
 export 'components/card.dart';
 export 'components/check_box.dart';
@@ -8,6 +9,7 @@ export 'components/click_area.dart';
 export 'components/data_table/data_table.dart';
 export 'components/drop_area.dart';
 export 'components/fab.dart';
+export 'components/feedback_message.dart';
 export 'components/image.dart';
 export 'components/modal.dart';
 export 'components/overlay.dart';

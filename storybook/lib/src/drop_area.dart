@@ -3,7 +3,7 @@ import 'package:storybook/src/ardrive_app_base.dart';
 import 'package:widgetbook/widgetbook.dart';
 
 WidgetbookCategory dropArea() {
-  return WidgetbookCategory(name: 'DropArea', widgets: [
+  return WidgetbookCategory(name: 'DropArea', children: [
     WidgetbookComponent(name: 'DropArea', useCases: [
       WidgetbookUseCase(
         name: 'DropArea',

@@ -393,4 +393,44 @@ class ArDriveIcons {
         size: size,
         color: color,
       );
+
+  // keypad
+  static ArDriveIcon keypad({double? size, Color? color}) => ArDriveIcon(
+        icon: ArDriveIconsData.keypad,
+        size: size,
+        color: color,
+      );
+
+  // pin
+  static ArDriveIcon pinNoCircle({double? size, Color? color}) => ArDriveIcon(
+        icon: ArDriveIconsData.pin_no_circle,
+        size: size,
+        color: color,
+      );
+
+  // pin with circle
+  static ArDriveIcon pinWithCircle({double? size, Color? color}) => ArDriveIcon(
+        icon: ArDriveIconsData.pin_circle,
+        size: size,
+        color: color,
+      );
+
+  // arrow-download
+  static ArDriveIcon arrowDownload({double? size, Color? color}) => ArDriveIcon(
+        icon: ArDriveIconsData.arrow_download,
+        size: size,
+        color: color,
+      );
+
+  static ArDriveIcon cloudSync({double? size, Color? color}) => ArDriveIcon(
+        icon: Icons.cloud_sync,
+        size: size,
+        color: color,
+      );
+
+  static ArDriveIcon detach({double? size, Color? color}) => ArDriveIcon(
+        icon: ArDriveIconsData.detach,
+        size: size,
+        color: color,
+      );
 }

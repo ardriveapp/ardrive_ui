@@ -21,10 +21,8 @@ class ArDriveModal extends StatelessWidget {
     return ConstrainedBox(
       constraints: constraints,
       child: ArDriveCard(
-        content: Padding(
-          padding: contentPadding,
-          child: content,
-        ),
+        contentPadding: contentPadding,
+        content: content,
         boxShadow: BoxShadowCard.shadow80,
       ),
     );
@@ -99,12 +97,16 @@ class ArDriveIconModal extends StatelessWidget {
                   style: ArDriveButtonStyle.secondary,
                   backgroundColor:
                       ArDriveTheme.of(context).themeData.colors.themeFgDefault,
-                  fontStyle: ArDriveTypography.body.buttonNormalRegular(
-                    color: ArDriveTheme.of(context)
-                        .themeData
-                        .colors
-                        .themeFgDefault,
-                  ),
+                  fontStyle: ArDriveTypography.body
+                      .buttonNormalBold(
+                        color: ArDriveTheme.of(context)
+                            .themeData
+                            .colors
+                            .themeFgDefault,
+                      )
+                      .copyWith(
+                        fontWeight: FontWeight.w700,
+                      ),
                   text: actions!.first.title,
                   onPressed: actions!.first.action,
                 ),
@@ -117,12 +119,16 @@ class ArDriveIconModal extends StatelessWidget {
                           .themeData
                           .colors
                           .themeFgDefault,
-                      fontStyle: ArDriveTypography.body.buttonNormalRegular(
-                        color: ArDriveTheme.of(context)
-                            .themeData
-                            .colors
-                            .themeAccentSubtle,
-                      ),
+                      fontStyle: ArDriveTypography.body
+                          .buttonNormalBold(
+                            color: ArDriveTheme.of(context)
+                                .themeData
+                                .colors
+                                .themeAccentSubtle,
+                          )
+                          .copyWith(
+                            fontWeight: FontWeight.w700,
+                          ),
                       text: actions![1].title,
                       onPressed: actions![1].action,
                     ),
@@ -383,8 +389,9 @@ class ArDriveStandardModal extends StatelessWidget {
   }
 
   Widget _buildActions(List<ModalAction> actions, BuildContext context) {
-    return Row(
-      mainAxisSize: MainAxisSize.min,
+    return Wrap(
+      alignment: WrapAlignment.end,
+      runSpacing: 8,
       children: [
         if (actions.isNotEmpty)
           ArDriveButton(
@@ -392,9 +399,14 @@ class ArDriveStandardModal extends StatelessWidget {
             style: ArDriveButtonStyle.secondary,
             backgroundColor:
                 ArDriveTheme.of(context).themeData.colors.themeFgDefault,
-            fontStyle: ArDriveTypography.body.buttonNormalRegular(
-              color: ArDriveTheme.of(context).themeData.colors.themeFgDefault,
-            ),
+            fontStyle: ArDriveTypography.body
+                .buttonNormalBold(
+                  color:
+                      ArDriveTheme.of(context).themeData.colors.themeFgDefault,
+                )
+                .copyWith(
+                  fontWeight: FontWeight.w700,
+                ),
             text: actions.first.title,
             onPressed: actions.first.action,
           ),
@@ -408,14 +420,21 @@ class ArDriveStandardModal extends StatelessWidget {
               maxHeight: buttonActionHeight,
               backgroundColor:
                   ArDriveTheme.of(context).themeData.colors.themeFgDefault,
-              fontStyle: ArDriveTypography.body.buttonNormalRegular(
-                color: actions.length > 2
-                    ? ArDriveTheme.of(context).themeData.colors.themeFgDefault
-                    : ArDriveTheme.of(context)
-                        .themeData
-                        .colors
-                        .themeAccentSubtle,
-              ),
+              fontStyle: ArDriveTypography.body
+                  .buttonNormalRegular(
+                    color: actions.length > 2
+                        ? ArDriveTheme.of(context)
+                            .themeData
+                            .colors
+                            .themeFgDefault
+                        : ArDriveTheme.of(context)
+                            .themeData
+                            .colors
+                            .themeAccentSubtle,
+                  )
+                  .copyWith(
+                    fontWeight: FontWeight.w700,
+                  ),
               isDisabled: !actions[1].isEnable,
               text: actions[1].title,
               onPressed: actions[1].action,
@@ -429,14 +448,21 @@ class ArDriveStandardModal extends StatelessWidget {
               maxHeight: buttonActionHeight,
               backgroundColor:
                   ArDriveTheme.of(context).themeData.colors.themeFgDefault,
-              fontStyle: ArDriveTypography.body.buttonNormalRegular(
-                color: actions.length > 2
-                    ? ArDriveTheme.of(context).themeData.colors.themeFgDefault
-                    : ArDriveTheme.of(context)
-                        .themeData
-                        .colors
-                        .themeAccentSubtle,
-              ),
+              fontStyle: ArDriveTypography.body
+                  .buttonNormalRegular(
+                    color: actions.length > 2
+                        ? ArDriveTheme.of(context)
+                            .themeData
+                            .colors
+                            .themeFgDefault
+                        : ArDriveTheme.of(context)
+                            .themeData
+                            .colors
+                            .themeAccentSubtle,
+                  )
+                  .copyWith(
+                    fontWeight: FontWeight.w700,
+                  ),
               isDisabled: !actions[2].isEnable,
               text: actions[2].title,
               onPressed: actions[2].action,
@@ -463,11 +489,13 @@ Future<void> showAnimatedDialog(
   BuildContext context, {
   bool barrierDismissible = true,
   required Widget content,
+  Color? barrierColor,
 }) {
   final lowScreenWarning = MediaQuery.of(context).size.height < 600;
 
   return showGeneralDialog(
     context: context,
+    barrierColor: barrierColor ?? const Color(0x80000000),
     transitionDuration: const Duration(milliseconds: 200),
     transitionBuilder: (context, a1, a2, widget) {
       return Transform.scale(
@@ -488,6 +516,42 @@ Future<void> showAnimatedDialog(
         elevation: 0,
         backgroundColor: Colors.transparent,
         child: content,
+      );
+    },
+  );
+}
+
+Future<T?> showAnimatedDialogWithBuilder<T>(
+  BuildContext context, {
+  bool barrierDismissible = true,
+  required WidgetBuilder builder,
+  Color? barrierColor,
+}) {
+  final lowScreenWarning = MediaQuery.of(context).size.height < 600;
+
+  return showGeneralDialog<T>(
+    context: context,
+    barrierColor: barrierColor ?? const Color(0x80000000),
+    transitionDuration: const Duration(milliseconds: 200),
+    transitionBuilder: (context, a1, a2, widget) {
+      return Transform.scale(
+        scale: a1.value,
+        child: Opacity(
+          opacity: a1.value,
+          child: widget,
+        ),
+      );
+    },
+    barrierDismissible: barrierDismissible,
+    barrierLabel: '',
+    pageBuilder: (context, a1, a2) {
+      return Dialog(
+        insetPadding: lowScreenWarning
+            ? const EdgeInsets.symmetric(horizontal: 0, vertical: 8)
+            : null,
+        elevation: 0,
+        backgroundColor: Colors.transparent,
+        child: builder(context),
       );
     },
   );

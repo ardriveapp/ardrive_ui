@@ -2,6 +2,8 @@ import 'package:ardrive_ui/ardrive_ui.dart';
 import 'package:ardrive_ui/src/constants/size_constants.dart';
 import 'package:flutter/material.dart';
 
+// TODO: We only set the checked state on the initial state, to change the state the user must interact with the checkbox.
+// TODO: We may want to add a way to change the state of the checkbox from outside.
 class ArDriveCheckBox extends StatefulWidget {
   const ArDriveCheckBox({
     super.key,
@@ -9,13 +11,23 @@ class ArDriveCheckBox extends StatefulWidget {
     this.isDisabled = false,
     this.isIndeterminate = false,
     this.title,
+    this.titleStyle,
     this.onChange,
+    this.titleWidget,
   });
 
+  /// Initial state of the checkbox.
   final bool checked;
   final bool isDisabled;
+
+  /// If true, the checkbox will be rendered as indeterminate.
   final bool isIndeterminate;
   final String? title;
+
+  /// A widget that will be used as the title of the checkbox.
+  /// It only shows if [title] is null.
+  final Widget? titleWidget;
+  final TextStyle? titleStyle;
   final Function(bool value)? onChange;
 
   @override
@@ -76,8 +88,7 @@ class ArDriveCheckBoxState extends State<ArDriveCheckBox> {
         }
         widget.onChange?.call(checked);
       },
-      child: SizedBox(
-        height: 24,
+      child: ArDriveClickArea(
         child: Row(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.center,
@@ -93,7 +104,7 @@ class ArDriveCheckBoxState extends State<ArDriveCheckBox> {
                   )
                 : AnimatedContainer(
                     height: 18.5,
-                    width: 16.5,
+                    width: 18.5,
                     margin: const EdgeInsets.fromLTRB(3.25, 3.5, 5, 4),
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(checkboxBorderRadius),
@@ -112,24 +123,37 @@ class ArDriveCheckBoxState extends State<ArDriveCheckBox> {
                           )
                         : null,
                   ),
-            if (widget.title != null) ...[
-              const SizedBox(
-                width: 8,
-              ),
-              Padding(
-                padding: const EdgeInsets.only(bottom: 4.0),
-                child: Text(
-                  widget.title!,
-                  style: ArDriveTypography.body.bodyRegular(
-                    color: _textColor(),
-                  ),
-                ),
-              )
+            if (_buildTitle() != null) ...[
+              const SizedBox(width: 8.0),
+              _buildTitle()!,
             ]
           ],
         ),
       ),
     );
+  }
+
+  Widget? _buildTitle() {
+    if (widget.title != null) {
+      return Flexible(
+        child: Padding(
+          padding: const EdgeInsets.only(bottom: 4.0),
+          child: Text(
+            widget.title!,
+            style: widget.titleStyle ??
+                ArDriveTypography.body.bodyRegular(
+                  color: _textColor(),
+                ),
+          ),
+        ),
+      );
+    }
+
+    if (widget.title == null && widget.titleWidget != null) {
+      return widget.titleWidget!;
+    }
+
+    return null;
   }
 
   Color _boxColor() {

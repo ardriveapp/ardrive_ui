@@ -44,6 +44,7 @@ class _ArDriveAppState extends State<ArDriveApp> {
   void initState() {
     super.initState();
 
+    // ignore: deprecated_member_use
     var window = WidgetsBinding.instance.window;
     WidgetsBinding.instance.handlePlatformBrightnessChanged();
 
@@ -111,6 +112,7 @@ class ArDriveThemeData {
     ArDriveColors? colors,
     ArDriveShadows? shadows,
     ArDriveDropdownTheme? dropdownTheme,
+    ArDriveTextFieldTheme? textFieldTheme,
   }) {
     this.colors = colors ?? ArDriveColors();
     this.shadows = shadows ?? ArDriveShadows(this.colors);
@@ -135,6 +137,24 @@ class ArDriveThemeData {
           backgroundColor: this.colors.themeBgSurface,
           hoverColor: const Color(0xff2C2C2C),
         );
+    this.textFieldTheme = textFieldTheme ??
+        ArDriveTextFieldTheme(
+          errorColor: this.colors.themeErrorDefault,
+          successColor: this.colors.themeSuccessDefault,
+          successBorderColor: this.colors.themeSuccessEmphasis,
+          errorBorderColor: this.colors.themeErrorOnEmphasis,
+          inputDisabledBorderColor: this.colors.themeInputBorderDisabled,
+          defaultBorderColor: this.colors.themeBorderDefault,
+          labelColor: this.colors.themeFgDefault,
+          inputBackgroundColor: this.colors.themeInputBackground,
+          inputTextColor: this.colors.themeInputText,
+          inputTextStyle: ArDriveTypography.body.inputLargeRegular(
+            color: this.colors.themeInputText,
+          ),
+          inputPlaceholderColor: this.colors.themeInputPlaceholder,
+          disabledTextColor: this.colors.themeFgDisabled,
+          requiredLabelColor: this.colors.themeFgDefault,
+        );
 
     this.backgroundColor = backgroundColor ?? const Color(0xff010905);
     this.primaryColor = primaryColor ?? this.colors.themeAccentBrand;
@@ -147,10 +167,38 @@ class ArDriveThemeData {
   late ArDriveToggleTheme toggleTheme;
   late ArDriveTableTheme tableTheme;
   late ArDriveDropdownTheme dropdownTheme;
+  late ArDriveTextFieldTheme textFieldTheme;
   late ThemeData materialThemeData;
   late String name;
   late ArDriveColors colors;
   late ArDriveShadows shadows;
+
+  // copy with
+  ArDriveThemeData copyWith({
+    Color? backgroundColor,
+    Color? primaryColor,
+    ArDriveToggleTheme? toggleTheme,
+    ArDriveTableTheme? tableTheme,
+    ThemeData? materialThemeData,
+    String? name,
+    ArDriveColors? colors,
+    ArDriveShadows? shadows,
+    ArDriveDropdownTheme? dropdownTheme,
+    ArDriveTextFieldTheme? textFieldTheme,
+  }) {
+    return ArDriveThemeData(
+      backgroundColor: backgroundColor ?? this.backgroundColor,
+      primaryColor: primaryColor ?? this.primaryColor,
+      toggleTheme: toggleTheme ?? this.toggleTheme,
+      tableTheme: tableTheme ?? this.tableTheme,
+      materialThemeData: materialThemeData ?? this.materialThemeData,
+      name: name ?? this.name,
+      colors: colors ?? this.colors,
+      shadows: shadows ?? this.shadows,
+      dropdownTheme: dropdownTheme ?? this.dropdownTheme,
+      textFieldTheme: textFieldTheme ?? this.textFieldTheme,
+    );
+  }
 }
 
 ThemeData lightMaterialTheme() {

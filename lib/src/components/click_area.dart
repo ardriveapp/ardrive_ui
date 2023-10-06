@@ -17,7 +17,8 @@ class ArDriveClickArea extends StatelessWidget {
     return Tooltip(
       message: tooltip ?? '',
       child: MouseRegion(
-        cursor: showCursor ? SystemMouseCursors.click : MouseCursor.defer,
+        cursor:
+            showCursor ? SystemMouseCursors.click : SystemMouseCursors.basic,
         child: child,
       ),
     );

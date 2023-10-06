@@ -6,7 +6,7 @@ import 'package:widgetbook/widgetbook.dart';
 WidgetbookCategory textField() {
   return WidgetbookCategory(
     name: 'TextField',
-    widgets: [
+    children: [
       WidgetbookComponent(name: 'TextField', useCases: [
         WidgetbookUseCase(
             name: 'Enabled',
@@ -47,7 +47,7 @@ WidgetbookCategory textField() {
                     obscureText: context.knobs.boolean(label: 'Obfuscate text'),
                     label: context.knobs.text(label: 'Label'),
                     hintText: context.knobs.text(label: 'Hint text'),
-                    validator: (s) =>
+                    asyncValidator: (s) =>
                         context.knobs.text(label: 'Error message'),
                   ),
                 ),
@@ -65,7 +65,7 @@ WidgetbookCategory textField() {
                     obscureText: context.knobs.boolean(label: 'Obfuscate text'),
                     label: context.knobs.text(label: 'Label'),
                     hintText: context.knobs.text(label: 'Hint text'),
-                    validator: (s) => null,
+                    asyncValidator: (s) => null,
                     successMessage:
                         context.knobs.text(label: 'Success message'),
                   ),
@@ -101,6 +101,17 @@ WidgetbookCategory textField() {
                             obscureText: true,
                             showObfuscationToggle: true,
                             hintText: 'Enter Password',
+                          ),
+                          const SizedBox(
+                            height: 16,
+                          ),
+                          ArDriveTextField(
+                            controller: ArDriveMultlineObscureTextController(),
+                            obscureText: true,
+                            showObfuscationToggle: true,
+                            hintText: 'Seed Phrase',
+                            minLines: 3,
+                            maxLines: 3,
                           ),
                         ]),
                   ),

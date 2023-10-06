@@ -224,9 +224,9 @@ class _ArDriveDataTableState<T extends IndexedItem>
 
         selectPage(_recalculateCurrentPage());
       } else {
-        _cachedRows = widget.rows;
-
-        selectPage(_selectedPage);
+        if (_sortedColumn != null) {
+          _sortRows(_sortedColumn!);
+        }
       }
     }
   }
@@ -362,8 +362,6 @@ class _ArDriveDataTableState<T extends IndexedItem>
               alignment: Alignment.centerLeft,
               child: GestureDetector(
                 onTap: () {
-                  final stopwatch = Stopwatch()..start();
-
                   setState(() {
                     if (_sortedColumn == index) {
                       _tableSort = _tableSort == TableSort.asc
@@ -375,37 +373,19 @@ class _ArDriveDataTableState<T extends IndexedItem>
                     }
                   });
 
-                  if (widget.sortRows != null) {
-                    _cachedRows =
-                        widget.sortRows!(_cachedRows, index, _tableSort!);
-                  } else if (widget.sort != null) {
-                    int sort(a, b) {
-                      if (_tableSort == TableSort.asc) {
-                        return widget.sort!.call(index)(a, b);
-                      } else {
-                        return widget.sort!.call(index)(b, a);
-                      }
-                    }
-
-                    _cachedRows.sort(sort);
-                  }
-
-                  selectPage(_selectedPage);
-
-                  stopwatch.stop();
-
-                  debugPrint(
-                    'TABLE SORT - Elapsed time: ${stopwatch.elapsedMilliseconds}ms',
-                  );
+                  _sortRows(index);
                 },
                 child: Row(
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    Padding(
-                      padding: const EdgeInsets.only(right: 4),
-                      child: Text(
-                        widget.columns[index].title,
-                        style: ArDriveTypography.body.buttonNormalBold(),
+                    Flexible(
+                      child: Padding(
+                        padding: const EdgeInsets.only(right: 4),
+                        child: Text(
+                          widget.columns[index].title,
+                          style: ArDriveTypography.body.buttonNormalBold(),
+                          overflow: TextOverflow.ellipsis,
+                        ),
                       ),
                     ),
                     if (_sortedColumn == index)
@@ -577,6 +557,7 @@ class _ArDriveDataTableState<T extends IndexedItem>
   }) {
     setState(
       () {
+        final wasMultiSelecting = _isMultiSelecting;
         if (row != null && index != null) {
           _selectMultiSelectItem(row, index, value);
         }
@@ -585,12 +566,11 @@ class _ArDriveDataTableState<T extends IndexedItem>
             !value &&
             getMultiSelectBox().selectedItems.isEmpty) {
           _isMultiSelectingWithLongPress = false;
+        }
 
-          if (widget.onChangeMultiSelecting != null) {
-            widget.onChangeMultiSelecting!(_isMultiSelecting);
-          }
-
-          return;
+        if (wasMultiSelecting != _isMultiSelecting &&
+            widget.onChangeMultiSelecting != null) {
+          widget.onChangeMultiSelecting!(_isMultiSelecting);
         }
       },
     );
@@ -883,6 +863,32 @@ class _ArDriveDataTableState<T extends IndexedItem>
   void goToPreviousPage() {
     selectPage(_selectedPage - 1);
   }
+
+  void _sortRows(int index) {
+    final stopwatch = Stopwatch()..start();
+
+    if (widget.sortRows != null) {
+      _cachedRows = widget.sortRows!(_cachedRows, index, _tableSort!);
+    } else if (widget.sort != null) {
+      int sort(a, b) {
+        if (_tableSort == TableSort.asc) {
+          return widget.sort!.call(index)(a, b);
+        } else {
+          return widget.sort!.call(index)(b, a);
+        }
+      }
+
+      _cachedRows.sort(sort);
+    }
+
+    selectPage(_selectedPage);
+
+    stopwatch.stop();
+
+    debugPrint(
+      'TABLE SORT - Elapsed time: ${stopwatch.elapsedMilliseconds}ms',
+    );
+  }
 }
 
 class PaginationSelect extends StatefulWidget {
@@ -925,7 +931,6 @@ class _PaginationSelectState extends State<PaginationSelect> {
   @override
   Widget build(BuildContext context) {
     return ArDriveDropdown(
-      width: 100,
       anchor: const Aligned(
         follower: Alignment.bottomLeft,
         target: Alignment.bottomRight,

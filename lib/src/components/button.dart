@@ -16,9 +16,11 @@ class ArDriveButton extends StatefulWidget {
     this.fontStyle,
     this.maxHeight,
     this.maxWidth,
+    this.borderRadius,
     this.icon,
     this.isDisabled = false,
     this.iconAlignment = IconButtonAlignment.left,
+    this.customContent,
   });
 
   final String text;
@@ -28,12 +30,17 @@ class ArDriveButton extends StatefulWidget {
   final TextStyle? fontStyle;
   final double? maxHeight;
   final double? maxWidth;
+  final double? borderRadius;
   final bool isDisabled;
   final IconButtonAlignment iconAlignment;
 
   /// An optional icon to display to the left of the button text.
   /// Only applies to primary and secondary buttons.
   final Widget? icon;
+
+  // An optional widget to display instead of the button text.
+  // Only applies to primary
+  final Widget? customContent;
 
   @override
   State<ArDriveButton> createState() => _ArDriveButtonState();
@@ -64,16 +71,17 @@ class _ArDriveButtonState extends State<ArDriveButton> {
                   widget.icon!,
                   const SizedBox(width: 8),
                 ],
-                Text(
-                  widget.text,
-                  style: widget.fontStyle ??
-                      ArDriveTypography.headline.headline5Bold(
-                        color: ArDriveTheme.of(context)
-                            .themeData
-                            .colors
-                            .themeFgOnAccent,
-                      ),
-                ),
+                widget.customContent ??
+                    Text(
+                      widget.text,
+                      style: widget.fontStyle ??
+                          ArDriveTypography.headline.headline5Bold(
+                            color: ArDriveTheme.of(context)
+                                .themeData
+                                .colors
+                                .themeFgOnAccent,
+                          ),
+                    ),
                 if (widget.icon != null &&
                     widget.iconAlignment == IconButtonAlignment.right) ...[
                   const SizedBox(width: 8),
@@ -152,7 +160,9 @@ class _ArDriveButtonState extends State<ArDriveButton> {
       MaterialStateProperty.resolveWith<OutlinedBorder>(
         (Set<MaterialState> states) {
           return RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(buttonBorderRadius),
+            borderRadius: BorderRadius.circular(
+              widget.borderRadius ?? buttonBorderRadius,
+            ),
           );
         },
       );
@@ -165,7 +175,9 @@ class _ArDriveButtonState extends State<ArDriveButton> {
               style: BorderStyle.solid,
               color: ArDriveTheme.of(context).themeData.colors.themeFgDefault,
             ),
-            borderRadius: BorderRadius.circular(buttonBorderRadius),
+            borderRadius: BorderRadius.circular(
+              widget.borderRadius ?? buttonBorderRadius,
+            ),
           );
         },
       );

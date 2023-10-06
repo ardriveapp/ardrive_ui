@@ -4,7 +4,7 @@ import 'package:storybook/src/ardrive_app_base.dart';
 import 'package:widgetbook/widgetbook.dart';
 
 WidgetbookCategory overlay() {
-  return WidgetbookCategory(name: 'Overlay', widgets: [
+  return WidgetbookCategory(name: 'Overlay', children: [
     WidgetbookComponent(name: 'Dropdown', useCases: [
       WidgetbookUseCase(
         name: 'Dropdown',

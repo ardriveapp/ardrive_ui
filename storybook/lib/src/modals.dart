@@ -6,7 +6,7 @@ import 'package:storybook/src/ardrive_app_base.dart';
 import 'package:widgetbook/widgetbook.dart';
 
 WidgetbookCategory modals() {
-  return WidgetbookCategory(name: 'Modals', widgets: [
+  return WidgetbookCategory(name: 'Modals', children: [
     WidgetbookComponent(name: 'Modals', useCases: [
       WidgetbookUseCase(
           name: 'Standard',
@@ -21,31 +21,60 @@ WidgetbookCategory modals() {
                     label: 'content',
                     initialValue:
                         'The file you have selected is too large to download from the mobile app.'),
-                actions: context.knobs.options(label: 'Actions', options: [
-                  const Option(label: 'Zero Actions', value: []),
-                  Option(label: 'One Action', value: [
-                    ModalAction(
-                      action: () {
-                        print('action 1');
-                      },
-                      title: 'Action 1',
-                    ),
-                  ]),
-                  Option(label: 'Two Actions', value: [
-                    ModalAction(
-                      action: () {
-                        print('action 1');
-                      },
-                      title: 'Action 1',
-                    ),
-                    ModalAction(
-                      action: () {
-                        print('action 2');
-                      },
-                      title: 'Action 2',
-                    ),
-                  ])
-                ]),
+                actions: context.knobs.options(
+                    label: 'Actions',
+                    labelBuilder: (option) => option!.isEmpty
+                        ? 'None'
+                        : option.length == 1
+                            ? 'One'
+                            : option.length == 2
+                                ? 'Two'
+                                : 'Three',
+                    options: [
+                      [],
+                      [
+                        ModalAction(
+                          action: () {
+                            print('action 1');
+                          },
+                          title: 'Action 1',
+                        ),
+                      ],
+                      [
+                        ModalAction(
+                          action: () {
+                            print('action 1');
+                          },
+                          title: 'Action 1',
+                        ),
+                        ModalAction(
+                          action: () {
+                            print('action 2');
+                          },
+                          title: 'Action 2',
+                        ),
+                      ],
+                      [
+                        ModalAction(
+                          action: () {
+                            print('action 1');
+                          },
+                          title: 'Action 1',
+                        ),
+                        ModalAction(
+                          action: () {
+                            print('action 2');
+                          },
+                          title: 'Action 2',
+                        ),
+                        ModalAction(
+                          action: () {
+                            print('action 3');
+                          },
+                          title: 'Action 3',
+                        ),
+                      ]
+                    ]),
               );
               return Scaffold(
                 body: Center(
@@ -79,16 +108,17 @@ WidgetbookCategory modals() {
                 ),
                 content: context.knobs.text(
                     label: 'content', initialValue: 'You created a new drive.'),
-                leading: context.knobs.options(label: 'leading', options: [
-                  const Option(label: 'No leading', value: null),
-                  const Option(
-                    label: 'With leading',
-                    value: ArDriveIcon(
+                leading: context.knobs.options(
+                  label: 'leading',
+                  labelBuilder: (value) => value == null ? 'null' : 'Icon',
+                  options: [
+                    null,
+                    const ArDriveIcon(
                       icon: ArDriveIconsData.triangle,
                       color: Colors.red,
                     ),
-                  ),
-                ]),
+                  ],
+                ),
               );
               return Scaffold(
                 body: Center(
@@ -125,11 +155,8 @@ WidgetbookCategory modals() {
                     initialValue: 'You created a new drive.',
                   ),
                   action: context.knobs.options(label: 'Action', options: [
-                    const Option(label: 'No actions', value: null),
-                    Option(
-                      label: 'With Action',
-                      value: ModalAction(action: () {}, title: 'Action'),
-                    )
+                    null,
+                    ModalAction(action: () {}, title: 'Action'),
                   ]));
 
               return Scaffold(
@@ -172,16 +199,16 @@ WidgetbookCategory modals() {
                     .themeSuccessDefault,
               ),
               actions: context.knobs.options(label: 'Actions', options: [
-                const Option(label: 'Zero Actions', value: []),
-                Option(label: 'One Action', value: [
+                [],
+                [
                   ModalAction(
                     action: () {
                       print('action 1');
                     },
                     title: 'Action 1',
                   ),
-                ]),
-                Option(label: 'Two Actions', value: [
+                ],
+                [
                   ModalAction(
                     action: () {
                       print('action 1');
@@ -194,7 +221,7 @@ WidgetbookCategory modals() {
                     },
                     title: 'Action 2',
                   ),
-                ]),
+                ],
               ]),
             );
             return ArDriveStorybookAppBase(builder: (context) {
