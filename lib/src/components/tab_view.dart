@@ -5,7 +5,21 @@ typedef ArDriveTab = MapEntry<Tab, Widget>;
 
 class ArDriveTabView extends StatefulWidget {
   final List<ArDriveTab> tabs;
-  const ArDriveTabView({Key? key, required this.tabs}) : super(key: key);
+  final Color? backgroundColor;
+  final Color? selectedLabelColor;
+  final Color? unselectedLabelColor;
+  final Color? selectedTabColor;
+  final Color? unselectedTabColor;
+
+  const ArDriveTabView({
+    Key? key,
+    required this.tabs,
+    this.backgroundColor,
+    this.selectedLabelColor,
+    this.unselectedLabelColor,
+    this.selectedTabColor,
+    this.unselectedTabColor,
+  }) : super(key: key);
 
   @override
   State<ArDriveTabView> createState() => _ArDriveTabViewState();
@@ -31,6 +45,10 @@ class _ArDriveTabViewState extends State<ArDriveTabView>
         ArDriveTabBar(
           tabs: [...widget.tabs.map((tab) => tab.key)],
           controller: _tabController,
+          selectedLabelColor: widget.selectedLabelColor,
+          unselectedLabelColor: widget.unselectedLabelColor,
+          selectedTabColor: widget.selectedTabColor,
+          unselectedTabColor: widget.unselectedTabColor,
         ),
         const SizedBox(
           height: 28,
@@ -38,7 +56,7 @@ class _ArDriveTabViewState extends State<ArDriveTabView>
         Expanded(
           child: ArDriveCard(
             contentPadding: EdgeInsets.zero,
-            backgroundColor:
+            backgroundColor: widget.backgroundColor ??
                 ArDriveTheme.of(context).themeData.colors.themeBgCanvas,
             content: TabBarView(
               controller: _tabController,
@@ -54,9 +72,20 @@ class _ArDriveTabViewState extends State<ArDriveTabView>
 class ArDriveTabBar extends StatelessWidget {
   final List<Tab> tabs;
   final TabController controller;
+  final Color? selectedTabColor;
+  final Color? unselectedTabColor;
+  final Color? selectedLabelColor;
+  final Color? unselectedLabelColor;
 
-  const ArDriveTabBar(
-      {super.key, required this.tabs, required this.controller});
+  const ArDriveTabBar({
+    super.key,
+    required this.tabs,
+    required this.controller,
+    this.selectedTabColor,
+    this.unselectedTabColor,
+    this.selectedLabelColor,
+    this.unselectedLabelColor,
+  });
 
   final borderRadius = 8.0;
 
@@ -81,7 +110,8 @@ class ArDriveTabBar extends StatelessWidget {
     return Container(
       height: 40,
       decoration: BoxDecoration(
-        color: ArDriveTheme.of(context).themeData.tableTheme.backgroundColor,
+        color: unselectedTabColor ??
+            ArDriveTheme.of(context).themeData.tableTheme.backgroundColor,
         borderRadius: BorderRadius.circular(8),
       ),
       child: TabBar(
@@ -91,11 +121,12 @@ class ArDriveTabBar extends StatelessWidget {
             controller.index,
             controller.length,
           ),
-          color:
+          color: selectedTabColor ??
               ArDriveTheme.of(context).themeData.tableTheme.selectedItemColor,
         ),
-        labelColor: ArDriveTheme.of(context).themeData.colors.themeFgDefault,
-        unselectedLabelColor:
+        labelColor: selectedLabelColor ??
+            ArDriveTheme.of(context).themeData.colors.themeFgDefault,
+        unselectedLabelColor: unselectedLabelColor ??
             ArDriveTheme.of(context).themeData.colors.themeAccentDisabled,
         tabs: tabs,
       ),
