@@ -1,7 +1,7 @@
 name: ardrive_ui
 description: UI Design Library for the ArDrive Design System
 
-version: 1.13.0
+version: 1.13.1
 
 publish_to: "none"
 
@@ -37,7 +37,7 @@ flutter:
   fonts:
     - family:  ArDriveIcons
       fonts:
-        - asset: assets/fonts/ArDriveIcons.ttf
+        - asset: assets/fonts/ArDriveIcons.ttf\
     - family: Wavehaus
       fonts:
         - asset: assets/fonts/Wavehaus-28Thin.otf
