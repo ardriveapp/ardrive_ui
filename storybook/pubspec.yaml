@@ -6,8 +6,8 @@ publish_to: "none" # Remove this line if you wish to publish to pub.dev
 version: 1.0.0+1
 
 environment:
-  sdk: ">=2.18.5 <3.0.0"
-  flutter: 3.10.0
+  sdk: '>=3.0.2 <4.0.0'
+  flutter: 3.13.6
 
 dependencies:
   flutter:
@@ -21,11 +21,6 @@ dependencies:
 
 dependency_overrides:
   widgetbook_core: 3.0.0-beta.8
-  flutter_downloader: 1.10.4
-  file_picker:
-    git:
-      url: https://github.com/ar-io/flutter_file_picker
-      ref: a4902ec620ba28c484bf84a0cea4669f3d3698fe
 
 dev_dependencies:
   flutter_test:
