@@ -19,6 +19,25 @@ class TableRowWidget {
 }
 
 class ArDriveDataTable<T extends IndexedItem> extends StatefulWidget {
+  final List<TableColumn> columns;
+  final List<T> rows;
+  final TableRowWidget Function(T row) buildRow;
+  final Widget Function(T row)? leading;
+  final Widget Function(T row)? trailing;
+  final int Function(T a, T b) Function(int columnIndex)? sort;
+  final List<T> Function(List<T> rows, int columnIndex, TableSort sortOrder)?
+      sortRows;
+  final Function(int page)? onChangePage;
+  final int pageItemsDivisorFactor;
+  final int maxItemsPerPage;
+  final String rowsPerPageText;
+  final Function(List<MultiSelectBox<T>> selectedRows)? onSelectedRows;
+  final Function(T row)? onRowTap;
+  final Function(bool onChangeMultiSelecting)? onChangeMultiSelecting;
+  final bool forceDisableMultiSelect;
+  final bool lockMultiSelect;
+  final T? selectedRow;
+
   const ArDriveDataTable({
     super.key,
     required this.columns,
@@ -37,25 +56,9 @@ class ArDriveDataTable<T extends IndexedItem> extends StatefulWidget {
     this.onChangeMultiSelecting,
     this.forceDisableMultiSelect = false,
     this.lockMultiSelect = false,
+    required this.selectedRow,
   });
 
-  final List<TableColumn> columns;
-  final List<T> rows;
-  final TableRowWidget Function(T row) buildRow;
-  final Widget Function(T row)? leading;
-  final Widget Function(T row)? trailing;
-  final int Function(T a, T b) Function(int columnIndex)? sort;
-  final List<T> Function(List<T> rows, int columnIndex, TableSort sortOrder)?
-      sortRows;
-  final Function(int page)? onChangePage;
-  final int pageItemsDivisorFactor;
-  final int maxItemsPerPage;
-  final String rowsPerPageText;
-  final Function(List<MultiSelectBox<T>> selectedRows)? onSelectedRows;
-  final Function(T row)? onRowTap;
-  final Function(bool onChangeMultiSelecting)? onChangeMultiSelecting;
-  final bool forceDisableMultiSelect;
-  final bool lockMultiSelect;
   @override
   State<ArDriveDataTable> createState() => _ArDriveDataTableState<T>();
 }
@@ -199,6 +202,12 @@ class _ArDriveDataTableState<T extends IndexedItem>
     super.didUpdateWidget(oldWidget);
 
     if (oldWidget != widget) {
+      if (widget.selectedRow != _selectedItem) {
+        setState(() {
+          _selectedItem = widget.selectedRow;
+        });
+      }
+
       if (widget.forceDisableMultiSelect && _isMultiSelecting) {
         clearSelection();
       }
@@ -354,62 +363,13 @@ class _ArDriveDataTableState<T extends IndexedItem>
   Widget build(BuildContext context) {
     final columns = List.generate(
       widget.columns.length,
-      (index) {
-        return Flexible(
-          flex: widget.columns[index].size,
-          child: ArDriveClickArea(
-            child: Align(
-              alignment: Alignment.centerLeft,
-              child: GestureDetector(
-                onTap: () {
-                  setState(() {
-                    if (_sortedColumn == index) {
-                      _tableSort = _tableSort == TableSort.asc
-                          ? TableSort.desc
-                          : TableSort.asc;
-                    } else {
-                      _sortedColumn = index;
-                      _tableSort = TableSort.asc;
-                    }
-                  });
-
-                  _sortRows(index);
-                },
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    Flexible(
-                      child: Padding(
-                        padding: const EdgeInsets.only(right: 4),
-                        child: Text(
-                          widget.columns[index].title,
-                          style: ArDriveTypography.body.buttonNormalBold(),
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                      ),
-                    ),
-                    if (_sortedColumn == index)
-                      _tableSort == TableSort.asc
-                          ? ArDriveIcons.carretUp(
-                              color: ArDriveTheme.of(context)
-                                  .themeData
-                                  .colors
-                                  .themeFgDefault)
-                          : ArDriveIcons.carretDown(
-                              color: ArDriveTheme.of(context)
-                                  .themeData
-                                  .colors
-                                  .themeFgDefault,
-                            ),
-                  ],
-                ),
-              ),
-            ),
-          ),
-        );
-      },
+      (index) => _buildSingleColumn(
+        column: widget.columns[index],
+        index: index,
+      ),
       growable: false,
     );
+
     EdgeInsets getPadding() {
       double rightPadding = 0;
       double leftPadding = 0;
@@ -485,6 +445,61 @@ class _ArDriveDataTableState<T extends IndexedItem>
           ),
           _pageIndicator(),
         ],
+      ),
+    );
+  }
+
+  Widget _buildSingleColumn({required TableColumn column, required int index}) {
+    return Flexible(
+      flex: column.size,
+      child: ArDriveClickArea(
+        child: Align(
+          alignment: Alignment.centerLeft,
+          child: GestureDetector(
+            onTap: () {
+              setState(() {
+                if (_sortedColumn == index) {
+                  _tableSort = _tableSort == TableSort.asc
+                      ? TableSort.desc
+                      : TableSort.asc;
+                } else {
+                  _sortedColumn = index;
+                  _tableSort = TableSort.asc;
+                }
+              });
+
+              _sortRows(index);
+            },
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Flexible(
+                  child: Padding(
+                    padding: const EdgeInsets.only(right: 4),
+                    child: Text(
+                      column.title,
+                      style: ArDriveTypography.body.buttonNormalBold(),
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ),
+                ),
+                if (_sortedColumn == index)
+                  _tableSort == TableSort.asc
+                      ? ArDriveIcons.carretUp(
+                          color: ArDriveTheme.of(context)
+                              .themeData
+                              .colors
+                              .themeFgDefault)
+                      : ArDriveIcons.carretDown(
+                          color: ArDriveTheme.of(context)
+                              .themeData
+                              .colors
+                              .themeFgDefault,
+                        ),
+              ],
+            ),
+          ),
+        ),
       ),
     );
   }
