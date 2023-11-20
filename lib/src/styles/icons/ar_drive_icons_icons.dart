@@ -145,10 +145,10 @@ class ArDriveIconsData {
       IconData(0xe83d, fontFamily: _kFontFam, fontPackage: _kFontPkg);
   static const IconData detach =
       IconData(0xe83f, fontFamily: _kFontFam, fontPackage: _kFontPkg);
-  static const IconData download_2 =
-      IconData(0xe840, fontFamily: _kFontFam, fontPackage: _kFontPkg);
-  static const IconData manifest =
+  static const IconData manifest_icon_flattened =
       IconData(0xe841, fontFamily: _kFontFam, fontPackage: _kFontPkg);
+  static const IconData download_2 =
+      IconData(0xe842, fontFamily: _kFontFam, fontPackage: _kFontPkg);
   static const IconData pin_circle =
       IconData(0xe844, fontFamily: _kFontFam, fontPackage: _kFontPkg);
   static const IconData pin_no_circle =
