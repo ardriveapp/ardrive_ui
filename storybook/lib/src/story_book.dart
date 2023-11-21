@@ -8,6 +8,7 @@ import 'package:storybook/src/colors.dart';
 import 'package:storybook/src/drop_area.dart';
 import 'package:storybook/src/fab.dart';
 import 'package:storybook/src/feedback_message.dart';
+import 'package:storybook/src/icons.dart';
 import 'package:storybook/src/image.dart';
 import 'package:storybook/src/modals.dart';
 import 'package:storybook/src/overlay.dart';
@@ -59,6 +60,7 @@ class StoryBook extends StatelessWidget {
             fab(),
             clickArea(),
             feedbackMessage(),
+            icons(),
           ],
         )
       ],

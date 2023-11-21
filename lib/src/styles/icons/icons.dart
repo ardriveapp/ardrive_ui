@@ -433,4 +433,16 @@ class ArDriveIcons {
         size: size,
         color: color,
       );
+
+  static ArDriveIcon download2({double? size, Color? color}) => ArDriveIcon(
+        icon: ArDriveIconsData.download_2,
+        size: size ?? 18,
+        color: color,
+      );
+
+  static ArDriveIcon manifest({double? size, Color? color}) => ArDriveIcon(
+        icon: ArDriveIconsData.manifest_icon_flattened,
+        size: size ?? 26,
+        color: color,
+      );
 }
