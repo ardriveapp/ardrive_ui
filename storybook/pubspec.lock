@@ -5,8 +5,8 @@ packages:
     dependency: transitive
     description:
       path: "."
-      ref: PE-4896-drag-and-drop-applies-wrong-content-type-to-files
-      resolved-ref: "19616c9d8490db3a09b23292f36ee6480b7b7dc3"
+      ref: "v1.4.1"
+      resolved-ref: "441c37764a1b120057ec2cd1e6eecb47bb35a37a"
       url: "https://github.com/ar-io/ardrive_io.git"
     source: git
     version: "1.4.1"
@@ -16,7 +16,7 @@ packages:
       path: ".."
       relative: true
     source: path
-    version: "1.13.1"
+    version: "1.14.0"
   args:
     dependency: transitive
     description:
