@@ -56,7 +56,7 @@ class ArDriveDataTable<T extends IndexedItem> extends StatefulWidget {
     this.onChangeMultiSelecting,
     this.forceDisableMultiSelect = false,
     this.lockMultiSelect = false,
-    required this.selectedRow,
+    this.selectedRow,
   });
 
   @override

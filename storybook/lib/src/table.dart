@@ -105,7 +105,6 @@ Widget _tableWithContent(BuildContext context) {
           createdAt: DateTime(2022, 10, 22),
         ),
     ],
-    selectedRow: null,
   );
 }
 
