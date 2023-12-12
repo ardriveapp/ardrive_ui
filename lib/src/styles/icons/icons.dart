@@ -445,4 +445,10 @@ class ArDriveIcons {
         size: size ?? 26,
         color: color,
       );
+
+  static ArDriveIcon gift({double? size, Color? color}) => ArDriveIcon(
+        icon: ArDriveIconsData.gift,
+        size: size ?? 26,
+        color: color,
+      );
 }
