@@ -115,9 +115,6 @@ class ArDriveIconsData {
       IconData(0xe82d, fontFamily: _kFontFam, fontPackage: _kFontPkg);
   static const IconData minus_rectangle =
       IconData(0xe82e, fontFamily: _kFontFam, fontPackage: _kFontPkg);
-  // TODO: Correct IconCodePoint
-  static const IconData license =
-      IconData(0xe83c, fontFamily: _kFontFam, fontPackage: _kFontPkg);
   static const IconData move =
       IconData(0xe82f, fontFamily: _kFontFam, fontPackage: _kFontPkg);
   static const IconData music =
@@ -154,6 +151,8 @@ class ArDriveIconsData {
       IconData(0xe841, fontFamily: _kFontFam, fontPackage: _kFontPkg);
   static const IconData download_2 =
       IconData(0xe842, fontFamily: _kFontFam, fontPackage: _kFontPkg);
+  static const IconData license =
+      IconData(0xe843, fontFamily: _kFontFam, fontPackage: _kFontPkg);
   static const IconData pin_circle =
       IconData(0xe844, fontFamily: _kFontFam, fontPackage: _kFontPkg);
   static const IconData pin_no_circle =
