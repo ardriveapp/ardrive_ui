@@ -22,11 +22,15 @@ class ArDriveSubmenu extends StatefulWidget {
     required this.child,
     required this.menuChildren,
     this.alignmentOffset = Offset.zero,
+    this.onOpen,
+    this.onClose,
   });
 
   final Widget child;
   final List<ArDriveSubmenuItem> menuChildren;
   final Offset alignmentOffset;
+  final Function? onOpen;
+  final Function? onClose;
 
   @override
   State<ArDriveSubmenu> createState() => _ArDriveSubmenuState();
@@ -36,18 +40,15 @@ class _ArDriveSubmenuState extends State<ArDriveSubmenu> {
   final topMenuController = MenuController();
 
   @override
-  void initState() {
-    super.initState();
-  }
-
-  @override
   Widget build(BuildContext context) {
     return ArDriveMenuWidget(
       onClick: () {
         if (topMenuController.isOpen) {
           topMenuController.close();
+          widget.onClose?.call();
         } else {
           topMenuController.open();
+          widget.onOpen?.call();
         }
       },
       menuController: topMenuController,
