@@ -305,6 +305,18 @@ class ArDriveIcons {
         size: size,
         color: color,
       );
+  // cc
+  static ArDriveIcon cc({double? size, Color? color}) => ArDriveIcon(
+        icon: ArDriveIconsData.cc,
+        size: size,
+        color: color,
+      );
+  // udl
+  static ArDriveIcon udl({double? size, Color? color}) => ArDriveIcon(
+        icon: ArDriveIconsData.udl,
+        size: size,
+        color: color,
+      );
   // move
   static ArDriveIcon move({double? size, Color? color}) => ArDriveIcon(
         icon: ArDriveIconsData.move,
