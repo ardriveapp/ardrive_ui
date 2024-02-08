@@ -86,7 +86,10 @@ class ArDriveCheckBoxState extends State<ArDriveCheckBox> {
           case CheckBoxState.disabled:
             break;
         }
-        widget.onChange?.call(checked);
+
+        if (widget.onChange != null && state != CheckBoxState.disabled) {
+          widget.onChange?.call(checked);
+        }
       },
       child: ArDriveClickArea(
         child: Row(
