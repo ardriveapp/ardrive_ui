@@ -289,7 +289,26 @@ class _ModalCloseButton extends StatelessWidget {
   }
 }
 
+/// ArDriveStandardModal Class
+///
+/// [ArDriveStandardModal] is a stateless widget that renders a standard modal dialog.
+/// It serves as a reusable component and offers flexibility by allowing various configurations.
+///
+/// Example:
+/// ```dart
+/// ArDriveStandardModal(
+///   title: "My Title",
+///   description: "Description",
+///   actions: [/* ... */],
+///   content: /* ... */,
+///   hasCloseButton: true,
+/// )
+/// ```
 class ArDriveStandardModal extends StatelessWidget {
+  /// Creates an instance of [ArDriveStandardModal].
+  ///
+  /// The [actions] should not exceed 3 in number.
+  /// If [hasCloseButton] is set to true, a close button appears in the title area.
   const ArDriveStandardModal({
     super.key,
     this.title,
@@ -298,13 +317,26 @@ class ArDriveStandardModal extends StatelessWidget {
     this.actions,
     this.width,
     this.hasCloseButton = false,
-  });
+  }) : assert(actions == null || actions.length <= 3);
 
+  /// Optional title displayed at the top of the modal.
   final String? title;
+
+  /// Optional description text.
+  /// Displayed only if [content] is null.
   final String? description;
+
+  /// A list of custom modal actions, usually an `ArDriveButton`.
   final List<ModalAction>? actions;
+
+  /// Optional widget content.
+  /// Takes precedence over [description].
   final Widget? content;
+
+  /// Optional width for the modal.
   final double? width;
+
+  /// Flag to show or hide the close button.
   final bool hasCloseButton;
 
   @override
